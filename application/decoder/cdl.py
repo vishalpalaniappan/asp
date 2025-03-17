@@ -49,7 +49,7 @@ class CDL:
         elif delimiter == CDL.LINE_TYPE_DELIMITER["EXCEPTION"]:
             self.exception = line
         elif delimiter == CDL.LINE_TYPE_DELIMITER["VARIABLE"]:
-            self.exception = line
+            pass
         else:
             self.execution.append(line)
 
