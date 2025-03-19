@@ -28,13 +28,13 @@ class Cdl:
         with ClpIrFileReader(Path(fileName)) as clp_reader:
             for log_event in clp_reader:
                 line = log_event.get_log_message()[11:].rstrip()
-                self.parseLogLine(line)
+                self.parseLogLine(log_event)
 
-    def parseLogLine(self, line):
+    def parseLogLine(self, log_event):
         '''
             Parse the log line and save the relevant data.
         '''
-        currLog = CdlLogLine(line)
+        currLog = CdlLogLine(log_event)
 
         if currLog.type == LINE_TYPE["IR_HEADER"]:
             self.header = CdlHeader(currLog.value)
@@ -59,7 +59,8 @@ class Cdl:
         self.traceEvents.append({
             "uid": log.uid,
             "traceEvent": log.traceEvent,
-            "position": len(self.execution) - 1
+            "position": len(self.execution) - 1,
+            "timestamp": log.timestamp
         })
 
     def addToCallStack(self, log):
