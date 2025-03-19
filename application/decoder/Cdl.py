@@ -17,7 +17,7 @@ class Cdl:
         self.exception = None
         self.traceEvents = []
         self.callStack = []
-        self.callStacks = []
+        self.callStacks = {}
 
         self.loadAndParseFile(fileName)
 
@@ -86,7 +86,7 @@ class Cdl:
         csFromCallPosition = list(map(self.getPreviousPosition, self.callStack) )
         csFromCallPosition.append(position)
 
-        self.callStacks.append(csFromCallPosition)
+        self.callStacks[position] = csFromCallPosition
     
     def getPreviousPosition(self, position):
         '''
