@@ -16,6 +16,8 @@ class Cdl:
         self.execution = []
         self.exception = None
         self.uniqueids = []
+        self.callStack = []
+        self.callStacks = []
 
         self.loadAndParseFile(fileName)
 
@@ -41,10 +43,54 @@ class Cdl:
             self.exception = currLog.value
         elif currLog.type == LINE_TYPE["EXECUTION"]:
             self.execution.append(currLog)
+            self.addToCallStack(currLog.ltId)
         elif currLog.type == LINE_TYPE["UNIQUE_ID"]:
             self.execution.append(currLog)
         elif currLog.type == LINE_TYPE["VARIABLE"]:
             self.execution.append(currLog)
+
+    def addToCallStack(self, ltId):
+        '''
+            Add the current execution to the call stack.
+
+            - If the log is a function, add it to stack.
+            - Move down stack until parent function of current log is found
+            - Map the stack positions to find the log which called the function
+            - Add current position to stack
+            - Copy stack into global list            
+        '''
+        position = len(self.execution) - 1
+        ltInfo = self.header.getLtInfo(ltId)
+        cs = self.callStack
+
+        if (ltInfo.isFunction()):
+            self.callStack.append(position)
+
+        while (len(cs) > 0):
+            currStackFuncLt = self.execution[cs[-1]].ltId
+            if (int(currStackFuncLt) == int(ltInfo.getFuncLt())):
+                break
+            cs.pop()
+
+        # Update the call stack to indicate where the functions were called from.
+        csFromCallPosition = list(map(self.getPreviousPosition, self.callStack) )
+        csFromCallPosition.append(position)
+
+        self.callStacks.append(csFromCallPosition)
+    
+    def getPreviousPosition(self, position):
+        '''
+            Given a position, this function returns the previous execution
+            log type. For example, when adding to the call stack, this will
+            allow us to find the place where a function was called from.
+        '''
+        position -= 1
+        while (position >= 0):
+            if self.execution[position].type == LINE_TYPE["EXECUTION"]:
+                return position
+            position -= 1
+        return position
+        
 
 if __name__ == "__main__":
     fileName = "../sample_system_logs/job_handler.clp.zst"
