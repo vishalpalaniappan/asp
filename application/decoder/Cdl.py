@@ -11,6 +11,7 @@ class Cdl:
         '''
             Initialize the CDL reader.
         '''
+        self.fileName = fileName
         self.header = None  
 
         self.execution = []
@@ -61,7 +62,8 @@ class Cdl:
         self.traceEvents[log.uid].append({
             "traceEvent": log.traceEvent,
             "position": len(self.execution) - 1,
-            "timestamp": log.timestamp
+            "timestamp": log.timestamp,
+            "filename": self.fileName
         })
 
     def addToCallStack(self, log):
