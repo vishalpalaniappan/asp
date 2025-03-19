@@ -1,22 +1,29 @@
 from pathlib import Path
 from clp_ffi_py.ir import ClpIrFileReader
 from CDL_CONSTANTS import LINE_TYPE_DELIMITER, LINE_TYPE
+from CdlLogLine import CdlLogLine
 import json
+from Variable import Variable
+from CdlHeader import CdlHeader
 
-class CDL:
+class Cdl:
 
     def __init__(self, fileName):
         '''
             Initialize the CDL reader.
         '''
-        self.header = None
+        self.header = None  
+
         self.execution = []
         self.exception = None
+        self.uniqueids = []
+        self.callStack = []
+        self.callStacks = []
 
         self.loadAndParseFile(fileName)
 
-        print(self.execution)
-
+        varInfo =self.header.varMap["1"]
+        print(varInfo.getName())
 
     def loadAndParseFile(self, fileName):
         '''
@@ -32,20 +39,21 @@ class CDL:
         '''
             Parse the log line and save the relevant data.
         '''
-        delimiter = line[0]
 
-        if delimiter == LINE_TYPE_DELIMITER["IR_HEADER"]:
-            self.header = json.loads(line)
-        elif delimiter == LINE_TYPE_DELIMITER["EXCEPTION"]:
-            self.exception = line
-        elif delimiter == LINE_TYPE_DELIMITER["VARIABLE"]:
-            pass
-        elif delimiter == LINE_TYPE_DELIMITER["UNIQUE_ID"]:
-            pass
-        else:
-            self.execution.append(line)
+        currLog = CdlLogLine(line)
+
+        if currLog.type == LINE_TYPE["IR_HEADER"]:
+            self.header = CdlHeader(currLog.value)
+        elif currLog.type == LINE_TYPE["EXCEPTION"]:
+            self.exception = currLog.value
+        elif currLog.type == LINE_TYPE["EXECUTION"]:
+            self.execution.append(currLog)
+        elif currLog.type == LINE_TYPE["UNIQUE_ID"]:
+            self.execution.append(currLog)
+        elif currLog.type == LINE_TYPE["VARIABLE"]:
+            self.execution.append(currLog)
 
 
 if __name__ == "__main__":
     fileName = "../sample_system_logs/job_handler.clp.zst"
-    f = CDL(fileName)
+    f = Cdl(fileName)
