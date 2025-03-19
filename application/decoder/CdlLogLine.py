@@ -4,6 +4,7 @@ import json
 class CdlLogLine:
 
     def __init__(self, line):
+        line = line.strip()
         self.parseLine(line)
 
     def parseLine(self, line):
