@@ -3,8 +3,11 @@ import json
 
 class CdlLogLine:
 
-    def __init__(self, line):
-        line = line.strip()
+    def __init__(self, log_event):
+        self.timestamp = log_event.get_timestamp()
+
+        # TODO: Improve the way this is implemented.
+        line = log_event.get_log_message()[11:].strip()
         self.parseLine(line)
 
     def parseLine(self, line):
