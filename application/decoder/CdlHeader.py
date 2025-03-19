@@ -26,3 +26,7 @@ class CdlHeader:
             self.varMap[lt] = Variable(header["varMap"][lt])
 
 
+    def getLtInfo(self, logtype):
+        return self.ltMap[logtype]
+
+

@@ -50,7 +50,7 @@ class CdlLogLine:
         split = line.split()
 
         self.type = LINE_TYPE["VARIABLE"]
-        self.varid = split[1]
+        self.varId = split[1]
         self.value = self.parseIfJson("".join(split[2:]))
 
     def parseUniqueId(self, line):
@@ -70,7 +70,7 @@ class CdlLogLine:
             "<logtypeid>"
         '''
         self.type = LINE_TYPE["EXECUTION"]
-        self.logTypeId = int(line)
+        self.ltId = line
 
 
     def parseIfJson(self, value):

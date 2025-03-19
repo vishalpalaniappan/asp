@@ -11,11 +11,11 @@ class LogType:
         return getattr(self, "id")
     
     def getFuncLt(self):
-        return getattr(self, "ifuncidd")
+        return getattr(self, "funcid")
     
     def getType(self):
         return getattr(self, "type")
 
     def isFunction(self):
-        return getattr(self, "function")
+        return getattr(self, "type") == "function"
 

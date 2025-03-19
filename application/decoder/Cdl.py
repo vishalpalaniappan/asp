@@ -17,13 +17,8 @@ class Cdl:
         self.execution = []
         self.exception = None
         self.uniqueids = []
-        self.callStack = []
-        self.callStacks = []
 
         self.loadAndParseFile(fileName)
-
-        varInfo =self.header.varMap["1"]
-        print(varInfo.getName())
 
     def loadAndParseFile(self, fileName):
         '''
@@ -51,7 +46,6 @@ class Cdl:
             self.execution.append(currLog)
         elif currLog.type == LINE_TYPE["VARIABLE"]:
             self.execution.append(currLog)
-
 
 if __name__ == "__main__":
     fileName = "../sample_system_logs/job_handler.clp.zst"
