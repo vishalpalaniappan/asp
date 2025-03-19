@@ -15,7 +15,7 @@ class Cdl:
 
         self.execution = []
         self.exception = None
-        self.traceEvents = []
+        self.traceEvents = {}
         self.callStack = []
         self.callStacks = {}
 
@@ -55,8 +55,10 @@ class Cdl:
             It stores the uid, traceEvent, and position in the execution array
             to enable retrieving unique trace stacks by processing a specific slice.
         '''
-        self.traceEvents.append({
-            "uid": log.uid,
+        if log.uid not in self.traceEvents:
+            self.traceEvents[log.uid] = []
+
+        self.traceEvents[log.uid].append({
             "traceEvent": log.traceEvent,
             "position": len(self.execution) - 1,
             "timestamp": log.timestamp
