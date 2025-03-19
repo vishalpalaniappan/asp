@@ -51,7 +51,10 @@ class Cdl:
 
     def addTraceEvent(self, log):
         '''
-            This function adds a trace event to 
+            This function adds a trace event to the traceEvents list.
+        
+            It stores the uid, traceEvent, and position in the execution array
+            to enable retrieving unique trace stacks by processing a specific slice.
         '''
         self.traceEvents.append({
             "uid": log.uid,
