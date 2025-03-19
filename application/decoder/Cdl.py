@@ -15,7 +15,7 @@ class Cdl:
 
         self.execution = []
         self.exception = None
-        self.uniqueids = []
+        self.traceEvents = []
         self.callStack = []
         self.callStacks = []
 
@@ -30,7 +30,6 @@ class Cdl:
                 line = log_event.get_log_message()[11:].rstrip()
                 self.parseLogLine(line)
 
-
     def parseLogLine(self, line):
         '''
             Parse the log line and save the relevant data.
@@ -43,13 +42,24 @@ class Cdl:
             self.exception = currLog.value
         elif currLog.type == LINE_TYPE["EXECUTION"]:
             self.execution.append(currLog)
-            self.addToCallStack(currLog.ltId)
+            self.addToCallStack(currLog)
         elif currLog.type == LINE_TYPE["UNIQUE_ID"]:
             self.execution.append(currLog)
+            self.addTraceEvent(currLog)
         elif currLog.type == LINE_TYPE["VARIABLE"]:
             self.execution.append(currLog)
 
-    def addToCallStack(self, ltId):
+    def addTraceEvent(self, log):
+        '''
+            This function adds a trace event to 
+        '''
+        self.traceEvents.append({
+            "uid": log.uid,
+            "traceEvent": log.traceEvent,
+            "position": len(self.execution) - 1
+        })
+
+    def addToCallStack(self, log):
         '''
             Add the current execution to the call stack.
 
@@ -60,7 +70,7 @@ class Cdl:
             - Copy stack into global list            
         '''
         position = len(self.execution) - 1
-        ltInfo = self.header.getLtInfo(ltId)
+        ltInfo = self.header.getLtInfo(log.ltId)
         cs = self.callStack
 
         if (ltInfo.isFunction()):
