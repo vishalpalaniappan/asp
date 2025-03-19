@@ -15,9 +15,9 @@ class Cdl:
 
         self.execution = []
         self.exception = None
-        self.uniqueids = []
+        self.traceEvents = []
         self.callStack = []
-        self.callStacks = []
+        self.callStacks = {}
 
         self.loadAndParseFile(fileName)
 
@@ -29,7 +29,6 @@ class Cdl:
             for log_event in clp_reader:
                 line = log_event.get_log_message()[11:].rstrip()
                 self.parseLogLine(line)
-
 
     def parseLogLine(self, line):
         '''
@@ -43,13 +42,27 @@ class Cdl:
             self.exception = currLog.value
         elif currLog.type == LINE_TYPE["EXECUTION"]:
             self.execution.append(currLog)
-            self.addToCallStack(currLog.ltId)
+            self.addToCallStack(currLog)
         elif currLog.type == LINE_TYPE["UNIQUE_ID"]:
             self.execution.append(currLog)
+            self.addTraceEvent(currLog)
         elif currLog.type == LINE_TYPE["VARIABLE"]:
             self.execution.append(currLog)
 
-    def addToCallStack(self, ltId):
+    def addTraceEvent(self, log):
+        '''
+            This function adds a trace event to the traceEvents list.
+        
+            It stores the uid, traceEvent, and position in the execution array
+            to enable retrieving unique trace stacks by processing a specific slice.
+        '''
+        self.traceEvents.append({
+            "uid": log.uid,
+            "traceEvent": log.traceEvent,
+            "position": len(self.execution) - 1
+        })
+
+    def addToCallStack(self, log):
         '''
             Add the current execution to the call stack.
 
@@ -60,7 +73,7 @@ class Cdl:
             - Copy stack into global list            
         '''
         position = len(self.execution) - 1
-        ltInfo = self.header.getLtInfo(ltId)
+        ltInfo = self.header.getLtInfo(log.ltId)
         cs = self.callStack
 
         if (ltInfo.isFunction()):
@@ -76,7 +89,7 @@ class Cdl:
         csFromCallPosition = list(map(self.getPreviousPosition, self.callStack) )
         csFromCallPosition.append(position)
 
-        self.callStacks.append(csFromCallPosition)
+        self.callStacks[position] = csFromCallPosition
     
     def getPreviousPosition(self, position):
         '''
