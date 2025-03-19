@@ -1,21 +1,9 @@
 from pathlib import Path
 from clp_ffi_py.ir import ClpIrFileReader
+from CDL_CONSTANTS import LINE_TYPE_DELIMITER, LINE_TYPE
 import json
 
 class CDL:
-
-    LINE_TYPE = {
-        "VARIABLE": 1,
-        "EXCEPTION": 2,
-        "EXECUTION": 3,
-        "IR_HEADER": 4,
-    }
-
-    LINE_TYPE_DELIMITER = {
-        "VARIABLE": "#",
-        "EXCEPTION": "?",
-        "IR_HEADER": "{",
-    }
 
     def __init__(self, fileName):
         '''
@@ -26,6 +14,8 @@ class CDL:
         self.exception = None
 
         self.loadAndParseFile(fileName)
+
+        print(self.execution)
 
 
     def loadAndParseFile(self, fileName):
@@ -44,15 +34,18 @@ class CDL:
         '''
         delimiter = line[0]
 
-        if delimiter == CDL.LINE_TYPE_DELIMITER["IR_HEADER"]:
+        if delimiter == LINE_TYPE_DELIMITER["IR_HEADER"]:
             self.header = json.loads(line)
-        elif delimiter == CDL.LINE_TYPE_DELIMITER["EXCEPTION"]:
+        elif delimiter == LINE_TYPE_DELIMITER["EXCEPTION"]:
             self.exception = line
-        elif delimiter == CDL.LINE_TYPE_DELIMITER["VARIABLE"]:
+        elif delimiter == LINE_TYPE_DELIMITER["VARIABLE"]:
+            pass
+        elif delimiter == LINE_TYPE_DELIMITER["UNIQUE_ID"]:
             pass
         else:
             self.execution.append(line)
 
 
 if __name__ == "__main__":
-    f = CDL("test.clp.zst")
+    fileName = "../sample_system_logs/job_handler.clp.zst"
+    f = CDL(fileName)
