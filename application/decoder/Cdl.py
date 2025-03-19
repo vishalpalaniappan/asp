@@ -27,7 +27,6 @@ class Cdl:
         '''
         with ClpIrFileReader(Path(fileName)) as clp_reader:
             for log_event in clp_reader:
-                line = log_event.get_log_message()[11:].rstrip()
                 self.parseLogLine(log_event)
 
     def parseLogLine(self, log_event):
