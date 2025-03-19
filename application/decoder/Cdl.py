@@ -49,7 +49,7 @@ class Cdl:
         elif currLog.type == LINE_TYPE["VARIABLE"]:
             self.execution.append(currLog)
 
-    def addToCallStack(self, logType):
+    def addToCallStack(self, ltId):
         '''
             Add the current execution to the call stack.
 
@@ -60,7 +60,7 @@ class Cdl:
             - Copy stack into global list            
         '''
         position = len(self.execution) - 1
-        ltInfo = self.header.getLtInfo(logType)
+        ltInfo = self.header.getLtInfo(ltId)
         cs = self.callStack
 
         if (ltInfo.isFunction()):
@@ -73,10 +73,10 @@ class Cdl:
             cs.pop()
 
         # Update the call stack to indicate where the functions were called from.
-        csMapped = list(map(self.getPreviousPosition, self.callStack) )
-        csMapped.append(position)
+        csFromCallPosition = list(map(self.getPreviousPosition, self.callStack) )
+        csFromCallPosition.append(position)
 
-        self.callStacks.append(csMapped.copy())
+        self.callStacks.append(csFromCallPosition)
     
     def getPreviousPosition(self, position):
         '''
