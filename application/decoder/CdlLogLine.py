@@ -80,5 +80,5 @@ class CdlLogLine:
         '''
         try:
             return json.loads(value)
-        except:
+        except json.JSONDecodeError:
             return value

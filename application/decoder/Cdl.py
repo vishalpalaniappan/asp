@@ -39,7 +39,6 @@ class Cdl:
         '''
             Parse the log line and save the relevant data.
         '''
-
         currLog = CdlLogLine(line)
 
         if currLog.type == LINE_TYPE["IR_HEADER"]:
