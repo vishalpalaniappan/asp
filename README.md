@@ -2,7 +2,7 @@
 This websocket server handles queries from the Automated System Viewer to extract and filter through system level traces. 
 
 > [!NOTE]  
-> This repo is in development and there are core features being added and explored. It will evolve as the solution is developed.
+> This repo is in development and there are core features being added and explored.
 
 # System Diagram
 ![Simplified AQS System Diagram](docs/system_diagram.jpg)
@@ -16,10 +16,10 @@ This websocket server handles queries from the Automated System Viewer to extrac
 - It groups unique traces if they start and end at the same location, these traces have the same **Trace Type**.
 - It allows the traces to be queried by timestamp, specific variable value or by UID (this will evolve)
     
-Note: I think that for a given **trace type**, there are specific variables associated with it, it would be great to allow the user to select the variable and filter the traces for a spceific variable value (ex. user, job type)
+Note: I think that for a given **trace type**, there are specific variables associated with it, it would be great to allow the user to select the variable and filter the traces for a specific variable value (ex. specific user, specific job type)
 
 ## CDL Reader
-The Cdl class uses the clp-ffi-py library to decode the CDL file and extracts the program execution data, such as:
+The Cdl class uses the clp-ffi-py library to decompress the CDL file and extract the program execution data. Some of the data that is extracted are:
 - Execution Sequence
 - Call stack for a given position
 - Variable Stack for a given position
