@@ -4,13 +4,17 @@ from decoder.Cdl import Cdl
 class SystemProcessor:
 
     def __init__(self, logFolder):
+        '''
+            Initialize the system processor with the logs
+            from the given folder.
+        '''
         self.logFolder = logFolder
         self.logFiles = []
         self.traceEvents = {}
 
-        self.parseLogFiles()
+        self.parseSystemLogFiles()
 
-    def parseLogFiles(self):
+    def parseSystemLogFiles(self):
         '''
             Parse the system log files contained in folder.
         '''
@@ -20,6 +24,8 @@ class SystemProcessor:
             _path = os.path.join(self.logFolder, file)
             cdlFile = Cdl(_path)
             self.addTraceEvents(cdlFile.traceEvents)
+
+            self.logFiles.append(cdlFile)
 
     def addTraceEvents(self, traceEvents):
         '''
