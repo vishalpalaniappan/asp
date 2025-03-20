@@ -5,7 +5,7 @@ This websocket server handles queries from the Automated System Viewer to extrac
 > This repo is in development and there are core features being added and explored.
 
 # System Diagram
-![Simplified AQS System Diagram](docs/system_diagram.jpg)
+![Simplified AQS System Diagram](docs/system_diagram2.jpg)
 
 # How does it work?
 
