@@ -5,15 +5,31 @@ class SystemProcessor:
 
     def __init__(self, logFolder):
         self.logFolder = logFolder
-        self.parseLogFiles()
         self.logFiles = []
+        self.traceEvents = {}
+
+        self.parseLogFiles()
 
     def parseLogFiles(self):
+        '''
+            Parse the system log files contained in folder.
+        '''
         files = os.listdir(self.logFolder)
 
         for file in files:
             _path = os.path.join(self.logFolder, file)
             cdlFile = Cdl(_path)
+            self.addTraceEvents(cdlFile.traceEvents)
+
+    def addTraceEvents(self, traceEvents):
+        '''
+            Add trace events from log files to system processor list.
+        '''
+        for traceUid in traceEvents:            
+            if traceUid not in self.traceEvents:
+                self.traceEvents[traceUid] = []
+
+            self.traceEvents[traceUid] += traceEvents[traceUid]
 
 
 if __name__ == "__main__":
