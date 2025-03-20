@@ -12,16 +12,17 @@ This websocket server handles queries from the Automated System Viewer to extrac
 ## System Processor
 - The SystemProcessor class identifies all the log files which belong to the system (currently, they are in a known folder).
 - It uses the Cdl class to extract the program execution data from each log file and gathers the unique traces from each program. 
-- It processes each unique trace and assembles them in the order they appear.
+- It processes each unique trace and assembles the sub-traces from each program in the order they appear.
 - It groups unique traces if they start and end at the same location, these traces have the same **Trace Type**.
-- It then allows the traces to be queried by timestamp, specific variable value or by UID (this will evolve)
-    - I think that as this evolves, for a given trace type, there are specific variables associated with it, it would be great to allow the user to select the variable and search for traces with a particular value.
+- It allows the traces to be queried by timestamp, specific variable value or by UID (this will evolve)
+    
+Note: I think that for a given **trace type**, there are specific variables associated with it, it would be great to allow the user to select the variable and filter the traces for a spceific variable value (ex. user, job type)
 
 ## CDL Reader
 The Cdl class uses the clp-ffi-py library to decode the CDL file and extracts the program execution data, such as:
 - Execution Sequence
-- Call stack
-- Variable Stack
+- Call stack for a given position
+- Variable Stack for a given position
 - Exception Information
 - Unique Traces
 
