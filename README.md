@@ -2,7 +2,7 @@
 This websocket server handles queries from the Automated System Viewer to extract and filter through system level traces. 
 
 > [!NOTE]  
-> This repo is in development and there are core features being added.
+> This repo is in development and there are core features being added and explored. It will evolve as the solution is developed.
 
 # System Diagram
 ![Simplified AQS System Diagram](docs/system_diagram.jpg)
