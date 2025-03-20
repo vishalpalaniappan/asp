@@ -1,4 +1,4 @@
-# asp-query-server
+# ASP-QUERY-SERVER
 This websocket server handles queries from the Automated System Viewer to extract and filter through system level traces. 
 
 > [!NOTE]  
