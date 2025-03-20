@@ -1,9 +1,8 @@
 from pathlib import Path
 from clp_ffi_py.ir import ClpIrFileReader
-from CDL_CONSTANTS import LINE_TYPE_DELIMITER, LINE_TYPE
-from CdlLogLine import CdlLogLine
-from Variable import Variable
-from CdlHeader import CdlHeader
+from decoder.CDL_CONSTANTS import LINE_TYPE
+from decoder.CdlLogLine import CdlLogLine
+from decoder.CdlHeader import CdlHeader
 
 class Cdl:
 
