@@ -4,12 +4,13 @@ This websocket server handles queries from the Automated System Viewer to extrac
 > [!NOTE]  
 > This repo is in development and there are core features being added.
 
-How does it work? 
-
+# System Diagram
 ![Simplified AQS System Diagram](docs/system_diagram.jpg)
 
-On a high level, it does the following (some features are in development):
+# How does it work?
 
+# System Processor
+On a high level, it does the following (many features are in development):
 - The SystemProcessor class identifies all the log files which belong to the system (currently, they are in a known folder).
 - It then uses the Cdl class to extract the program execution data from each log file and gathers the unique traces from each program. 
 - It then processes each unique trace and assembles them in the order they appear.
