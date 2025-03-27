@@ -1,5 +1,6 @@
 import os
 from decoder.Cdl import Cdl
+import datetime
 
 class SystemProcessor:
 
@@ -20,14 +21,17 @@ class SystemProcessor:
         '''
         files = os.listdir(self.logFolder)
 
-        for file in files[0:1]:
+        for file in files:
             if file.endswith(".clp.zst"):
                 print("Processing File:", file)
                 _path = os.path.join(self.logFolder, file)
                 cdlFile = Cdl(_path)
-                self.addTraceEvents(cdlFile.traceEvents)
-
+                self.addTraceEvents(cdlFile.uniqueTraceEvents)
                 self.logFiles.append(cdlFile)
+        
+        # Sort the trace events by timestamp
+        for uid in self.traceEvents:
+            self.traceEvents[uid].sort(key=lambda x: x["timestamp"], reverse=False)
 
     def addTraceEvents(self, traceEvents):
         '''
