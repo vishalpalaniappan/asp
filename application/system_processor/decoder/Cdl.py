@@ -44,6 +44,57 @@ class Cdl:
             self.addToCallStack(currLog)
         elif currLog.type == LINE_TYPE["VARIABLE"]:
             self.execution.append(currLog)
+            self.saveUniqueId(currLog)
+
+
+    def saveUniqueId(self, variable):
+        '''
+            Save the asp_uid variable value to the top of the stack.
+        '''
+        varInfo = self.header.getVarInfo(variable.varId)
+
+        if varInfo.getName() == "asp_uid":
+            self.callStack[-1]["uid"] = variable.value
+
+    def getLtFromPosition(self, position):
+        '''
+            Get logtype info given an execution position
+        '''
+        stackTop = self.callStacks[position][-1]
+        lt = self.execution[stackTop].ltId
+        ltInfo = self.header.getLtInfo(lt)
+        return ltInfo
+
+
+    def addUniqueTrace(self, uid, startPos, endPos):
+        '''
+            Given a start and end position of a unique trace, 
+            add the position and level of each function in the
+            trace to the unique trace object.
+        '''
+        trace = []
+        for position in range(startPos, endPos):
+            lineType = self.execution[position]
+
+            if lineType.type == LINE_TYPE["EXECUTION"]:
+                ltInfo = self.getLtFromPosition(position)
+
+                if (ltInfo.isFunction()):
+                    trace.append({
+                        "position": position,
+                        "level": len(self.callStacks[position]),
+                        "name": ltInfo.getName()
+                    })
+
+        if uid not in self.traceEvents:
+            self.traceEvents[uid] = []        
+        
+        startTs = self.execution[startPos].timestamp
+        self.traceEvents[uid].append({
+            "fileName": self.fileName,
+            "trace": trace,
+            "timestamp": startTs
+        })
 
     def addToCallStack(self, log):
         '''
@@ -60,26 +111,31 @@ class Cdl:
         cs = self.callStack
 
         if (ltInfo.isFunction()):
-            self.callStack.append(position)
+            self.callStack.append({"position":position,"isUnique":ltInfo.isUnique})
 
         while (len(cs) > 0):
-            currStackFuncLt = self.execution[cs[-1]].ltId
+            currStackFuncLt = self.execution[cs[-1]["position"]].ltId
             if (int(currStackFuncLt) == int(ltInfo.getFuncLt())):
                 break
-            cs.pop()
 
+            popped = cs.pop()
+
+            if popped["isUnique"]:
+                self.addUniqueTrace(popped["uid"], popped["position"], position)
+                
         # Update the call stack to indicate where the functions were called from.
-        csFromCallPosition = list(map(self.getPreviousPosition, self.callStack) )
+        csFromCallPosition = list(map(self.getPreviousPosition, self.callStack))
         csFromCallPosition.append(position)
 
         self.callStacks[position] = csFromCallPosition
     
-    def getPreviousPosition(self, position):
+    def getPreviousPosition(self, cs):
         '''
             Given a position, this function returns the previous execution
             log type. For example, when adding to the call stack, this will
             allow us to find the place where a function was called from.
         '''
+        position = cs["position"]
         position -= 1
         while (position >= 0):
             if self.execution[position].type == LINE_TYPE["EXECUTION"]:

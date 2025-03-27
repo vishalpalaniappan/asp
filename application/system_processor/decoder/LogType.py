@@ -18,4 +18,10 @@ class LogType:
 
     def isFunction(self):
         return getattr(self, "type") == "function"
+    
+    def isUnique(self):
+        return getattr(self, "isUnique")
+        
+    def getName(self):
+        return getattr(self, "name")
 
