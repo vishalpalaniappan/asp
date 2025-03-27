@@ -27,6 +27,15 @@ class CdlHeader:
 
 
     def getLtInfo(self, logtype):
+        '''
+            Returns logtype info given a logtype id.
+        '''
         return self.ltMap[logtype]
+    
+    def getVarInfo(self, varType):
+        '''
+            Returns variable info given a variable type.
+        '''
+        return self.varMap[varType]
 
 

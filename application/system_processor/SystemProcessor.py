@@ -1,16 +1,16 @@
 import os
 from decoder.Cdl import Cdl
+import json
 
 class SystemProcessor:
 
     def __init__(self, logFolder):
         '''
-            Initialize the system processor with the logs
-            from the given folder.
+            Initialize the system processor with the logs from the given folder.
         '''
         self.logFolder = logFolder
         self.logFiles = []
-        self.traceEvents = {}
+        self.uniqueTraces = {}
 
         self.parseSystemLogFiles()
 
@@ -21,21 +21,29 @@ class SystemProcessor:
         files = os.listdir(self.logFolder)
 
         for file in files:
-            _path = os.path.join(self.logFolder, file)
-            cdlFile = Cdl(_path)
-            self.addTraceEvents(cdlFile.traceEvents)
+            if file.endswith(".clp.zst"):
+                _path = os.path.join(self.logFolder, file)
+                cdlFile = Cdl(_path)
+                self.addUniqueTraceEvents(cdlFile.uniqueTraceEvents)
+                self.logFiles.append(cdlFile)
+        
+        # Sort the trace events by timestamp
+        for uid in self.uniqueTraces:
+            self.uniqueTraces[uid].sort(key=lambda x: x["timestamp"], reverse=False)
 
-            self.logFiles.append(cdlFile)
+        # Save trace events to json file
+        with open("traceEvents.json", "w+") as f:
+            f.write(json.dumps(self.uniqueTraces))
 
-    def addTraceEvents(self, traceEvents):
+    def addUniqueTraceEvents(self, traceEvents):
         '''
-            Add trace events from log files to system processor list.
+            Add trace events from log files to system unique trace list.
         '''
         for traceUid in traceEvents:            
-            if traceUid not in self.traceEvents:
-                self.traceEvents[traceUid] = []
+            if traceUid not in self.uniqueTraces:
+                self.uniqueTraces[traceUid] = []
 
-            self.traceEvents[traceUid] += traceEvents[traceUid]
+            self.uniqueTraces[traceUid] += traceEvents[traceUid]
 
 
 if __name__ == "__main__":
