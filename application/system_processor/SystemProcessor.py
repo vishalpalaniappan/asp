@@ -6,12 +6,11 @@ class SystemProcessor:
 
     def __init__(self, logFolder):
         '''
-            Initialize the system processor with the logs
-            from the given folder.
+            Initialize the system processor with the logs from the given folder.
         '''
         self.logFolder = logFolder
         self.logFiles = []
-        self.traceEvents = {}
+        self.uniqueTraces = {}
 
         self.parseSystemLogFiles()
 
@@ -23,25 +22,24 @@ class SystemProcessor:
 
         for file in files:
             if file.endswith(".clp.zst"):
-                print("Processing File:", file)
                 _path = os.path.join(self.logFolder, file)
                 cdlFile = Cdl(_path)
-                self.addTraceEvents(cdlFile.uniqueTraceEvents)
+                self.addUniqueTraceEvents(cdlFile.uniqueTraceEvents)
                 self.logFiles.append(cdlFile)
         
         # Sort the trace events by timestamp
         for uid in self.traceEvents:
-            self.traceEvents[uid].sort(key=lambda x: x["timestamp"], reverse=False)
+            self.uniqueTraces[uid].sort(key=lambda x: x["timestamp"], reverse=False)
 
-    def addTraceEvents(self, traceEvents):
+    def addUniqueTraceEvents(self, traceEvents):
         '''
-            Add trace events from log files to system processor list.
+            Add trace events from log files to system unique trace list.
         '''
         for traceUid in traceEvents:            
-            if traceUid not in self.traceEvents:
-                self.traceEvents[traceUid] = []
+            if traceUid not in self.uniqueTraces:
+                self.uniqueTraces[traceUid] = []
 
-            self.traceEvents[traceUid] += traceEvents[traceUid]
+            self.uniqueTraces[traceUid] += traceEvents[traceUid]
 
 
 if __name__ == "__main__":

@@ -96,6 +96,10 @@ class Cdl:
             - Map the stack positions to find the log which called the function
             - Add current position to stack
             - Copy stack into global list            
+
+            - If a unique trace function is added to stack, it is the start of a unique trace.
+            - If a unique trace function is removed from stack, it is the end of a unique trace.
+            - When a unique trace ends, save it to the unique trace list.
         '''
         position = len(self.execution) - 1
         ltInfo = self.header.getLtInfo(log.ltId)
@@ -109,9 +113,9 @@ class Cdl:
             if (int(currStackFuncLt) == int(ltInfo.getFuncLt())):
                 break
 
-            # If the removed call is the end of a unique trace, then
-            # add it to the trace list.
             popped = cs.pop()
+
+            # If the removed call is the end of a unique trace, then add it to the trace list.
             if popped["isUnique"]:
                 self.addUniqueTrace(popped["uid"], popped["position"], position)
                 
