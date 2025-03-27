@@ -69,6 +69,7 @@ class Cdl:
 
             if lineType.type == LINE_TYPE["EXECUTION"]:
                 ltInfo = self.header.getLtInfo(lineType.ltId)
+
                 if (ltInfo.isFunction()):
                     trace.append({
                         "position": position,
@@ -115,12 +116,12 @@ class Cdl:
                 self.addUniqueTrace(popped["uid"], popped["position"], position)
                 
         # Update the call stack to indicate where the functions were called from.
-        csFromCallPosition = list(map(self.getPreviousPosition, self.callStack))
+        csFromCallPosition = list(map(self.getPreviousExecutionPosition, self.callStack))
         csFromCallPosition.append(position)
 
         self.callStacks[position] = csFromCallPosition
     
-    def getPreviousPosition(self, cs):
+    def getPreviousExecutionPosition(self, cs):
         '''
             Given a position, this function returns the previous execution
             log type. For example, when adding to the call stack, this will
