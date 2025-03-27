@@ -19,7 +19,6 @@ async def handle_query(websocket):
         if (message["code"] == MSG_TYPES["GET_UNIQUE_TRACES"]):
             message["response"] = processor.uniqueTraces
             message["error"] = False
-            await websocket.send(json.dumps(message))
         else:
             message["response"] = f"Unknown message type: {message['code']}"
             message["error"] = True
