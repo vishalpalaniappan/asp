@@ -59,8 +59,7 @@ class Cdl:
         '''
             Get logtype info given an execution position
         '''
-        stackTop = self.callStacks[position][-1]
-        lt = self.execution[stackTop].ltId
+        lt = self.execution[position].ltId
         ltInfo = self.header.getLtInfo(lt)
         return ltInfo
 
