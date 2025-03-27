@@ -28,7 +28,7 @@ class SystemProcessor:
                 self.logFiles.append(cdlFile)
         
         # Sort the trace events by timestamp
-        for uid in self.traceEvents:
+        for uid in self.uniqueTraces:
             self.uniqueTraces[uid].sort(key=lambda x: x["timestamp"], reverse=False)
 
     def addUniqueTraceEvents(self, traceEvents):
