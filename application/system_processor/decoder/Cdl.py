@@ -46,7 +46,6 @@ class Cdl:
             self.execution.append(currLog)
             self.saveUniqueId(currLog)
 
-
     def saveUniqueId(self, variable):
         '''
             Save the asp_uid variable value to the top of the stack.
@@ -72,6 +71,8 @@ class Cdl:
             add the position and level of each function in the
             trace to the unique trace object.
         '''
+
+        # Add every visited function and its level in the stack to the trace list 
         trace = []
         for position in range(startPos, endPos):
             lineType = self.execution[position]
@@ -86,14 +87,14 @@ class Cdl:
                         "name": ltInfo.getName()
                     })
 
+        # Add trace event to the traceEvents list.
         if uid not in self.traceEvents:
             self.traceEvents[uid] = []        
         
-        startTs = self.execution[startPos].timestamp
         self.traceEvents[uid].append({
             "fileName": self.fileName,
             "trace": trace,
-            "timestamp": startTs
+            "timestamp": self.execution[startPos].timestamp
         })
 
     def addToCallStack(self, log):
@@ -118,8 +119,9 @@ class Cdl:
             if (int(currStackFuncLt) == int(ltInfo.getFuncLt())):
                 break
 
+            # If the removed call is the end of a unique trace, then
+            # add it to the trace list.
             popped = cs.pop()
-
             if popped["isUnique"]:
                 self.addUniqueTrace(popped["uid"], popped["position"], position)
                 
