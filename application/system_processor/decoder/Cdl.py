@@ -15,7 +15,7 @@ class Cdl:
 
         self.execution = []
         self.exception = None
-        self.traceEvents = {}
+        self.uniqueTraceEvents = {}
         self.callStack = []
         self.callStacks = {}
 
@@ -55,15 +55,6 @@ class Cdl:
         if varInfo.getName() == "asp_uid":
             self.callStack[-1]["uid"] = variable.value
 
-    def getLtFromPosition(self, position):
-        '''
-            Get logtype info given an execution position
-        '''
-        lt = self.execution[position].ltId
-        ltInfo = self.header.getLtInfo(lt)
-        return ltInfo
-
-
     def addUniqueTrace(self, uid, startPos, endPos):
         '''
             Given a start and end position of a unique trace, 
@@ -77,8 +68,7 @@ class Cdl:
             lineType = self.execution[position]
 
             if lineType.type == LINE_TYPE["EXECUTION"]:
-                ltInfo = self.getLtFromPosition(position)
-
+                ltInfo = self.header.getLtInfo(lineType.ltId)
                 if (ltInfo.isFunction()):
                     trace.append({
                         "position": position,
@@ -86,11 +76,11 @@ class Cdl:
                         "name": ltInfo.getName()
                     })
 
-        # Add trace event to the traceEvents list.
-        if uid not in self.traceEvents:
-            self.traceEvents[uid] = []        
+        # Add trace to the unique traceEvents list.
+        if uid not in self.uniqueTraceEvents:
+            self.uniqueTraceEvents[uid] = []        
         
-        self.traceEvents[uid].append({
+        self.uniqueTraceEvents[uid].append({
             "fileName": self.fileName,
             "trace": trace,
             "timestamp": self.execution[startPos].timestamp
