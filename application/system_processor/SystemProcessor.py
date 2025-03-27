@@ -20,12 +20,14 @@ class SystemProcessor:
         '''
         files = os.listdir(self.logFolder)
 
-        for file in files:
-            _path = os.path.join(self.logFolder, file)
-            cdlFile = Cdl(_path)
-            self.addTraceEvents(cdlFile.traceEvents)
+        for file in files[0:1]:
+            if file.endswith(".clp.zst"):
+                print("Processing File:", file)
+                _path = os.path.join(self.logFolder, file)
+                cdlFile = Cdl(_path)
+                self.addTraceEvents(cdlFile.traceEvents)
 
-            self.logFiles.append(cdlFile)
+                self.logFiles.append(cdlFile)
 
     def addTraceEvents(self, traceEvents):
         '''
