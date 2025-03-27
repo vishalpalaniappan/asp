@@ -45,23 +45,6 @@ class Cdl:
         elif currLog.type == LINE_TYPE["VARIABLE"]:
             self.execution.append(currLog)
 
-    def addTraceEvent(self, log):
-        '''
-            This function adds a trace event to the traceEvents list.
-        
-            It stores the uid, traceEvent, and position in the execution array
-            to enable retrieving unique trace stacks by processing a specific slice.
-        '''
-        if log.uid not in self.traceEvents:
-            self.traceEvents[log.uid] = []
-
-        self.traceEvents[log.uid].append({
-            "traceEvent": log.traceEvent,
-            "position": len(self.execution) - 1,
-            "timestamp": log.timestamp,
-            "filename": self.fileName
-        })
-
     def addToCallStack(self, log):
         '''
             Add the current execution to the call stack.
