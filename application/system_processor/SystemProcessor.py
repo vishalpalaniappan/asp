@@ -45,6 +45,15 @@ class SystemProcessor:
 
             self.uniqueTraces[traceUid] += traceEvents[traceUid]
 
+    def getFileTrees(self):
+        '''
+            Returns the file tree for all programs in the system
+        '''
+        fileTrees = {}
+        for log in self.logFiles:
+            fileTrees[log.fileName] = log.header.fileTree
+
+        return fileTrees
 
 if __name__ == "__main__":
     SYSTEM_LOG_FILES = "../sample_system_logs/"

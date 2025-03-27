@@ -16,15 +16,26 @@ async def handle_query(websocket):
 
         message = json.loads(message)
 
-        if (message["code"] == MSG_TYPES["GET_UNIQUE_TRACES"]):
+        if "code" not in message:
+            message["response"] = "Message does not contain a code"
+            message["error"] = True
+            await websocket.send(json.dumps(message))
+
+        elif (message["code"] == MSG_TYPES["GET_UNIQUE_TRACES"]):
             message["response"] = processor.uniqueTraces
             message["error"] = False
+            await websocket.send(json.dumps(message))
+
+        elif (message["code"] == MSG_TYPES["GET_FILE_TREES"]):
+            message["response"] = processor.getFileTrees()
+            message["error"] = False
+            await websocket.send(json.dumps(message))
+
         else:
             message["response"] = f"Unknown message type: {message['code']}"
             message["error"] = True
+            await websocket.send(json.dumps(message))
 
-        
-        await websocket.send(json.dumps(message))
         
 
         
