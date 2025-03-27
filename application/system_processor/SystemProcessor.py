@@ -1,7 +1,6 @@
 import os
 from decoder.Cdl import Cdl
 import json
-import datetime
 
 class SystemProcessor:
 
