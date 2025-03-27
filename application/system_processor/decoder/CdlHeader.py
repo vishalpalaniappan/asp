@@ -1,6 +1,6 @@
 import json
-from decoder.Variable import Variable
-from decoder.LogType import LogType
+from application.system_processor.decoder.Variable import Variable
+from application.system_processor.decoder.LogType import LogType
 
 class CdlHeader:
 
