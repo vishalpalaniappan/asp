@@ -1,0 +1,3 @@
+MSG_TYPES = {
+    "GET_UNIQUE_TRACES": 1
+}
