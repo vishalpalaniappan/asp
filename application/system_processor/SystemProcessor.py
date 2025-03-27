@@ -1,5 +1,6 @@
 import os
 from decoder.Cdl import Cdl
+import json
 import datetime
 
 class SystemProcessor:
@@ -30,6 +31,10 @@ class SystemProcessor:
         # Sort the trace events by timestamp
         for uid in self.uniqueTraces:
             self.uniqueTraces[uid].sort(key=lambda x: x["timestamp"], reverse=False)
+
+        # Save trace events to json file
+        with open("traceEvents.json", "w+") as f:
+            f.write(json.dumps(self.uniqueTraces))
 
     def addUniqueTraceEvents(self, traceEvents):
         '''
