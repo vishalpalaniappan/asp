@@ -1,5 +1,5 @@
 import os
-from decoder.Cdl import Cdl
+from application.system_processor.decoder.Cdl import Cdl
 import json
 
 class SystemProcessor:
