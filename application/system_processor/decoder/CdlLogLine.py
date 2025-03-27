@@ -22,8 +22,6 @@ class CdlLogLine:
             self.parseException(line)
         elif delimiter == LINE_TYPE_DELIMITER["VARIABLE"]:
             self.parseVariable(line)
-        elif delimiter == LINE_TYPE_DELIMITER["UNIQUE_ID"]:
-            self.parseUniqueId(line)
         else:
             self.parseExecution(line)
 
@@ -56,17 +54,6 @@ class CdlLogLine:
         self.type = LINE_TYPE["VARIABLE"]
         self.varId = split[1]
         self.value = self.parseIfJson("".join(split[2:]))
-
-    def parseUniqueId(self, line):
-        '''
-            Parse unique id log statements
-            "@ [start|end] <unique_id>"
-        '''
-        split = line.split()
-
-        self.type = LINE_TYPE["UNIQUE_ID"]
-        self.traceEvent = split[1]
-        self.uid = self.parseIfJson("".join(split[2:]))
 
     def parseExecution(self, line):
         '''

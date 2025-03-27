@@ -42,9 +42,6 @@ class Cdl:
         elif currLog.type == LINE_TYPE["EXECUTION"]:
             self.execution.append(currLog)
             self.addToCallStack(currLog)
-        elif currLog.type == LINE_TYPE["UNIQUE_ID"]:
-            self.execution.append(currLog)
-            self.addTraceEvent(currLog)
         elif currLog.type == LINE_TYPE["VARIABLE"]:
             self.execution.append(currLog)
 
