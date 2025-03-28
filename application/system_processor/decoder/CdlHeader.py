@@ -43,10 +43,10 @@ class CdlHeader:
             Returns the file that this logtype belongs to
         '''
         for file in self.fileTree:
-            lt = int(lt)
+            lt_value = int(lt)
             minLt = self.fileTree[file]["minLt"]
             maxLt = self.fileTree[file]["maxLt"]
-            if (lt >= minLt and lt < maxLt):
+            if (lt_value >= minLt and lt_value < maxLt):
                 return file
             
         return None
