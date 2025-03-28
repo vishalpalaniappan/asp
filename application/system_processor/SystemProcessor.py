@@ -20,10 +20,10 @@ class SystemProcessor:
         '''
         files = os.listdir(self.logFolder)
 
-        for file in files:
-            if file.endswith(".clp.zst"):
-                _path = os.path.join(self.logFolder, file)
-                cdlFile = Cdl(_path)
+        for logFileName in files:
+            if logFileName.endswith(".clp.zst"):
+                _path = os.path.join(self.logFolder, logFileName)
+                cdlFile = Cdl(logFileName, _path)
                 self.addUniqueTraceEvents(cdlFile.uniqueTraceEvents)
                 self.logFiles.append(cdlFile)
         
@@ -51,7 +51,7 @@ class SystemProcessor:
         '''
         fileTrees = {}
         for log in self.logFiles:
-            fileTrees[log.fileName] = log.header.fileTree
+            fileTrees[log.logFileName] = log.header.fileTree
 
         return fileTrees
 
