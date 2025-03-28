@@ -85,7 +85,7 @@ class Cdl:
             self.uniqueTraceEvents[uid] = []        
         
         self.uniqueTraceEvents[uid].append({
-            "programName": self.logFileName.split(".")[0] + ".py",
+            "logFileName": self.logFileName,
             "trace": trace,
             "timestamp": self.execution[startPos].timestamp
         })
