@@ -4,6 +4,15 @@ This websocket server handles queries from the Automated System Viewer to extrac
 > [!NOTE]  
 > This repo is in development and there are core features being added and explored.
 
+# Usage
+To run this program, run the following command:
+  ```shell
+  python3 adli.py <source_path>
+  ```
+This will start a websocket server on port 8765. After connecting to the websocket server, you can send commands to interface with the system processor. 
+
+Note: There are limited commands available right now, see PR #13 for example commands. The functionality will be expanded as the system is developed further.
+
 # System Diagram
 ![Simplified AQS System Diagram](docs/system_diagram2.jpg)
 
