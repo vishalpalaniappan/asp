@@ -7,7 +7,7 @@ This websocket server handles queries from the Automated System Viewer to extrac
 # Usage
 To run this program, run the following command:
   ```shell
-  python3 adli.py <source_path>
+  python3 server.py
   ```
 This will start a websocket server on port 8765. After connecting to the websocket server, you can send commands to interface with the system processor. 
 
