@@ -37,5 +37,18 @@ class CdlHeader:
             Returns variable info given a variable type.
         '''
         return self.varMap[varType]
+    
+    def getFileFromLt(self, lt):
+        '''
+            Returns the file that this logtype belongs to
+        '''
+        for file in self.fileTree:
+            lt = int(lt)
+            minLt = self.fileTree[file]["minLt"]
+            maxLt = self.fileTree[file]["maxLt"]
+            if (lt >= minLt and lt < maxLt):
+                return file
+            
+        return None
 
 

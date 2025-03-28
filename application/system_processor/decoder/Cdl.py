@@ -6,11 +6,12 @@ from application.system_processor.decoder.CdlHeader import CdlHeader
 
 class Cdl:
 
-    def __init__(self, fileName):
+    def __init__(self, logFileName, filePath):
         '''
             Initialize the CDL reader.
         '''
-        self.fileName = fileName
+        self.logFileName = logFileName
+        self.filePath = filePath
         self.header = None  
 
         self.execution = []
@@ -19,13 +20,13 @@ class Cdl:
         self.callStack = []
         self.callStacks = {}
 
-        self.loadAndParseFile(fileName)
+        self.loadAndParseFile(filePath)
 
-    def loadAndParseFile(self, fileName):
+    def loadAndParseFile(self, filePath):
         '''
             Load and parse the file line by line.
         '''
-        with ClpIrFileReader(Path(fileName)) as clp_reader:
+        with ClpIrFileReader(Path(filePath)) as clp_reader:
             for log_event in clp_reader:
                 self.parseLogLine(log_event)
 
@@ -74,7 +75,9 @@ class Cdl:
                     trace.append({
                         "position": position,
                         "level": len(self.callStacks[position]),
-                        "name": ltInfo.getName()
+                        "name": ltInfo.getName(),
+                        "lineNo": ltInfo.lineno,
+                        "file": self.header.getFileFromLt(ltInfo.id)
                     })
 
         # Add trace to the unique traceEvents list.
@@ -82,7 +85,7 @@ class Cdl:
             self.uniqueTraceEvents[uid] = []        
         
         self.uniqueTraceEvents[uid].append({
-            "fileName": self.fileName,
+            "programName": self.logFileName.split(".")[0] + ".py",
             "trace": trace,
             "timestamp": self.execution[startPos].timestamp
         })
