@@ -20,10 +20,10 @@ class CdlHeader:
         self.fileTree = header["fileTree"]
 
         for lt in header["ltMap"]:
-            self.ltMap[lt] = LogType(header["ltMap"][lt])
+            self.ltMap[int(lt)] = LogType(header["ltMap"][lt])
         
         for lt in header["varMap"]:
-            self.varMap[lt] = Variable(header["varMap"][lt])
+            self.varMap[int(lt)] = Variable(header["varMap"][lt])
 
 
     def getLtInfo(self, logtype):

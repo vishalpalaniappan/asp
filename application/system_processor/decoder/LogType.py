@@ -21,7 +21,13 @@ class LogType:
     
     def isUnique(self):
         return getattr(self, "isUnique")
+    
+    def getLineNo(self):
+        return getattr(self, "lineno")
         
     def getName(self):
-        return getattr(self, "name")
+        if hasattr(self, "name"):
+            return getattr(self, "name")
+        else:
+            None
 
