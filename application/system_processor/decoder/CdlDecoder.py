@@ -29,8 +29,8 @@ class CdlDecoder:
             Load and parse the file line by line.
         '''
         with ClpIrFileReader(Path(filePath)) as clp_reader:
+            self.position = 0
             for log_event in clp_reader:
-                self.position = 0
                 self.parseLogLine(log_event)
 
     def parseLogLine(self, log_event):
@@ -44,14 +44,14 @@ class CdlDecoder:
         elif currLog.type == LINE_TYPE["EXCEPTION"]:
             self.exception = currLog.value
         elif currLog.type == LINE_TYPE["EXECUTION"]:
-            self.position += 1
-            self.execution.append(currLog)
             self.lastExecution = self.position
+            self.execution.append(currLog)
             self.addToCallStack(currLog)
-        elif currLog.type == LINE_TYPE["VARIABLE"]:
             self.position += 1
+        elif currLog.type == LINE_TYPE["VARIABLE"]:
             self.execution.append(currLog)
             self.saveUniqueId(currLog)
+            self.position += 1
 
     def saveUniqueId(self, variable):
         '''
@@ -147,3 +147,26 @@ class CdlDecoder:
                 return position
             position -= 1
         return position
+    
+    def getCallStackAtPosition(self, position):
+        '''
+            Get call stack info for the given position.
+        '''
+        csInfo = []
+        for cs in self.callStacks[position]:
+            lt = self.execution[cs].ltId
+            ltInfo = self.header.getLtInfo(lt)
+            funcLt = ltInfo.getFuncLt()
+
+            if (funcLt == 0):
+                funcName = "<module>"
+            else:
+                funcName = self.header.getLtInfo(funcLt).getName()
+
+            csInfo.append({
+                "functionName": funcName,
+                "fileName": self.logFileName,
+                "position": cs,
+                "lineNumber": ltInfo.getLineNo()
+            })
+

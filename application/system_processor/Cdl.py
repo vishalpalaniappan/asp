@@ -8,6 +8,8 @@ class Cdl:
         self.logFileName = os.path.basename(filePath)
         self.decoder = CdlDecoder(filePath)
 
+        self.decoder.getCallStackAtPosition(self.decoder.lastExecution)
+
     def uniqueTraceEvents(self):
         return self.decoder.uniqueTraceEvents
     
@@ -15,10 +17,8 @@ class Cdl:
         return self.decoder.header.fileTree
 
     def goToPosition(self, position):
-        pass
-
-    def getCallStackAtPosition(self, position):
-        pass
+        callStack = self.decoder.getCallStackAtPosition[position]
+        return callStack
 
     def stepInto(self):
         pass
