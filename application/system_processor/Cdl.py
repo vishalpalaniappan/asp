@@ -4,6 +4,7 @@ import os
 class Cdl:
 
     def __init__(self, filePath):
+        self.filePath = filePath
         self.logFileName = os.path.basename(filePath)
         self.decoder = CdlDecoder(filePath)
 
