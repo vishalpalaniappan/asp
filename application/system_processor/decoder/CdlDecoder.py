@@ -4,13 +4,15 @@ from application.system_processor.decoder.CDL_CONSTANTS import LINE_TYPE
 from application.system_processor.decoder.CdlLogLine import CdlLogLine
 from application.system_processor.decoder.CdlHeader import CdlHeader
 
-class Cdl:
+import os
 
-    def __init__(self, logFileName, filePath):
+class CdlDecoder:
+
+    def __init__(self, filePath):
         '''
             Initialize the CDL reader.
         '''
-        self.logFileName = logFileName
+        self.logFileName = os.path.basename(filePath)
         self.filePath = filePath
         self.header = None  
 
