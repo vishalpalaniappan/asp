@@ -30,6 +30,7 @@ class CdlDecoder:
         '''
         with ClpIrFileReader(Path(filePath)) as clp_reader:
             for log_event in clp_reader:
+                self.position = 0
                 self.parseLogLine(log_event)
 
     def parseLogLine(self, log_event):
@@ -43,9 +44,12 @@ class CdlDecoder:
         elif currLog.type == LINE_TYPE["EXCEPTION"]:
             self.exception = currLog.value
         elif currLog.type == LINE_TYPE["EXECUTION"]:
+            self.position += 1
             self.execution.append(currLog)
+            self.lastExecution = self.position
             self.addToCallStack(currLog)
         elif currLog.type == LINE_TYPE["VARIABLE"]:
+            self.position += 1
             self.execution.append(currLog)
             self.saveUniqueId(currLog)
 
@@ -143,8 +147,3 @@ class CdlDecoder:
                 return position
             position -= 1
         return position
-        
-
-if __name__ == "__main__":
-    fileName = "../sample_system_logs/job_handler.clp.zst"
-    f = Cdl(fileName)
