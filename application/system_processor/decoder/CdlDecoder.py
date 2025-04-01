@@ -129,24 +129,35 @@ class CdlDecoder:
                 self.addUniqueTrace(popped["uid"], popped["position"], position)
                 
         # Update the call stack to indicate where the functions were called from.
-        csFromCallPosition = list(map(self.getPreviousExecutionPosition, self.callStack))
+        csFromCallPosition = []
+        for cs in self.callStack:
+            csFromCallPosition.append(self.getPreviousExecutionPosition(cs["position"]))
         csFromCallPosition.append(position)
 
         self.callStacks[position] = csFromCallPosition
     
-    def getPreviousExecutionPosition(self, cs):
+    def getPreviousExecutionPosition(self, position):
         '''
-            Given a position, this function returns the previous execution
-            log type. For example, when adding to the call stack, this will
+            This function returns the previous execution log type. 
+            For example, when adding to the call stack, this will
             allow us to find the place where a function was called from.
         '''
-        position = cs["position"]
-        position -= 1
-        while (position >= 0):
+        while (position >= 1):
+            position -= 1
             if self.execution[position].type == LINE_TYPE["EXECUTION"]:
                 return position
-            position -= 1
-        return position
+        return None
+    
+
+    def getNextExecutionPosition(self, position):
+        '''
+            This function returns the next execution log type. 
+        '''
+        while (position < len(self.execution) - 2):
+            position += 1
+            if self.execution[position].type == LINE_TYPE["EXECUTION"]:
+                return position
+        return None
     
     def getCallStackAtPosition(self, position):
         '''
@@ -169,4 +180,6 @@ class CdlDecoder:
                 "position": cs,
                 "lineNumber": ltInfo.getLineNo()
             })
+
+        return csInfo
 
