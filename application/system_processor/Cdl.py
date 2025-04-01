@@ -7,6 +7,12 @@ class Cdl:
         self.logFileName = os.path.basename(filePath)
         self.decoder = CdlDecoder(filePath)
 
+    def uniqueTraceEvents(self):
+        return self.decoder.uniqueTraceEvents
+    
+    def getFileTree(self):
+        return self.decoder.header.fileTree
+
     def goToPosition(self, position):
         pass
 
