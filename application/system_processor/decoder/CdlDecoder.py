@@ -153,10 +153,11 @@ class CdlDecoder:
         '''
             This function returns the next execution position. 
         '''
-        while (position < len(self.execution) - 2):
-            position += 1
+        position += 1
+        while (position < len(self.execution)):
             if self.execution[position].type == LINE_TYPE["EXECUTION"]:
                 return position
+            position += 1
         return None
     
     def getCallStackAtPosition(self, position):
