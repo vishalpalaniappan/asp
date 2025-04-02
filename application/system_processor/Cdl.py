@@ -24,8 +24,9 @@ class Cdl:
             Go to the given position
         '''
         callStack = self.decoder.getCallStackAtPosition(position)
+        variables = self.decoder.getVariablesAtPosition(position)
         self.position = position
-        return callStack
+        return [callStack, variables]
 
     def stepInto(self, position):
         '''

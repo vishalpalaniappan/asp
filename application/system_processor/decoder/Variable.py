@@ -11,10 +11,13 @@ class Variable:
         return getattr(self, "name", None)
     
     def getFuncLt(self):
-        return getattr(self, "funcid", None)
+        return getattr(self, "funcId", None)
     
     def isTempVar(self):
         return getattr(self, "isTemp", None)
     
     def isGlobal(self):
         return getattr(self, "global", None)
+    
+    def getKeys(self):
+        return getattr(self, "keys", None)
