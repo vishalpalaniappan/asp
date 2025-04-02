@@ -138,7 +138,7 @@ class CdlDecoder:
     
     def getPreviousExecutionPosition(self, position):
         '''
-            This function returns the previous execution log type. 
+            This function returns the previous execution position. 
             For example, when adding to the call stack, this will
             allow us to find the place where a function was called from.
         '''
@@ -151,7 +151,7 @@ class CdlDecoder:
 
     def getNextExecutionPosition(self, position):
         '''
-            This function returns the next execution log type. 
+            This function returns the next execution position. 
         '''
         while (position < len(self.execution) - 2):
             position += 1
