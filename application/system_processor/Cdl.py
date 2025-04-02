@@ -32,7 +32,8 @@ class Cdl:
             Step into the current position
         '''
         nextPosition = self.decoder.getNextExecutionPosition(position)
-        self.goToPosition(nextPosition)
+        if nextPosition:
+            self.goToPosition(nextPosition)
 
     def stepOut(self, position):
         '''
