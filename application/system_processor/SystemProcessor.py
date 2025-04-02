@@ -1,5 +1,5 @@
 import os
-from application.system_processor.decoder.Cdl import Cdl
+from application.system_processor.Cdl import Cdl
 import json
 
 class SystemProcessor:
@@ -22,9 +22,8 @@ class SystemProcessor:
 
         for logFileName in files:
             if logFileName.endswith(".clp.zst"):
-                _path = os.path.join(self.logFolder, logFileName)
-                cdlFile = Cdl(logFileName, _path)
-                self.addUniqueTraceEvents(cdlFile.uniqueTraceEvents)
+                cdlFile = Cdl(os.path.join(self.logFolder, logFileName))
+                self.addUniqueTraceEvents(cdlFile.uniqueTraceEvents())
                 self.logFiles.append(cdlFile)
         
         # Sort the trace events by timestamp
@@ -51,7 +50,7 @@ class SystemProcessor:
         '''
         fileTrees = {}
         for log in self.logFiles:
-            fileTrees[log.logFileName] = log.header.fileTree
+            fileTrees[log.logFileName] = log.getFileTree()
 
         return fileTrees
 

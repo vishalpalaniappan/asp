@@ -4,13 +4,15 @@ from application.system_processor.decoder.CDL_CONSTANTS import LINE_TYPE
 from application.system_processor.decoder.CdlLogLine import CdlLogLine
 from application.system_processor.decoder.CdlHeader import CdlHeader
 
-class Cdl:
+import os
 
-    def __init__(self, logFileName, filePath):
+class CdlDecoder:
+
+    def __init__(self, filePath):
         '''
             Initialize the CDL reader.
         '''
-        self.logFileName = logFileName
+        self.logFileName = os.path.basename(filePath)
         self.filePath = filePath
         self.header = None  
 
@@ -27,6 +29,7 @@ class Cdl:
             Load and parse the file line by line.
         '''
         with ClpIrFileReader(Path(filePath)) as clp_reader:
+            self.position = 0
             for log_event in clp_reader:
                 self.parseLogLine(log_event)
 
@@ -41,11 +44,14 @@ class Cdl:
         elif currLog.type == LINE_TYPE["EXCEPTION"]:
             self.exception = currLog.value
         elif currLog.type == LINE_TYPE["EXECUTION"]:
+            self.lastExecution = self.position
             self.execution.append(currLog)
             self.addToCallStack(currLog)
+            self.position += 1
         elif currLog.type == LINE_TYPE["VARIABLE"]:
             self.execution.append(currLog)
             self.saveUniqueId(currLog)
+            self.position += 1
 
     def saveUniqueId(self, variable):
         '''
@@ -123,26 +129,58 @@ class Cdl:
                 self.addUniqueTrace(popped["uid"], popped["position"], position)
                 
         # Update the call stack to indicate where the functions were called from.
-        csFromCallPosition = list(map(self.getPreviousExecutionPosition, self.callStack))
+        csFromCallPosition = []
+        for cs in self.callStack:
+            csFromCallPosition.append(self.getPreviousExecutionPosition(cs["position"]))
         csFromCallPosition.append(position)
 
         self.callStacks[position] = csFromCallPosition
     
-    def getPreviousExecutionPosition(self, cs):
+    def getPreviousExecutionPosition(self, position):
         '''
-            Given a position, this function returns the previous execution
-            log type. For example, when adding to the call stack, this will
+            This function returns the previous execution position. 
+            For example, when adding to the call stack, this will
             allow us to find the place where a function was called from.
         '''
-        position = cs["position"]
-        position -= 1
-        while (position >= 0):
+        while (position >= 1):
+            position -= 1
             if self.execution[position].type == LINE_TYPE["EXECUTION"]:
                 return position
-            position -= 1
-        return position
-        
+        return None
+    
 
-if __name__ == "__main__":
-    fileName = "../sample_system_logs/job_handler.clp.zst"
-    f = Cdl(fileName)
+    def getNextExecutionPosition(self, position):
+        '''
+            This function returns the next execution position. 
+        '''
+        position += 1
+        while (position < len(self.execution)):
+            if self.execution[position].type == LINE_TYPE["EXECUTION"]:
+                return position
+            position += 1
+        return None
+    
+    def getCallStackAtPosition(self, position):
+        '''
+            Get call stack info for the given position.
+        '''
+        csInfo = []
+        for cs in self.callStacks[position]:
+            lt = self.execution[cs].ltId
+            ltInfo = self.header.getLtInfo(lt)
+            funcLt = ltInfo.getFuncLt()
+
+            if (funcLt == 0):
+                funcName = "<module>"
+            else:
+                funcName = self.header.getLtInfo(funcLt).getName()
+
+            csInfo.append({
+                "functionName": funcName,
+                "fileName": self.logFileName,
+                "position": cs,
+                "lineNumber": ltInfo.getLineNo()
+            })
+
+        return csInfo
+
