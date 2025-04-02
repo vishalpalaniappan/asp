@@ -33,7 +33,9 @@ class Cdl:
         '''
         nextPosition = self.decoder.getNextExecutionPosition(position)
         if nextPosition:
-            self.goToPosition(nextPosition)
+            return self.goToPosition(nextPosition)
+        
+        return None
 
     def stepOut(self, position):
         '''
@@ -42,7 +44,7 @@ class Cdl:
         cs = self.decoder.callStacks[position]
         if len(cs) <= 1:
             return
-        self.goToPosition(cs[-2])
+        return self.goToPosition(cs[-2])
 
     def stepOverForward(self, position):
         '''
@@ -53,13 +55,13 @@ class Cdl:
         while position < len(self.decoder.execution):
             position = self.decoder.getNextExecutionPosition(position)
 
-            if position == None:
+            if position is None:
                 return
             
             if len(self.decoder.callStacks[position]) <= originalStackSize:
                 break
         
-        self.goToPosition(position)
+        return self.goToPosition(position)
     
     def stepOverBackward(self, position):
         '''
@@ -76,16 +78,16 @@ class Cdl:
             if len(self.decoder.callStacks[position]) <= originalStackSize:
                 break
         
-        self.goToPosition(position)
+        return self.goToPosition(position)
 
     def goToStart(self):
         '''
             Go to the first executed line in the file.
         '''
-        self.goToPosition(0)
+        return self.goToPosition(0)
 
     def goToEnd(self):
         '''
             Go to the last executed line in the file.
         '''
-        self.goToPosition(self.decoder.lastExecution)
+        return self.goToPosition(self.decoder.lastExecution)
