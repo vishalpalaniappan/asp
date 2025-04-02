@@ -5,6 +5,7 @@ from application.system_processor.decoder.CdlLogLine import CdlLogLine
 from application.system_processor.decoder.CdlHeader import CdlHeader
 
 import os
+import copy
 
 class CdlDecoder:
 
@@ -184,10 +185,75 @@ class CdlDecoder:
 
         return csInfo
     
+
+    def updateVariable(self, variable, value, varStack, tempStack):
+        '''
+            Given a list of nested keys, this function creates the
+            nested key tree and assigns the value on the last level.
+
+            A key can can have three types:
+            - variable : Load key from varStack
+            - temp_variable : Load key from tempStack
+            - value: Load from key["value"]
+        '''
+        name = variable.name
+
+        if (len(variable.getKeys()) == 0):
+            varStack[name] = value
+            return
+
+        currVal = {} if (name not in varStack) else copy.deepcopy(varStack[name])
+        
+        currLevel = currVal 
+        for idx, key in enumerate(variable.getKeys()):
+            newKey = key["value"]
+
+            if (key["type"] == "temp_variable"):
+                newKey = tempStack[newKey]
+            elif (key["type"] == "variable"):
+                newKey = varStack[newKey]
+
+            if newKey not in currLevel or isinstance(currLevel[newKey], dict):
+                currLevel[newKey] = {}
+
+            # Assign value at last key, otherwise keep going down a level
+            if idx == len(variable.getKeys()):
+                currLevel[newKey] = copy.deepcopy(value)
+            else:
+                currLevel = currLevel[newKey]
+
+        varStack[variable.name] = currVal
+    
     def getVariablesAtPosition(self, position):
         '''
             Given a position, this function returns the variables 
             that are in the current and global scope.
         '''
-        pass
+        localVars = {}
+        globalVars = {}
+        tempVars = {}
 
+        currLt = self.execution[position].ltId
+        funcId = self.header.getLtInfo(currLt).getFuncLt()
+
+        currPosition = 0
+        while (currPosition < position):
+            currLog = self.execution[currPosition]
+
+            if currLog.type == LINE_TYPE["VARIABLE"]:
+                variable = self.header.varMap[currLog.varId]
+                varFuncId = variable.getFuncLt()
+
+                if variable.isTempVar():
+                    tempVars[variable.getName()] = currLog.value
+                elif ((varFuncId == 0) or variable.isGlobal()):
+                    self.updateVariable(variable, currLog.value, globalVars, tempVars)
+                elif (varFuncId == funcId):
+                    self.updateVariable(variable, currLog.value, localVars, tempVars)
+
+            currPosition += 1
+
+        return {
+            "localVars" : localVars,
+            "globalVars" : globalVars,
+        }
