@@ -217,7 +217,7 @@ class CdlDecoder:
                 currLevel[newKey] = {}
 
             # Assign value at last key, otherwise keep going down a level
-            if idx == len(variable.getKeys()):
+            if idx + 1 == len(variable.getKeys()):
                 currLevel[newKey] = copy.deepcopy(value)
             else:
                 currLevel = currLevel[newKey]
