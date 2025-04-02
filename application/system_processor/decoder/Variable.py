@@ -8,13 +8,13 @@ class Variable:
             setattr(self, key, varInfo[key])
 
     def getName(self):
-        return getattr(self, "name")
+        return getattr(self, "name", None)
     
     def getFuncLt(self):
-        return getattr(self, "funcid")
+        return getattr(self, "funcid", None)
     
     def isTempVar(self):
-        return getattr(self, "isTemp")
+        return getattr(self, "isTemp", None)
     
     def isGlobal(self):
-        return getattr(self, "global")
+        return getattr(self, "global", None)

@@ -8,26 +8,22 @@ class LogType:
             setattr(self, key, ltInfo[key])
 
     def getLt(self):
-        return getattr(self, "id")
+        return getattr(self, "id", None)
     
     def getFuncLt(self):
-        return getattr(self, "funcid")
+        return getattr(self, "funcid", None)
     
     def getType(self):
-        return getattr(self, "type")
+        return getattr(self, "type", None)
 
     def isFunction(self):
-        return getattr(self, "type") == "function"
+        return getattr(self, "type", None) == "function"
     
     def isUnique(self):
-        return getattr(self, "isUnique")
+        return getattr(self, "isUnique", None)
     
     def getLineNo(self):
-        return getattr(self, "lineno")
+        return getattr(self, "lineno", None)
         
     def getName(self):
-        if hasattr(self, "name"):
-            return self.name
-        else:
-            return None
-
+        return getattr(self, "name", None)
