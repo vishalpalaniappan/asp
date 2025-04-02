@@ -27,7 +27,7 @@ class LogType:
         
     def getName(self):
         if hasattr(self, "name"):
-            return getattr(self, "name")
+            return self.name
         else:
-            None
+            return None
 
