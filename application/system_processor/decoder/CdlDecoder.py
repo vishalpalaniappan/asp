@@ -183,4 +183,11 @@ class CdlDecoder:
             })
 
         return csInfo
+    
+    def getVariablesAtPosition(self, position):
+        '''
+            Given a position, this function returns the variables 
+            that are in the current and global scope.
+        '''
+        pass
 
