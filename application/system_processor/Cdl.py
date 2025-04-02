@@ -43,7 +43,7 @@ class Cdl:
         '''
         cs = self.decoder.callStacks[position]
         if len(cs) <= 1:
-            return
+            return None
         return self.goToPosition(cs[-2])
 
     def stepOverForward(self, position):
@@ -56,7 +56,7 @@ class Cdl:
             position = self.decoder.getNextExecutionPosition(position)
 
             if position is None:
-                return
+                return None
             
             if len(self.decoder.callStacks[position]) <= originalStackSize:
                 break
@@ -72,8 +72,8 @@ class Cdl:
         while position > 0:
             position = self.decoder.getPreviousExecutionPosition(position)
 
-            if position == None:
-                return
+            if position is None:
+                return None
             
             if len(self.decoder.callStacks[position]) <= originalStackSize:
                 break
