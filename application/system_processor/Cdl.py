@@ -10,8 +10,6 @@ class Cdl:
 
         self.goToPosition(self.decoder.lastExecution)
 
-        self.stepOverBackward(self.decoder.lastExecution)
-
     def uniqueTraceEvents(self):
         '''
             Return the unique traces in the log file
@@ -26,7 +24,7 @@ class Cdl:
             Go to the given position
         '''
         callStack = self.decoder.getCallStackAtPosition(position)
-        print(callStack)
+        self.position = position
         return callStack
 
     def stepInto(self, position):
@@ -68,7 +66,7 @@ class Cdl:
         '''
         originalStackSize = len(self.decoder.callStacks[position])
 
-        while position < len(self.decoder.execution):
+        while position > 0:
             position = self.decoder.getPreviousExecutionPosition(position)
 
             if position == None:
