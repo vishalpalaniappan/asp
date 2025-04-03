@@ -21,7 +21,7 @@ To address the issue of log file size, ASP leverages a free log management tool 
 
 A system diagram is provided below:
 
-![Simplified AQS System Diagram](docs/Simplified_System_Diagram_ASP.jpg)
+![Simplified AQS System Diagram](docs/Simplified_System_Diagram_ASP.png)
 
 ## Automated Diagnostic Log Injector
 
@@ -49,7 +49,7 @@ In addition to logging variables and instructions, the ADLI tool also injects lo
 
 ## System Identification
 
-A software system is a group of programs working together to achieve a given function. To provide system level diagnostic insight, theWhen injecting logs into the programs in the system, the ADLI tool also includes system level information in the header of the CDL file. This includes the system the program belongs to and the version of the system. Using this information is used by ASP to fully recreate the system using the log files. 
+A software system is a group of programs working together to achieve a given function. When injecting logs into the programs in the system, the ADLI tool also includes system level information in the header of the CDL file. This includes the system the program belongs to and the version of the system. Using this information is used by ASP to fully recreate the system using the log files. 
 
 
 ## Automated System Processor
