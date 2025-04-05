@@ -21,7 +21,7 @@ To address the issue of log file size, ASP leverages a free log management tool 
 
 A system diagram is provided below:
 
-![Simplified AQS System Diagram](docs/Simplified_System_Diagram_ASP.png)
+![Simplified AQS System Diagram](docs/Simplified_System_Diagram_ASP_1.png)
 
 ## Automated Diagnostic Log Injector
 
