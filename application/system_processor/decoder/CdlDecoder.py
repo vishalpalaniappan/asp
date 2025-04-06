@@ -67,7 +67,7 @@ class CdlDecoder:
         '''
             This function returns the variable values of the given function's arguments.
             The arguments are logged after the function def, so we read the variables until
-            the log isn't a variable, this will ensure that we read all the variables.
+            the log isn't a variable, this will ensure that we save all the arguments.
         '''
         funcArgs = {}
         position += 1
