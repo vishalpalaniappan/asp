@@ -23,7 +23,7 @@ class SystemProcessor:
         for logFileName in files:
             if logFileName.endswith(".clp.zst"):
                 cdlFile = Cdl(os.path.join(self.logFolder, logFileName))
-                self.addUniqueTraceEvents(cdlFile.uniqueTraceEvents())
+                self.addUniqueTraceEvents(cdlFile.getUniqueTraceEvents())
                 self.logFiles.append(cdlFile)
         
         # Sort the trace events by timestamp
