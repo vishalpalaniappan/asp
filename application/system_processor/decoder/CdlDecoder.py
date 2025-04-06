@@ -63,6 +63,21 @@ class CdlDecoder:
         if varInfo.getName() == "asp_uid":
             self.callStack[-1]["uid"] = variable.value
 
+    def getFunctionArgumentValues(self, position):
+        '''
+            This function returns the variable values of the given function's arguments.
+            The arguments are logged after the function def, so we read the variables until
+            the log isn't a variable, this will ensure that we save all the arguments.
+        '''
+        funcArgs = {}
+        position += 1
+        while position < len(self.execution) and (self.execution[position].type == LINE_TYPE["VARIABLE"]):
+            varInfo = self.header.getVarInfo(self.execution[position].varId)
+            funcArgs[varInfo.getName()] = self.execution[position].value
+            position += 1
+
+        return funcArgs
+
     def addUniqueTrace(self, uid, startPos, endPos):
         '''
             Given a start and end position of a unique trace, 
@@ -84,7 +99,8 @@ class CdlDecoder:
                         "level": len(self.callStacks[position]),
                         "name": ltInfo.getName(),
                         "lineNo": ltInfo.lineno,
-                        "file": self.header.getFileFromLt(ltInfo.id)
+                        "file": self.header.getFileFromLt(ltInfo.id),
+                        "variables": self.getFunctionArgumentValues(position)
                     })
 
         # Add trace to the unique traceEvents list.

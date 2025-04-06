@@ -10,7 +10,7 @@ class Cdl:
 
         self.goToPosition(self.decoder.lastExecution)
 
-    def uniqueTraceEvents(self):
+    def getUniqueTraceEvents(self):
         '''
             Return the unique traces in the log file
         '''
