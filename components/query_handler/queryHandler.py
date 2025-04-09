@@ -1,9 +1,5 @@
-from application.system_processor.SystemProcessor import SystemProcessor
 import json
-from application.MSG_TYPES import MSG_TYPES
-
-SYSTEM_LOG_FILES = "./application/sample_system_logs/"
-processor = SystemProcessor(SYSTEM_LOG_FILES)
+from MSG_TYPES import MSG_TYPES
 
 async def handle_query(websocket):
     '''
@@ -22,12 +18,10 @@ async def handle_query(websocket):
             await websocket.send(json.dumps(message))
 
         elif (message["code"] == MSG_TYPES["GET_UNIQUE_TRACES"]):
-            message["response"] = processor.uniqueTraces
             message["error"] = False
             await websocket.send(json.dumps(message))
 
         elif (message["code"] == MSG_TYPES["GET_FILE_TREES"]):
-            message["response"] = processor.getFileTrees()
             message["error"] = False
             await websocket.send(json.dumps(message))
 

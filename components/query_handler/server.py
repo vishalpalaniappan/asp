@@ -3,7 +3,7 @@
 import asyncio
 import argparse
 from websockets.asyncio.server import serve
-from application.queryHandler import handle_query
+from queryHandler import handle_query
 
 async def main():
     '''

@@ -1,6 +1,7 @@
 import os
-from application.system_processor.Cdl import Cdl
+from Cdl import Cdl
 import json
+from pathlib import Path
 
 class SystemProcessor:
 
@@ -55,5 +56,6 @@ class SystemProcessor:
         return fileTrees
 
 if __name__ == "__main__":
-    SYSTEM_LOG_FILES = "../sample_system_logs/"
+    rootDir = Path(__file__).resolve().parents[0]
+    SYSTEM_LOG_FILES = rootDir / "sample_system_logs"
     processor = SystemProcessor(SYSTEM_LOG_FILES)
