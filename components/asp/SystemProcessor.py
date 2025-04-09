@@ -29,7 +29,7 @@ class SystemProcessor:
         
         # Sort the trace events by timestamp
         for uid in self.uniqueTraces:
-            self.uniqueTraces[uid].sort(key=lambda x: x["timestamp"], reverse=False)
+            self.uniqueTraces[uid].sort(key=lambda x: x["startTs"], reverse=False)
 
         # Save trace events to json file
         with open("traceEvents.json", "w+") as f:

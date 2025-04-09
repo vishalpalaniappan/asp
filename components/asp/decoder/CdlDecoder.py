@@ -100,7 +100,8 @@ class CdlDecoder:
                         "name": ltInfo.getName(),
                         "lineNo": ltInfo.lineno,
                         "file": self.header.getFileFromLt(ltInfo.id),
-                        "variables": self.getFunctionArgumentValues(position)
+                        "variables": self.getFunctionArgumentValues(position),
+                        "timestamp": lineType.timestamp
                     })
 
         # Add trace to the unique traceEvents list.
@@ -110,7 +111,8 @@ class CdlDecoder:
         self.uniqueTraceEvents[uid].append({
             "logFileName": self.logFileName,
             "trace": trace,
-            "timestamp": self.execution[startPos].timestamp
+            "startTs": self.execution[startPos].timestamp,
+            "endTs": self.execution[endPos].timestamp
         })
 
     def addToCallStack(self, log):
