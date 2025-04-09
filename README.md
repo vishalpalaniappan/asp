@@ -5,13 +5,21 @@ This websocket server handles queries from the Automated System Viewer to extrac
 > This repo is in development and there are core features being added and explored.
 
 # Usage
-To run this program, run the following command:
+Currently, each program has to be run separately. This workflow will be automated once core functionality is fully developed.
+
+To run the query handler, go to components/query_handler and run:
   ```shell
   python3 server.py
   ```
 This will start a websocket server on port 8765. After connecting to the websocket server, you can send commands to interface with the system processor. 
 
-Note: There are limited commands available right now, see PR #13 for example commands. The functionality will be expanded as the system is developed further.
+Note: As of PR #22, the query server is not connected to a data source. In the coming PR's, the query server will be connected to the database.
+
+To run the system processor, go to components/asp and run:
+  ```shell
+  python3 SystemProcessor.py
+  ```
+This will generate a traceEvents.json file in the directory where the program was executed from.
 
 # System Diagram
 ![Simplified AQS System Diagram](docs/system_diagram2.jpg)
