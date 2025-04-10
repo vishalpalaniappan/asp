@@ -25,6 +25,8 @@ class CdlDecoder:
 
         self.loadAndParseFile(filePath)
 
+        print(self.header.getMetadata())
+
     def loadAndParseFile(self, filePath):
         '''
             Load and parse the file line by line.
