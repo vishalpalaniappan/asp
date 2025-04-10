@@ -45,4 +45,4 @@ Name: <sys_id>_<sys_ver>_traces
 | startTs            |  DATE       | Name of Program                                 |
 | endTs              |  DATE       | Description of program                          |
 | traceType          |  NUMBER     | Language of the program (eg. python)            |
-| fileTree           |  STRING     | JSON String of the filetree for the program     |
+| traces             |  STRING     | JSON String of the traces for this program      |
