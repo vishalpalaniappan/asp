@@ -1,4 +1,4 @@
-# Layout of SQLITE database
+# Database Structure
 
 ### SYSTEM TABLE
 
