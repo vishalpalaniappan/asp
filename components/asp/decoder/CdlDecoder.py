@@ -44,14 +44,7 @@ class CdlDecoder:
         currLog = CdlLogLine(log_event)
 
         if currLog.type == LINE_TYPE["JSON"]:
-
-            if (currLog.value["type"] == "adli_header"):
-                self.header = CdlHeader(currLog.value["header"])
-            elif (currLog.value["type"] == "adli_input"):
-                self.inputs.append(currLog.value)
-            elif (currLog.value["type"] == "adli_output"):
-                self.outputs.append(currLog.value)
-
+            self.processJSONLog(currLog)
         elif currLog.type == LINE_TYPE["EXCEPTION"]:
             self.exception = currLog.value
         elif currLog.type == LINE_TYPE["EXECUTION"]:
@@ -63,6 +56,18 @@ class CdlDecoder:
             self.execution.append(currLog)
             self.saveUniqueId(currLog)
             self.position += 1
+
+
+    def processJSONLog(self, log):
+        '''
+            This function processes any JSON logs.
+        '''
+        if (log.value["type"] == "adli_header"):
+            self.header = CdlHeader(log.value["header"])
+        elif (log.value["type"] == "adli_input"):
+            self.inputs.append(log.value)
+        elif (log.value["type"] == "adli_output"):
+            self.outputs.append(log.value)
 
     def saveUniqueId(self, variable):
         '''
