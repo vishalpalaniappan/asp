@@ -23,9 +23,10 @@ class CdlDecoder:
         self.callStack = []
         self.callStacks = {}
 
-        self.loadAndParseFile(filePath)
+        self.inputs = []
+        self.outputs = []
 
-        print(self.header.getMetadata())
+        self.loadAndParseFile(filePath)
 
     def loadAndParseFile(self, filePath):
         '''
@@ -42,8 +43,15 @@ class CdlDecoder:
         '''
         currLog = CdlLogLine(log_event)
 
-        if currLog.type == LINE_TYPE["IR_HEADER"]:
-            self.header = CdlHeader(currLog.value)
+        if currLog.type == LINE_TYPE["JSON"]:
+
+            if (currLog.value["type"] == "adli_header"):
+                self.header = CdlHeader(currLog.value["header"])
+            elif (currLog.value["type"] == "adli_input"):
+                self.inputs.append(currLog.value)
+            elif (currLog.value["type"] == "adli_output"):
+                self.outputs.append(currLog.value)
+
         elif currLog.type == LINE_TYPE["EXCEPTION"]:
             self.exception = currLog.value
         elif currLog.type == LINE_TYPE["EXECUTION"]:
