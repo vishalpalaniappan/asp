@@ -3,7 +3,7 @@ from clp_ffi_py.ir import ClpIrFileReader
 from decoder.CDL_CONSTANTS import LINE_TYPE
 from decoder.CdlLogLine import CdlLogLine
 from decoder.CdlHeader import CdlHeader
-from decoder.helper import checkAndCreateKey
+from decoder.NodeProcessor import NodeProcessor
 
 import os
 import copy
@@ -31,6 +31,8 @@ class CdlDecoder:
 
         print(self.header.programInfo)
         print(json.dumps(self.nodes, indent=4))
+        NodeProcessor(self)
+
 
     def loadAndParseFile(self, filePath):
         '''
@@ -43,7 +45,7 @@ class CdlDecoder:
 
     def parseLogLine(self, log_event):
         '''
-            Parse the log line and save the relevant data.
+            Parse the log line and process the relevant data.
         '''
         currLog = CdlLogLine(log_event)
         self.execution.append(currLog)
@@ -77,7 +79,10 @@ class CdlDecoder:
         '''
             Add the input to the top of the call stack.
         '''
-        checkAndCreateKey("input", self.callStack[-1], logValue)
+        # createAndUpdateKey("input", self.callStack[-1], logValue)
+        if "input" not in self.callStack[-1]:
+            self.callStack[-1]["input"] = []
+        self.callStack[-1]["input"].append(logValue)
 
 
     def processOutput(self, logValue):
@@ -89,11 +94,14 @@ class CdlDecoder:
         '''
         for cs in reversed(self.callStack):
             if "input" in cs:
-                checkAndCreateKey("output", cs["input"], [])
-                cs["input"]["output"].append(logValue)
+                if "output" not in cs["input"][0]:
+                    cs["input"][0]["output"] = []
+                cs["input"][0]["output"].append(logValue)
                 return
 
-        checkAndCreateKey("output", self.callStack[-1], [])
+
+        if "output" not in self.callStack[-1]:
+            self.callStack[-1]["output"] = []
         self.callStack[-1]["output"].append(logValue)
 
     def addToCallStack(self, log):
@@ -120,6 +128,9 @@ class CdlDecoder:
 
             popped = cs.pop()
 
+            # When the position is removed from the stack, add it to the
+            # nodes list if the position has input or output information 
+            # in it. The nodes will be processed in the next stage.
             if ("input" in popped or "output" in popped):
                 self.nodes.append(popped)
                 
@@ -142,7 +153,6 @@ class CdlDecoder:
             if self.execution[position].type == LINE_TYPE["EXECUTION"]:
                 return position
         return None
-    
 
     def getNextExecutionPosition(self, position):
         '''
