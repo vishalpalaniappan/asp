@@ -21,7 +21,6 @@ class CdlDecoder:
 
         self.execution = []
         self.exception = None
-        self.uniqueTraceEvents = {}
         self.callStack = []
         self.callStacks = {}
 
@@ -29,9 +28,7 @@ class CdlDecoder:
 
         self.loadAndParseFile(filePath)
 
-        print(self.header.programInfo)
-        print(json.dumps(self.nodes, indent=4))
-        NodeProcessor(self)
+        self.nodes = NodeProcessor(self).classifyNodes()
 
 
     def loadAndParseFile(self, filePath):
@@ -102,6 +99,7 @@ class CdlDecoder:
 
         if "output" not in self.callStack[-1]:
             self.callStack[-1]["output"] = []
+
         self.callStack[-1]["output"].append(logValue)
 
     def addToCallStack(self, log):
