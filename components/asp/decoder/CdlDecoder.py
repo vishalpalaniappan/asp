@@ -3,7 +3,6 @@ from clp_ffi_py.ir import ClpIrFileReader
 from decoder.CDL_CONSTANTS import LINE_TYPE
 from decoder.CdlLogLine import CdlLogLine
 from decoder.CdlHeader import CdlHeader
-from decoder.NodeProcessor import NodeProcessor
 
 import os
 import copy
@@ -26,9 +25,13 @@ class CdlDecoder:
 
         self.nodes = []
 
+        print("")
         self.loadAndParseFile(filePath)
 
-        self.nodes = NodeProcessor(self).classifyNodes()
+        while len(self.callStack) > 0:
+            popped = self.callStack.pop()
+            if (("input" in popped) or ("output" in popped)):
+                self.nodes.append(popped)
 
 
     def loadAndParseFile(self, filePath):
@@ -76,7 +79,6 @@ class CdlDecoder:
         '''
             Add the input to the top of the call stack.
         '''
-        # createAndUpdateKey("input", self.callStack[-1], logValue)
         if "input" not in self.callStack[-1]:
             self.callStack[-1]["input"] = []
         self.callStack[-1]["input"].append(logValue)
@@ -91,12 +93,11 @@ class CdlDecoder:
         '''
         for cs in reversed(self.callStack):
             if "input" in cs:
-                if "output" not in cs["input"][0]:
-                    cs["input"][0]["output"] = []
-                cs["input"][0]["output"].append(logValue)
+                if "output" not in cs["input"][-1]:
+                    cs["input"][-1]["output"] = []
+                cs["input"][-1]["output"].append(logValue)
                 return
-
-
+            
         if "output" not in self.callStack[-1]:
             self.callStack[-1]["output"] = []
 
@@ -129,7 +130,7 @@ class CdlDecoder:
             # When the position is removed from the stack, add it to the
             # nodes list if the position has input or output information 
             # in it. The nodes will be processed in the next stage.
-            if ("input" in popped or "output" in popped):
+            if (("input" in popped) or ("output" in popped)):
                 self.nodes.append(popped)
                 
         # Update the call stack to indicate where the functions were called from.
