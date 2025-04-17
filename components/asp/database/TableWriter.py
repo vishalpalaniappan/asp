@@ -19,7 +19,9 @@ class TableWriter:
             3. Add filetree for system for this program
             4. Add extracted unique traces to the table.
         '''
-        self.addToSystemIndex(cdlFile.decoder.header.sysinfo)
+        header = cdlFile.decoder.header
+        self.addToSystemIndex(header.sysinfo)
+        self.addToProgramTable(header.sysinfo, header.fileTree, header.programInfo)
 
 
     def addToSystemIndex(self, systemInfo):
@@ -45,7 +47,7 @@ class TableWriter:
             self.conn.commit()
 
         self.cursor.execute(f'''CREATE TABLE IF NOT EXISTS "{sysId}-{sysVer}-programs"
-            (id int, name string, description string, language string, fileTree string)''')
+            (id string, name string, description string, language string, fileTree string)''')
 
         self.cursor.execute(f'''CREATE TABLE IF NOT EXISTS "{sysId}-{sysVer}-deployments"
             (deployment_id int, ts date)''')
@@ -54,6 +56,19 @@ class TableWriter:
             (deployment_id int, trace_id int, startTs date, endTs date, fileTree string)''')
         self.conn.commit()
 
+    def addToProgramTable(self, systemInfo, fileTree, programInfo):
+
+        
+        sysId = systemInfo["metadata"]["systemId"]        
+        sysVer = systemInfo["metadata"]["systemVersion"]
+
+        tableName = f"{sysId}-{sysVer}-programs"
+
+        sql = f''' INSERT INTO "{tableName}"(id, name, description, language, fileTree)
+            VALUES(?,?,?,?,?) '''
+        
+        self.cursor.execute(sql, [sysId, programInfo["name"], programInfo["description"], programInfo["language"], json.dumps(fileTree)])
+        self.conn.commit()
         
 
 if __name__ == "__main__":

@@ -14,7 +14,6 @@ class SystemProcessor:
         self.logFiles = []
         self.uniqueTraces = {}
         self.database = TableWriter()
-
         self.parseSystemLogFiles()
 
     def parseSystemLogFiles(self):
@@ -23,7 +22,7 @@ class SystemProcessor:
         '''
         files = os.listdir(self.logFolder)
 
-        for logFileName in files[7:8]:
+        for logFileName in files:
             if logFileName.endswith(".clp.zst"):
                 cdlFile = Cdl(os.path.join(self.logFolder, logFileName))
                 self.database.write_file(cdlFile)
