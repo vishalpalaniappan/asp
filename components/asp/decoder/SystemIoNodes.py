@@ -1,5 +1,3 @@
-
-
 class SystemIoNodes:
     '''
         This class accepts the system io nodes extracted while
@@ -19,6 +17,8 @@ class SystemIoNodes:
         '''
         for node in nodes:
             self.processNode(node)
+
+        return self.classifiedNodes
 
     def processNode(self, node):
         '''

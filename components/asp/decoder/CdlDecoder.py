@@ -3,12 +3,10 @@ from clp_ffi_py.ir import ClpIrFileReader
 from decoder.CDL_CONSTANTS import LINE_TYPE
 from decoder.CdlLogLine import CdlLogLine
 from decoder.CdlHeader import CdlHeader
-from decoder.NodeProcessor import NodeProcessor
 from decoder.SystemIoNodes import SystemIoNodes
 
 import os
 import copy
-import json
 
 class CdlDecoder:
 
@@ -29,19 +27,7 @@ class CdlDecoder:
 
         self.loadAndParseFile(filePath)
 
-        while len(self.callStack) > 0:
-            popped = self.callStack.pop()
-            if (("input" in popped) or ("output" in popped)):
-                self.nodes.append(popped)
-
-        fileName = self.header.programInfo["name"]
-        with open("./nodes/" +fileName + "_nodes.json","w+") as f:
-            f.write(json.dumps(self.nodes))
-
-        systemIoNodes = SystemIoNodes()
-        systemIoNodes.processNodes(self.nodes)
-        print(systemIoNodes.classifiedNodes)
-
+        self.systemIoNodes = SystemIoNodes().processNodes(self.nodes)
 
     def loadAndParseFile(self, filePath):
         '''
@@ -51,6 +37,12 @@ class CdlDecoder:
             self.position = 0
             for log_event in clp_reader:
                 self.parseLogLine(log_event)
+        
+        # Save any remaining system io nodes in the callstack
+        while len(self.callStack) > 0:
+            popped = self.callStack.pop()
+            if (("input" in popped) or ("output" in popped)):
+                self.nodes.append(popped)
 
     def parseLogLine(self, log_event):
         '''
