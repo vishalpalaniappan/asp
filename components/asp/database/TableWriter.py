@@ -20,19 +20,20 @@ class TableWriter:
             4. Add extracted unique traces to the table.
         '''
         header = cdlFile.decoder.header
-        self.addToSystemIndex(header.sysinfo)
-        self.addToProgramTable(header.sysinfo, header.fileTree, header.programInfo)
+        self.addToSystemIndex(header)
+        self.addToProgramTable(header)
+        self.addToDeploymentsTable(header)
 
 
-    def addToSystemIndex(self, systemInfo):
+    def addToSystemIndex(self, header):
         '''
             Adds sys info to SYSTEMTABLES and creates tables for programs, deployments and traces.
         '''
-        sysId = systemInfo["metadata"]["systemId"]        
-        sysVer = systemInfo["metadata"]["systemVersion"]
-        name = systemInfo["metadata"]["name"]
-        description = systemInfo["metadata"]["description"]
-        programs = json.dumps(systemInfo["programs"])
+        sysId = header.sysinfo["metadata"]["systemId"]        
+        sysVer = header.sysinfo["metadata"]["systemVersion"]
+        name = header.sysinfo["metadata"]["name"]
+        description = header.sysinfo["metadata"]["description"]
+        programs = json.dumps(header.sysinfo["programs"])
 
         self.cursor.execute(f'''
             SELECT system_id FROM SYSTEMTABLES WHERE system_id = {sysId} and version = {sysVer}
@@ -50,26 +51,44 @@ class TableWriter:
             (id string, name string, description string, language string, fileTree string)''')
 
         self.cursor.execute(f'''CREATE TABLE IF NOT EXISTS "{sysId}-{sysVer}-deployments"
-            (deployment_id int, ts date)''')
+            (deployment_id string, ts date)''')
 
         self.cursor.execute(f'''CREATE TABLE IF NOT EXISTS "{sysId}-{sysVer}-traces"
             (deployment_id int, trace_id int, startTs date, endTs date, fileTree string)''')
         self.conn.commit()
 
-    def addToProgramTable(self, systemInfo, fileTree, programInfo):
-
-        
-        sysId = systemInfo["metadata"]["systemId"]        
-        sysVer = systemInfo["metadata"]["systemVersion"]
+    def addToProgramTable(self, header):
+        sysId = header.sysinfo["metadata"]["systemId"]        
+        sysVer = header.sysinfo["metadata"]["systemVersion"]
+        name = header.programInfo["name"]
+        description = header.programInfo["description"]
+        language = header.programInfo["language"]
+        fileTree = header.fileTree
 
         tableName = f"{sysId}-{sysVer}-programs"
 
         sql = f''' INSERT INTO "{tableName}"(id, name, description, language, fileTree)
             VALUES(?,?,?,?,?) '''
         
-        self.cursor.execute(sql, [sysId, programInfo["name"], programInfo["description"], programInfo["language"], json.dumps(fileTree)])
+        self.cursor.execute(sql, [sysId, name, description,language, json.dumps(fileTree)])
         self.conn.commit()
+
+    def addToDeploymentsTable(self, header):
+        sysId = header.sysinfo["metadata"]["systemId"]        
+        sysVer = header.sysinfo["metadata"]["systemVersion"]
+        adliInfo = header.adliInfo
+        adliExecutionId = adliInfo["adliExecutionId"]
+        timestamp = adliInfo["timestamp"]
+
+        print(adliInfo)
         
+        tableName = f"{sysId}-{sysVer}-deployments"
+
+        sql = f''' INSERT INTO "{tableName}"(deployment_id, ts)
+            VALUES(?,?) '''
+        
+        self.cursor.execute(sql, [adliExecutionId, timestamp])
+        self.conn.commit()
 
 if __name__ == "__main__":
     a = TableWriter()
