@@ -5,6 +5,7 @@ from pathlib import Path
 from database.TableWriter import TableWriter
 
 from TraceAssembler import TraceAssembler
+from EventWriter import EventWriter
 
 class SystemProcessor:
 
@@ -14,12 +15,11 @@ class SystemProcessor:
         '''
         self.logFolder = logFolder
         self.logFiles = []
-        self.uniqueTraces = {}
         self.database = TableWriter()
+        self.eventWriter = EventWriter()
         self.parseSystemLogFiles()
 
-        self.traces = TraceAssembler(self).processLogs()
-
+        # self.traces = TraceAssembler(self).processLogs()
 
 
     def parseSystemLogFiles(self):
@@ -33,6 +33,7 @@ class SystemProcessor:
                 cdlFile = Cdl(os.path.join(self.logFolder, logFileName))
                 self.database.write_file(cdlFile)
                 self.logFiles.append(cdlFile)
+                self.eventWriter.addEventsToDb(cdlFile)
 
 if __name__ == "__main__":
     rootDir = Path(__file__).resolve().parents[0]
