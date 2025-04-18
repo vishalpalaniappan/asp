@@ -42,7 +42,8 @@ Name: <sys_id>_<sys_ver>_traces
 |--------------------|:-----------:|------------------------------------------------:|
 | deploymen_id       |  INTEGER    | Deployment Id (eg 554233)                       |
 | trace_id           |  INTEGER    | Trace Id (eg 235234)                            |
-| startTs            |  DATE       | Name of Program                                 |
-| endTs              |  DATE       | Description of program                          |
-| traceType          |  NUMBER     | Language of the program (eg. python)            |
-| traces             |  STRING     | JSON String of the traces for this program      |
+| trace_id           | INTEGER    | Trace Id (eg 235234)                            
+| startTs            | DATE       | Start timestamp of the trace                    
+| endTs              | DATE       | End timestamp of the trace                      
+| traceType          | NUMBER     | Type identifier for the trace                   
+| traces             | STRING     | JSON String of the traces for this program      
