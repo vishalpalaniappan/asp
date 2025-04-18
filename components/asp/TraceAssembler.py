@@ -1,4 +1,6 @@
 import json
+import os
+from pathlib import Path 
 
 class TraceAssembler:
 
@@ -10,18 +12,12 @@ class TraceAssembler:
 
     def processLogs(self):
         for log in self.system.logFiles:
-            # print(log.decoder.header.programInfo)
             self.processLog(log)
         return self.traces
     
     def processLog(self, log):
         for ioEvent in log.decoder.systemIoNodes:
             if ioEvent["type"] == "start":
-                print("")
-                print("-------start----------")
-                print(ioEvent["node"]["adliValue"])
-                print("----------------------")
-                print(log.decoder.header.programInfo["name"])
                 self.currentTrace = []
                 self.currentTrace.append(ioEvent["node"])
                 self.findTrace(ioEvent["node"])
@@ -32,7 +28,7 @@ class TraceAssembler:
         searchIndex = searchNode["adliExecutionIndex"]
 
         for log in self.system.logFiles:
-
+            fileName = log.logFileName.split(".")[0]
             for ioEvent in log.decoder.systemIoNodes:
                 
                 if ioEvent["type"] == "link" or ioEvent["type"] == "end":
@@ -41,13 +37,9 @@ class TraceAssembler:
                     currIndex = node["adliExecutionIndex"]
 
                     if ((searchId == currId) and (searchIndex == currIndex)):
-                        if "output" not in node:
-                            print(log.decoder.header.programInfo["name"])
-                            print("--------end-----------")
-                            print(ioEvent["node"]["adliValue"])
-                            print("----------------------")
+                        if "output" in node:
                             self.currentTrace.append(node)
-                        else:
-                            print(log.decoder.header.programInfo["name"])
-                            self.currentTrace.append(node)
+                            # TODO: Add support for processing multiple outputs.
                             self.findTrace(node["output"][0])
+                        else:
+                            self.currentTrace.append(node)
