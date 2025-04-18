@@ -4,6 +4,8 @@ import json
 from pathlib import Path
 from database.TableWriter import TableWriter
 
+from TraceAssembler import TraceAssembler
+
 class SystemProcessor:
 
     def __init__(self, logFolder):
@@ -16,6 +18,10 @@ class SystemProcessor:
         self.database = TableWriter()
         self.parseSystemLogFiles()
 
+        self.traces = TraceAssembler(self).processLogs()
+
+
+
     def parseSystemLogFiles(self):
         '''
             Parse the system log files contained in folder.
@@ -27,16 +33,6 @@ class SystemProcessor:
                 cdlFile = Cdl(os.path.join(self.logFolder, logFileName))
                 self.database.write_file(cdlFile)
                 self.logFiles.append(cdlFile)
-
-    def getFileTrees(self):
-        '''
-            Returns the file tree for all programs in the system
-        '''
-        fileTrees = {}
-        for log in self.logFiles:
-            fileTrees[log.logFileName] = log.getFileTree()
-
-        return fileTrees
 
 if __name__ == "__main__":
     rootDir = Path(__file__).resolve().parents[0]
