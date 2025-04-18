@@ -25,9 +25,9 @@ class SystemIoNodes:
             Process the provided node.
         '''
         if "input" in node:
-            return self.processInput(node["input"])        
+            self.processInput(node["input"])        
         if "output" in node:
-            return self.processOutput(node["output"])        
+            self.processOutput(node["output"])        
 
     def processInput(self, inputs):
         '''

@@ -76,18 +76,15 @@ class TableWriter:
     def addToDeploymentsTable(self, header):
         sysId = header.sysinfo["metadata"]["systemId"]        
         sysVer = header.sysinfo["metadata"]["systemVersion"]
-        adliInfo = header.adliInfo
-        adliExecutionId = adliInfo["adliExecutionId"]
-        timestamp = adliInfo["timestamp"]
-
-        print(adliInfo)
+        sysInfo = header.sysinfo
+        deploymentId = sysInfo["adliSystemExecutionId"]
         
         tableName = f"{sysId}-{sysVer}-deployments"
 
         sql = f''' INSERT INTO "{tableName}"(deployment_id, ts)
             VALUES(?,?) '''
         
-        self.cursor.execute(sql, [adliExecutionId, timestamp])
+        self.cursor.execute(sql, [deploymentId, 999])
         self.conn.commit()
 
 if __name__ == "__main__":
