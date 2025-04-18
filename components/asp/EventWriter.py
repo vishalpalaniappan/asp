@@ -21,14 +21,16 @@ class EventWriter:
         ts = math.floor(float(logFile.decoder.header.execInfo["timestamp"]))
 
         print(logFile.decoder.header.execInfo)
+        event_data = []
         for event in logFile.decoder.systemIoNodes:
             node = event["node"]
             execId = node["adliExecutionId"]
             execIndex = node["adliExecutionIndex"]
             type = event["type"]
             nodeStr = json.dumps(node)
+            event_data.append([sysId, sysVer, deploymentId, programId, ts, execId, execIndex, type, nodeStr])
 
-            sql = ''' INSERT INTO IOEVENTS(system_id, sys_ver, deployment_id, program_id, ts, execution_id, execution_index, type, node)
-                VALUES(?,?,?,?,?,?,?,?,?) '''
-            self.cursor.execute(sql, [sysId, sysVer, deploymentId, programId, ts, execId, execIndex, type, nodeStr])
-            self.conn.commit()
+        sql = ''' INSERT OR REPLACE INTO IOEVENTS(system_id, sys_ver, deployment_id, program_id, ts, execution_id, execution_index, type, node)
+            VALUES(?,?,?,?,?,?,?,?,?) '''
+        self.cursor.executemany(sql, event_data)
+        self.conn.commit()
