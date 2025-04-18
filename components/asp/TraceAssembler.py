@@ -6,6 +6,7 @@ class TraceAssembler:
         self.logs = []
         self.traces = []
         self.system = system
+        self.currentTrace = []
 
     def processLogs(self):
         for log in self.system.logFiles:
@@ -17,23 +18,31 @@ class TraceAssembler:
     def processLog(self, log):
         for ioEvent in log.decoder.systemIoNodes:
             if ioEvent["type"] == "start":
-                print("start")
+                print("")
+                print(log.decoder.header.programInfo["name"])
+                self.currentTrace = []
+                self.currentTrace.append(ioEvent["node"])
                 self.findTrace(ioEvent["node"])
+                self.traces.append(self.currentTrace)
 
-    def findTrace(self, node):
-        id = node["adliExecutionId"]
-        index = node["adliExecutionIndex"]
+    def findTrace(self, searchNode):
+        id = searchNode["adliExecutionId"]
+        index = searchNode["adliExecutionIndex"]
 
         for log in self.system.logFiles:
-            self.checkLog(log, id , index)
 
-    def checkLog(self, log, id , index):
-        for node in log.decoder.systemIoNodes:
-            nodeId = node["node"]["adliExecutionId"]
-            nodeIndex = node["node"]["adliExecutionIndex"]
+            for ioEvent in log.decoder.systemIoNodes:
+                
+                if ioEvent["type"] == "link" or ioEvent["type"] == "end":
+                    node = ioEvent["node"]
+                    nodeId = node["adliExecutionId"]
+                    nodeIndex = node["adliExecutionIndex"]
 
-            if ((id == nodeId) and (index == nodeIndex)):
-                print("FOUND MATCH")
-
-    
-    
+                    if ((id == nodeId) and (index == nodeIndex)):
+                        if "output" not in node:
+                            print(log.decoder.header.programInfo["name"])
+                            self.currentTrace.append(node)
+                        else:
+                            print(log.decoder.header.programInfo["name"])
+                            self.currentTrace.append(node)
+                            self.findTrace(node["output"][0])
