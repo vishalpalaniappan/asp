@@ -1,7 +1,7 @@
 import os
 from Cdl import Cdl
 from pathlib import Path
-from EventWriter import EventWriter
+from database.EventWriter import EventWriter
 
 class SystemProcessor:
 

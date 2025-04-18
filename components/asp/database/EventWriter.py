@@ -12,7 +12,7 @@ class EventWriter:
         self.conn.commit()
 
     def __enter__(self):
-       return self 
+        return self 
  
     def __exit__(self):
         '''
@@ -30,8 +30,8 @@ class EventWriter:
         deploymentId = logFile.decoder.header.sysinfo["adliSystemExecutionId"]
         programId = logFile.decoder.header.execInfo["programExecutionId"]
         ts = math.floor(float(logFile.decoder.header.execInfo["timestamp"]))
+        programInfo = logFile.decoder.header.programInfo
 
-        print(logFile.decoder.header.programInfo)
         event_data = []
         for event in logFile.decoder.systemIoNodes:
             node = event["node"]
@@ -39,9 +39,10 @@ class EventWriter:
             execIndex = node["adliExecutionIndex"]
             type = event["type"]
             nodeStr = json.dumps(node)
-            event_data.append([sysId, sysVer, deploymentId, programId, ts, execId, execIndex, type, nodeStr])
+            event_data.append([sysId, sysVer, deploymentId, programId, ts, execId, execIndex, type, nodeStr])        
 
         sql = ''' INSERT OR REPLACE INTO IOEVENTS(system_id, sys_ver, deployment_id, program_id, ts, execution_id, execution_index, type, node)
             VALUES(?,?,?,?,?,?,?,?,?) '''
         self.cursor.executemany(sql, event_data)
         self.conn.commit()
+        print(f"Added System IO events from {programInfo['name']} to database.")
