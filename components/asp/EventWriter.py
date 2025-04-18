@@ -4,23 +4,34 @@ import math
 
 class EventWriter:
 
-    def __init__(self):
-        
+    def __init__(self):        
         self.conn = sqlite3.connect("ioEvents.db", check_same_thread=False)
         self.cursor = self.conn.cursor()
         self.cursor.execute('''CREATE TABLE IF NOT EXISTS IOEVENTS
             (system_id string, sys_ver string, deployment_id string, program_id string, ts date, execution_id string, execution_index int, type string, node string)''')
         self.conn.commit()
+
+    def __enter__(self):
+       return self 
+ 
+    def __exit__(self):
+        '''
+            Close the database connection on exit.
+        '''
+        if hasattr(self, 'conn') and self.conn:
+            self.conn.close()
         
     def addEventsToDb(self, logFile):
-
+        '''
+            Add system io events to the database.
+        '''
         sysId = logFile.decoder.header.sysinfo["metadata"]["systemId"]
         sysVer = logFile.decoder.header.sysinfo["metadata"]["systemVersion"]
         deploymentId = logFile.decoder.header.sysinfo["adliSystemExecutionId"]
         programId = logFile.decoder.header.execInfo["programExecutionId"]
         ts = math.floor(float(logFile.decoder.header.execInfo["timestamp"]))
 
-        print(logFile.decoder.header.execInfo)
+        print(logFile.decoder.header.programInfo)
         event_data = []
         for event in logFile.decoder.systemIoNodes:
             node = event["node"]
