@@ -8,7 +8,8 @@ class EventWriter:
         self.conn = sqlite3.connect("ioEvents.db", check_same_thread=False)
         self.cursor = self.conn.cursor()
         self.cursor.execute('''CREATE TABLE IF NOT EXISTS IOEVENTS
-            (system_id string, sys_ver string, deployment_id string, program_id string, ts date, execution_id string, execution_index int, type string, node string)''')
+            (system_id string, sys_ver string, deployment_id string, program_id string, ts date,\
+                             adli_execution_id string, adli_execution_index int, type string, node string)''')
         self.conn.commit()
 
     def __enter__(self):
@@ -20,6 +21,15 @@ class EventWriter:
         '''
         if hasattr(self, 'conn') and self.conn:
             self.conn.close()
+
+    def checkIfFieldExists(self, table, column, value):
+        '''
+            Checks if the database has the given field.
+        '''
+        query = f'SELECT {column} FROM {table} WHERE {column} = ?' 
+        self.cursor.execute(query, [value])
+        row = self.cursor.fetchone() 
+        return not (row == None)
         
     def addEventsToDb(self, logFile):
         '''
@@ -29,20 +39,30 @@ class EventWriter:
         sysVer = logFile.decoder.header.sysinfo["metadata"]["systemVersion"]
         deploymentId = logFile.decoder.header.sysinfo["adliSystemExecutionId"]
         programId = logFile.decoder.header.execInfo["programExecutionId"]
-        ts = math.floor(float(logFile.decoder.header.execInfo["timestamp"]))
+        ts = float(logFile.decoder.header.execInfo["timestamp"])
         programInfo = logFile.decoder.header.programInfo
+        
+        # If the program has already been processed, then return.
+        fileExists = self.checkIfFieldExists("IOEVENTS", "program_id", programId)
+        if (fileExists):
+            print(f"File {programId} has already been processed.")
+            return
 
+        # Create table data for each io node
         event_data = []
         for event in logFile.decoder.systemIoNodes:
             node = event["node"]
-            execId = node["adliExecutionId"]
-            execIndex = node["adliExecutionIndex"]
+            adliExecutionId = node["adliExecutionId"]
+            adliExecutionIndex = node["adliExecutionIndex"]
             type = event["type"]
             nodeStr = json.dumps(node)
-            event_data.append([sysId, sysVer, deploymentId, programId, ts, execId, execIndex, type, nodeStr])        
+            event_data.append([sysId, sysVer, deploymentId, programId, ts, adliExecutionId, adliExecutionIndex, type, nodeStr])        
 
-        sql = ''' INSERT OR REPLACE INTO IOEVENTS(system_id, sys_ver, deployment_id, program_id, ts, execution_id, execution_index, type, node)
+        # Execute SQL statement
+        sql = ''' INSERT OR REPLACE INTO IOEVENTS(system_id, sys_ver, deployment_id, program_id, ts, adli_execution_id,\
+              adli_execution_index, type, node)
             VALUES(?,?,?,?,?,?,?,?,?) '''
         self.cursor.executemany(sql, event_data)
         self.conn.commit()
+        
         print(f"Added System IO events from {programInfo['name']} to database.")
