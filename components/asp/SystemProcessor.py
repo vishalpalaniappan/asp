@@ -1,10 +1,6 @@
 import os
 from Cdl import Cdl
-import json
 from pathlib import Path
-from database.TableWriter import TableWriter
-
-from TraceAssembler import TraceAssembler
 from EventWriter import EventWriter
 
 class SystemProcessor:
@@ -15,11 +11,8 @@ class SystemProcessor:
         '''
         self.logFolder = logFolder
         self.logFiles = []
-        self.database = TableWriter()
         self.eventWriter = EventWriter()
         self.parseSystemLogFiles()
-
-        # self.traces = TraceAssembler(self).processLogs()
 
 
     def parseSystemLogFiles(self):
@@ -31,7 +24,6 @@ class SystemProcessor:
         for logFileName in files:
             if logFileName.endswith(".clp.zst"):
                 cdlFile = Cdl(os.path.join(self.logFolder, logFileName))
-                self.database.write_file(cdlFile)
                 self.logFiles.append(cdlFile)
                 self.eventWriter.addEventsToDb(cdlFile)
 
