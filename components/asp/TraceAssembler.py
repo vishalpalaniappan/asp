@@ -10,8 +10,7 @@ class TraceAssembler:
 
     def processLogs(self):
         for log in self.system.logFiles:
-            print("")
-            print(log.decoder.header.programInfo)
+            # print(log.decoder.header.programInfo)
             self.processLog(log)
         return self.traces
     
@@ -19,6 +18,9 @@ class TraceAssembler:
         for ioEvent in log.decoder.systemIoNodes:
             if ioEvent["type"] == "start":
                 print("")
+                print("-------start----------")
+                print(ioEvent["node"]["adliValue"])
+                print("----------------------")
                 print(log.decoder.header.programInfo["name"])
                 self.currentTrace = []
                 self.currentTrace.append(ioEvent["node"])
@@ -26,8 +28,8 @@ class TraceAssembler:
                 self.traces.append(self.currentTrace)
 
     def findTrace(self, searchNode):
-        id = searchNode["adliExecutionId"]
-        index = searchNode["adliExecutionIndex"]
+        searchId = searchNode["adliExecutionId"]
+        searchIndex = searchNode["adliExecutionIndex"]
 
         for log in self.system.logFiles:
 
@@ -35,12 +37,15 @@ class TraceAssembler:
                 
                 if ioEvent["type"] == "link" or ioEvent["type"] == "end":
                     node = ioEvent["node"]
-                    nodeId = node["adliExecutionId"]
-                    nodeIndex = node["adliExecutionIndex"]
+                    currId = node["adliExecutionId"]
+                    currIndex = node["adliExecutionIndex"]
 
-                    if ((id == nodeId) and (index == nodeIndex)):
+                    if ((searchId == currId) and (searchIndex == currIndex)):
                         if "output" not in node:
                             print(log.decoder.header.programInfo["name"])
+                            print("--------end-----------")
+                            print(ioEvent["node"]["adliValue"])
+                            print("----------------------")
                             self.currentTrace.append(node)
                         else:
                             print(log.decoder.header.programInfo["name"])
