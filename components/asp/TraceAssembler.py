@@ -40,7 +40,6 @@ class TraceAssembler:
                 self.currentTrace = []
                 ioEvent["node"]["name"] = log.decoder.header.programInfo["name"]
                 self.currentTrace.append(ioEvent["node"])
-                # self.currentTrace.append(log.decoder.header.programInfo["name"])
                 self.findTrace(ioEvent["node"])
                 self.traces.append(self.currentTrace)
 
@@ -63,10 +62,8 @@ class TraceAssembler:
                         if "output" in node:
                             node["name"] = log.decoder.header.programInfo["name"]
                             self.currentTrace.append(node)
-                            # self.currentTrace.append(log.decoder.header.programInfo["name"])
                             # TODO: Add support for processing multiple outputs.
                             self.findTrace(node["output"][0])
                         else:
                             node["name"] = log.decoder.header.programInfo["name"]
                             self.currentTrace.append(node)
-                            # self.currentTrace.append(log.decoder.header.programInfo["name"])
