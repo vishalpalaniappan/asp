@@ -49,7 +49,7 @@ class EventWriter:
         programInfo = logFile.decoder.header.programInfo
         
         # If the program has already been processed, then return.
-        fileExists = self.checkIfFieldExists("IOEVENTS", "program_id", programId)
+        fileExists = self.checkIfFieldExists("IOEVENTS", "program_execution_id", programId)
         if (fileExists):
             print(f"File {programId} has already been processed.")
             return
