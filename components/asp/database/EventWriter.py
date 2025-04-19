@@ -6,15 +6,17 @@ class EventWriter:
         This class writes the IO events to the database. 
     '''
 
-    def __init__(self):    
-            
-        # Initialize the database
-        self.conn = sqlite3.connect("ioEvents.db", check_same_thread=False)
-        self.cursor = self.conn.cursor()
-        self.cursor.execute('''CREATE TABLE IF NOT EXISTS IOEVENTS
-            (system_id string, sys_ver string, deployment_id string, program_id string, ts date,\
-                             adli_execution_id string, adli_execution_index int, type string, node string)''')
-        self.conn.commit()
+    def __init__(self, db_path="ioEvents.db"):
+        try:
+            self.conn = sqlite3.connect(db_path, check_same_thread=False)
+            self.cursor = self.conn.cursor()
+            self.cursor.execute('''CREATE TABLE IF NOT EXISTS IOEVENTS
+                (system_id string, sys_ver string, deployment_id string, program_id string, ts date, adli_execution_id string,\
+                                 adli_execution_index int, type string, node string)''')
+            self.conn.commit()
+        except sqlite3.Error as e:
+            print(f"Database error: {e}")
+            raise
 
     def __enter__(self):
         return self 
