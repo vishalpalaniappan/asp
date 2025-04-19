@@ -11,7 +11,7 @@ class EventWriter:
             self.conn = sqlite3.connect(db_path, check_same_thread=False)
             self.cursor = self.conn.cursor()
             self.cursor.execute('''CREATE TABLE IF NOT EXISTS IOEVENTS
-                (system_id string, sys_ver string, deployment_id string, program_id string, ts real, adli_execution_id string,\
+                (system_id string, sys_ver string, deployment_id string, program_execution_id  string, ts real, adli_execution_id string,\
                                  adli_execution_index int, type string, node string)''')
             self.conn.commit()
         except sqlite3.Error as e:
@@ -65,7 +65,7 @@ class EventWriter:
             event_data.append([sysId, sysVer, deploymentId, programId, ts, adliExecutionId, adliExecutionIndex, type, nodeStr])        
 
         # Execute SQL statement
-        sql = ''' INSERT OR REPLACE INTO IOEVENTS(system_id, sys_ver, deployment_id, program_id, ts, adli_execution_id,\
+        sql = ''' INSERT OR REPLACE INTO IOEVENTS(system_id, sys_ver, deployment_id, program_execution_id, ts, adli_execution_id,\
               adli_execution_index, type, node)
             VALUES(?,?,?,?,?,?,?,?,?) '''
         self.cursor.executemany(sql, event_data)
