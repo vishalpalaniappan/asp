@@ -12,7 +12,7 @@ class SysWriter:
         self.conn = sqlite3.connect("asp.db", check_same_thread=False)
         self.cursor = self.conn.cursor()
         self.cursor.execute('''CREATE TABLE IF NOT EXISTS SYSTEMTABLES
-            (system_id int, version real, name text, description, programs)''')
+            (system_id string, version string, name string, description text, programs string)''')
         self.conn.commit()
         
     def write_file(self, cdlFile):
@@ -100,7 +100,7 @@ class SysWriter:
 
         # If entry for specified system id and version doesn't exist, add it.
         if (len(rows) == 0):
-            sql = ''' INSERT INTO SYSTEMTABLES(system_id string, version string, name string, description string, programs string)
+            sql = ''' INSERT INTO SYSTEMTABLES(system_id, version, name, description, programs)
                 VALUES(?,?,?,?,?) '''
             self.cursor.execute(sql, [sysId, sysVer, name, description, programs])
             self.conn.commit()
