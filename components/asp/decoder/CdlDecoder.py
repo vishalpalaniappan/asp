@@ -3,6 +3,7 @@ from clp_ffi_py.ir import ClpIrFileReader
 from decoder.CDL_CONSTANTS import LINE_TYPE
 from decoder.CdlLogLine import CdlLogLine
 from decoder.CdlHeader import CdlHeader
+from decoder.SystemIoNodes import SystemIoNodes
 
 import os
 import copy
@@ -19,11 +20,14 @@ class CdlDecoder:
 
         self.execution = []
         self.exception = None
-        self.uniqueTraceEvents = {}
         self.callStack = []
         self.callStacks = {}
 
+        self.nodes = []
+
         self.loadAndParseFile(filePath)
+
+        self.systemIoNodes = SystemIoNodes().processNodes(self.nodes)
 
     def loadAndParseFile(self, filePath):
         '''
@@ -33,85 +37,72 @@ class CdlDecoder:
             self.position = 0
             for log_event in clp_reader:
                 self.parseLogLine(log_event)
+        
+        # Save any remaining system io nodes in the callstack
+        while len(self.callStack) > 0:
+            popped = self.callStack.pop()
+            if (("input" in popped) or ("output" in popped)):
+                self.nodes.append(popped)
 
     def parseLogLine(self, log_event):
         '''
-            Parse the log line and save the relevant data.
+            Parse the log line and process the relevant data.
         '''
         currLog = CdlLogLine(log_event)
+        self.execution.append(currLog)
 
-        if currLog.type == LINE_TYPE["IR_HEADER"]:
-            self.header = CdlHeader(currLog.value)
+        if currLog.type == LINE_TYPE["JSON"]:
+            self.processJSONLog(currLog)
         elif currLog.type == LINE_TYPE["EXCEPTION"]:
             self.exception = currLog.value
         elif currLog.type == LINE_TYPE["EXECUTION"]:
             self.lastExecution = self.position
-            self.execution.append(currLog)
             self.addToCallStack(currLog)
-            self.position += 1
         elif currLog.type == LINE_TYPE["VARIABLE"]:
-            self.execution.append(currLog)
-            self.saveUniqueId(currLog)
-            self.position += 1
-
-    def saveUniqueId(self, variable):
-        '''
-            Save the asp_uid variable value to the top of the stack.
-        '''
-        varInfo = self.header.getVarInfo(variable.varId)
-
-        if varInfo.getName() == "asp_uid":
-            self.callStack[-1]["uid"] = variable.value
-
-    def getFunctionArgumentValues(self, position):
-        '''
-            This function returns the variable values of the given function's arguments.
-            The arguments are logged after the function def, so we read the variables until
-            the log isn't a variable, this will ensure that we save all the arguments.
-        '''
-        funcArgs = {}
-        position += 1
-        while position < len(self.execution) and (self.execution[position].type == LINE_TYPE["VARIABLE"]):
-            varInfo = self.header.getVarInfo(self.execution[position].varId)
-            funcArgs[varInfo.getName()] = self.execution[position].value
-            position += 1
-
-        return funcArgs
-
-    def addUniqueTrace(self, uid, startPos, endPos):
-        '''
-            Given a start and end position of a unique trace, 
-            add the position and level of each function in the
-            trace to the unique trace object.
-        '''
-
-        # Add every visited function and its level in the stack to the trace list 
-        trace = []
-        for position in range(startPos, endPos):
-            lineType = self.execution[position]
-
-            if lineType.type == LINE_TYPE["EXECUTION"]:
-                ltInfo = self.header.getLtInfo(lineType.ltId)
-
-                if (ltInfo.isFunction()):
-                    trace.append({
-                        "position": position,
-                        "level": len(self.callStacks[position]),
-                        "name": ltInfo.getName(),
-                        "lineNo": ltInfo.lineno,
-                        "file": self.header.getFileFromLt(ltInfo.id),
-                        "variables": self.getFunctionArgumentValues(position)
-                    })
-
-        # Add trace to the unique traceEvents list.
-        if uid not in self.uniqueTraceEvents:
-            self.uniqueTraceEvents[uid] = []        
+            pass
         
-        self.uniqueTraceEvents[uid].append({
-            "logFileName": self.logFileName,
-            "trace": trace,
-            "timestamp": self.execution[startPos].timestamp
-        })
+        self.position += 1
+
+
+    def processJSONLog(self, log):
+        '''
+            This function processes any JSON logs.
+        '''
+        if (log.value["type"] == "adli_header"):
+            self.header = CdlHeader(log.value["header"])
+        elif (log.value["type"] == "adli_input"):
+            self.processInput(log.value)
+        elif (log.value["type"] == "adli_output"):
+            self.processOutput(log.value)
+
+
+    def processInput(self, logValue):
+        '''
+            Add the input to the top of the call stack.
+        '''
+        if "input" not in self.callStack[-1]:
+            self.callStack[-1]["input"] = []
+        self.callStack[-1]["input"].append(logValue)
+
+
+    def processOutput(self, logValue):
+        '''
+            Process the output node.
+            - Move down the stack
+            - If an input was found, append the output to the input and return
+            - If an input was not found, then append output to top of call stack
+        '''
+        for cs in reversed(self.callStack):
+            if "input" in cs:
+                if "output" not in cs["input"][-1]:
+                    cs["input"][-1]["output"] = []
+                cs["input"][-1]["output"].append(logValue)
+                return
+            
+        if "output" not in self.callStack[-1]:
+            self.callStack[-1]["output"] = []
+
+        self.callStack[-1]["output"].append(logValue)
 
     def addToCallStack(self, log):
         '''
@@ -121,34 +112,32 @@ class CdlDecoder:
             - Move down stack until parent function of current log is found
             - Map the stack positions to find the log which called the function
             - Add current position to stack
-            - Copy stack into global list            
-
-            - If a unique trace function is added to stack, it is the start of a unique trace.
-            - If a unique trace function is removed from stack, it is the end of a unique trace.
-            - When a unique trace ends, save it to the unique trace list.
+            - Copy stack into global list       
         '''
         position = len(self.execution) - 1
         ltInfo = self.header.getLtInfo(log.ltId)
         cs = self.callStack
 
         if (ltInfo.isFunction()):
-            self.callStack.append({"position":position,"isUnique":ltInfo.isUnique})
+            self.callStack.append({"funcPosition":position})
 
         while (len(cs) > 0):
-            currStackFuncLt = self.execution[cs[-1]["position"]].ltId
+            currStackFuncLt = self.execution[cs[-1]["funcPosition"]].ltId
             if (int(currStackFuncLt) == int(ltInfo.getFuncLt())):
                 break
 
             popped = cs.pop()
 
-            # If the removed call is the end of a unique trace, then add it to the trace list.
-            if popped["isUnique"]:
-                self.addUniqueTrace(popped["uid"], popped["position"], position)
+            # When the position is removed from the stack, add it to the
+            # nodes list if the position has input or output information 
+            # in it. The nodes will be processed in the next stage.
+            if (("input" in popped) or ("output" in popped)):
+                self.nodes.append(popped)
                 
         # Update the call stack to indicate where the functions were called from.
         csFromCallPosition = []
         for cs in self.callStack:
-            csFromCallPosition.append(self.getPreviousExecutionPosition(cs["position"]))
+            csFromCallPosition.append(self.getPreviousExecutionPosition(cs["funcPosition"]))
         csFromCallPosition.append(position)
 
         self.callStacks[position] = csFromCallPosition
@@ -164,7 +153,6 @@ class CdlDecoder:
             if self.execution[position].type == LINE_TYPE["EXECUTION"]:
                 return position
         return None
-    
 
     def getNextExecutionPosition(self, position):
         '''
@@ -273,3 +261,18 @@ class CdlDecoder:
             "localVars" : localVars,
             "globalVars" : globalVars,
         }
+
+    def getFunctionArgumentValues(self, position):
+        '''
+            This function returns the variable values of the given function's arguments.
+            The arguments are logged after the function def, so we read the variables until
+            the log isn't a variable, this will ensure that we save all the arguments.
+        '''
+        funcArgs = {}
+        position += 1
+        while position < len(self.execution) and (self.execution[position].type == LINE_TYPE["VARIABLE"]):
+            varInfo = self.header.getVarInfo(self.execution[position].varId)
+            funcArgs[varInfo.getName()] = self.execution[position].value
+            position += 1
+
+        return funcArgs

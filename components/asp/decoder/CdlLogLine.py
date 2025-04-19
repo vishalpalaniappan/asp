@@ -16,8 +16,8 @@ class CdlLogLine:
         '''
         delimiter = line[0]
         
-        if delimiter == LINE_TYPE_DELIMITER["IR_HEADER"]:
-            self.parseHeader(line)
+        if delimiter == LINE_TYPE_DELIMITER["JSON"]:
+            self.parseJSONLog(line)
         elif delimiter == LINE_TYPE_DELIMITER["EXCEPTION"]:
             self.parseException(line)
         elif delimiter == LINE_TYPE_DELIMITER["VARIABLE"]:
@@ -25,13 +25,12 @@ class CdlLogLine:
         else:
             self.parseExecution(line)
 
-    def parseHeader(self, line):
+    def parseJSONLog(self, line):
         '''
-            Parse the IR stream header            
+            Parse the IR stream JSON log.            
         '''
-        self.type = LINE_TYPE["IR_HEADER"]
-        self.value = line
-        pass
+        self.type = LINE_TYPE["JSON"]
+        self.value = json.loads(line)
 
     def parseException(self, line):
         '''

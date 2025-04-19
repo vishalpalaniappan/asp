@@ -4,20 +4,22 @@ from decoder.LogType import LogType
 
 class CdlHeader:
 
-    def __init__(self, headerJsonString):
+    def __init__(self, header):
         self.ltMap = {}
         self.varMap = {}
-        self.saveHeaderInformation(headerJsonString)
+        self.saveHeaderInformation(header)
 
-    def saveHeaderInformation(self, headerJsonString):
+    def saveHeaderInformation(self, header):
         '''
             Save the header information while creating
             objects to store the variable and logtype
             information.
         '''
-        header = json.loads(headerJsonString)
-
         self.fileTree = header["fileTree"]
+        self.execInfo = header["execInfo"]
+        self.programInfo = header["programInfo"]
+        self.adliInfo = header["adliInfo"]
+        self.sysinfo = header["sysInfo"]
 
         for lt in header["ltMap"]:
             self.ltMap[int(lt)] = LogType(header["ltMap"][lt])
@@ -50,5 +52,4 @@ class CdlHeader:
                 return file
             
         return None
-
 
