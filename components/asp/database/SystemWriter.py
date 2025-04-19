@@ -1,7 +1,7 @@
 import sqlite3
 import json
 
-class SysWriter:
+class SystemWriter:
     '''
         Given a CDL file, this program writes the metadata related to the 
         CDL file to the database. This includes, the programs, deployments

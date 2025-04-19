@@ -2,7 +2,7 @@ import os
 from Cdl import Cdl
 from pathlib import Path
 from database.EventWriter import EventWriter
-from database.SysWriter import SysWriter
+from database.SystemWriter import SystemWriter
 
 class SystemProcessor:
 
@@ -13,7 +13,7 @@ class SystemProcessor:
         self.logFolder = logFolder
         self.logFiles = []
         self.eventWriter = EventWriter()
-        self.sysWriter = SysWriter()
+        self.sysWriter = SystemWriter()
 
         self.parseSystemLogFiles()
 
