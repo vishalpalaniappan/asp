@@ -100,7 +100,7 @@ class SysWriter:
 
         # If entry for specified system id and version doesn't exist, add it.
         if (len(rows) == 0):
-            sql = ''' INSERT INTO SYSTEMTABLES(system_id, version, name, description, programs)
+            sql = ''' INSERT INTO SYSTEMTABLES(system_id string, version string, name string, description string, programs string)
                 VALUES(?,?,?,?,?) '''
             self.cursor.execute(sql, [sysId, sysVer, name, description, programs])
             self.conn.commit()
