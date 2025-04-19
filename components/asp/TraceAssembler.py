@@ -21,19 +21,54 @@ class TraceAssembler:
 
         query = f'SELECT * FROM "IOEVENTS" WHERE "type" = ?' 
         self.cursor.execute(query, ["start"])
-        rows = self.cursor.fetchall() 
+        nodes = self.cursor.fetchall() 
 
         startNodes = []
-        for row in rows:
+        for node in nodes:
             startNodes.append({
-                "executionId": row[5],
-                "executionIndex": row[6],
-                "node": row[8]
+                "executionId": node[5],
+                "executionIndex": node[6],
+                "node": json.loads(node[8])
             })
 
+            trace = self.getTrace(startNodes[-1]["node"])
+            self.addNodeToDatabase(trace)
+
         return startNodes
+    
+    def getTrace(self, node):
+        trace = [node]
+        link = self.findLink(node)
 
+        while (link):
+            trace.append(link["node"])
+            link = self.findLink(link["node"])
 
+            # If end of trace has been reached, append and return
+            if link and link["type"] == "end":
+                trace.append(link["node"])
+                return trace
+
+        # Trace did not end
+        return trace
+        
+    def findLink(self, node):
+        query = f'SELECT * FROM "IOEVENTS" WHERE ("type" = ? or "type" = ?) and "adli_execution_id" = ? and "adli_execution_index" = ?' 
+        self.cursor.execute(query, ["link", "end", node["adliExecutionId"], node["adliExecutionIndex"]])
+        rows = self.cursor.fetchall() 
+
+        for row in rows:
+            node = json.loads(row[8])
+            if "output" in node:
+                return {"type":"link", "node":node["output"][0]}
+            else:
+                return {"type":"end", "node":node}
+
+        return None
+    
+
+    def addNodeToDatabase(self, trace):
+        print(len(trace))
 
 if __name__ == "__main__":
     TraceAssembler()
