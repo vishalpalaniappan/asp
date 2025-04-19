@@ -94,8 +94,8 @@ class SysWriter:
         programs = json.dumps(systemInfo["programs"])
 
         self.cursor.execute(f'''
-            SELECT system_id FROM SYSTEMTABLES WHERE system_id = {sysId} and version = {sysVer}
-        ''')
+            SELECT system_id FROM SYSTEMTABLES WHERE system_id = ? and version = ?
+        ''', (sysId, sysVer))
         rows = self.cursor.fetchall()
 
         # If entry for specified system id and version doesn't exist, add it.
