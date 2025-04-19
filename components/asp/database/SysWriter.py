@@ -8,7 +8,7 @@ class SysWriter:
         and assembled traces.
     '''
 
-    def __init__(self):        
+    def __init__(self):
         self.conn = sqlite3.connect("asp.db", check_same_thread=False)
         self.cursor = self.conn.cursor()
         self.cursor.execute('''CREATE TABLE IF NOT EXISTS SYSTEMTABLES
@@ -116,9 +116,4 @@ class SysWriter:
         self.cursor.execute(f'''CREATE TABLE IF NOT EXISTS "{sysId}_{sysVer}_traces"
             (deployment_id string, trace_id string, startTs real, endTs real, traceType string, traces string)''')
         self.conn.commit()
-
-        
-
-if __name__ == "__main__":
-    a = SysWriter()
     
