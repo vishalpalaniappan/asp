@@ -114,7 +114,7 @@ class SysWriter:
         self.conn.commit()
         
         self.cursor.execute(f'''CREATE TABLE IF NOT EXISTS "{sysId}_{sysVer}_traces"
-            (deployment_id string, trace_id string, startTs real, endTs real, traceType string)''')
+            (deployment_id string, trace_id string, startTs real, endTs real, traceType string, traces string)''')
         self.conn.commit()
 
         
