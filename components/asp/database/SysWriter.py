@@ -2,6 +2,11 @@ import sqlite3
 import json
 
 class SysWriter:
+    '''
+        Given a CDL file, this program writes the metadata related to the 
+        CDL file to the database. This includes, the programs, deployments
+        and assembled traces.
+    '''
 
     def __init__(self):        
         self.conn = sqlite3.connect("asp.db", check_same_thread=False)
@@ -21,7 +26,6 @@ class SysWriter:
         self.addToSystemIndex(cdlFile.decoder.header.sysinfo)
         self.addPrograms(cdlFile.decoder.header)
         self.addDeployments(cdlFile.decoder.header)
-
 
     def checkIfFieldExists(self, table, column, value):
         '''
