@@ -35,7 +35,7 @@ class EventWriter:
         query = f'SELECT {column} FROM {table} WHERE {column} = ?' 
         self.cursor.execute(query, [value])
         row = self.cursor.fetchone() 
-        return not (row == None)
+        return row is not None
         
     def addEventsToDb(self, logFile):
         '''
