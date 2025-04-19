@@ -11,8 +11,13 @@ class SysWriter:
     def __init__(self):
         self.conn = sqlite3.connect("asp.db", check_same_thread=False)
         self.cursor = self.conn.cursor()
-        self.cursor.execute('''CREATE TABLE IF NOT EXISTS SYSTEMTABLES
-            (system_id string, version string, name string, description text, programs string)''')
+        self.cursor.execute(
+            '''
+            CREATE TABLE IF NOT EXISTS SYSTEMTABLES
+            (system_id string, version string, name string, description text, programs string,
+                PRIMARY KEY (system_id, version))
+            '''
+        )
         self.conn.commit()
         
     def write_file(self, cdlFile):
