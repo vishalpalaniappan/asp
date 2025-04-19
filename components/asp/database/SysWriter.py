@@ -105,15 +105,18 @@ class SysWriter:
             self.cursor.execute(sql, [sysId, sysVer, name, description, programs])
             self.conn.commit()
 
-        self.cursor.execute(f'''CREATE TABLE IF NOT EXISTS "{sysId}_{sysVer}_deployments"
-            (deployment_id string)''')
+        table_name = f"{sysId}_{sysVer}_deployments"
+        self.cursor.execute(f'''CREATE TABLE IF NOT EXISTS "{table_name}"
+            (deployment_id string, ts real, PRIMARY KEY (deployment_id))''')
         self.conn.commit()
         
-        self.cursor.execute(f'''CREATE TABLE IF NOT EXISTS "{sysId}_{sysVer}_programs"
-            (name string, description string, language string, fileTree string)''')
+        table_name = f"{sysId}_{sysVer}_programs"
+        self.cursor.execute(f'''CREATE TABLE IF NOT EXISTS "{table_name}"
+            (name string PRIMARY KEY, description string, language string, fileTree string)''')
         self.conn.commit()
         
-        self.cursor.execute(f'''CREATE TABLE IF NOT EXISTS "{sysId}_{sysVer}_traces"
-            (deployment_id string, trace_id string, startTs real, endTs real, traceType string, traces string)''')
+        table_name = f"{sysId}_{sysVer}_traces"
+        self.cursor.execute(f'''CREATE TABLE IF NOT EXISTS "{table_name}"
+            (deployment_id string, trace_id string, startTs real, endTs real, 
+             traceType string, traces string, PRIMARY KEY (deployment_id, trace_id))''')
         self.conn.commit()
-    
