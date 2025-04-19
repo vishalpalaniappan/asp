@@ -19,24 +19,41 @@ class SysWriter:
             4. Add extracted unique traces to the table.
         '''
         self.addToSystemIndex(cdlFile.decoder.header.sysinfo)
-        self.createTables(cdlFile.decoder.header)
+        self.addPrograms(cdlFile.decoder.header)
 
-    def createTables(self, header):
+
+    def checkIfFieldExists(self, table, column, value):
+        '''
+            Checks if the database has the given field.
+        '''
+        query = f'SELECT {column} FROM "{table}" WHERE {column} = ?' 
+        self.cursor.execute(query, [value])
+        row = self.cursor.fetchone() 
+        return row is not None
+
+    def addPrograms(self, header):
+        '''
+            Add programs to the database.
+        '''
         sysId = header.sysinfo["metadata"]["systemId"]        
-        sysVer = header.sysinfo["metadata"]["systemVersion"]
-
-        self.cursor.execute(f'''CREATE TABLE IF NOT EXISTS {sysId}_{sysVer}_deployments
-            (deployment_id string, ts real)''')
-        self.conn.commit()
-
+        sysVer = header.sysinfo["metadata"]["systemVersion"] 
+        programInfo = header.programInfo
         
-        self.cursor.execute('''CREATE TABLE IF NOT EXISTS {sysId}_{sysVer}_programs
-            (name string, description string, language string, fileTree string)''')
-        self.conn.commit()
+        TABLENAME = f"{sysId}_{sysVer}_programs"
 
-        
-        self.cursor.execute('''CREATE TABLE IF NOT EXISTS {sysId}_{sysVer}_traces
-            (deployment_id string, trace_id string, startTs real, endTs real, traceType string)''')
+        name = programInfo["name"]
+        description = programInfo["description"]
+        language = programInfo["language"]
+        fileTree = json.dumps(header.fileTree)
+
+        # Return if the program has already been written to the database
+        hasName = self.checkIfFieldExists(TABLENAME, "name", name)
+        if (hasName):
+            return
+
+        sql = f''' INSERT OR REPLACE INTO "{TABLENAME}"(name, description, language, fileTree)
+                VALUES(?,?,?,?) '''
+        self.cursor.execute(sql, [name, description, language, fileTree])
         self.conn.commit()
 
 
@@ -62,14 +79,16 @@ class SysWriter:
             self.cursor.execute(sql, [sysId, sysVer, name, description, programs])
             self.conn.commit()
 
-        self.cursor.execute(f'''CREATE TABLE IF NOT EXISTS "{sysId}-{sysVer}-programs"
-            (id int, name string, description string, language string, fileTree string)''')
-
-        self.cursor.execute(f'''CREATE TABLE IF NOT EXISTS "{sysId}-{sysVer}-deployments"
-            (deployment_id int, ts date)''')
-
-        self.cursor.execute(f'''CREATE TABLE IF NOT EXISTS "{sysId}-{sysVer}-traces"
-            (deployment_id int, trace_id int, startTs date, endTs date, fileTree string)''')
+        self.cursor.execute(f'''CREATE TABLE IF NOT EXISTS "{sysId}_{sysVer}_deployments"
+            (deployment_id string, ts real)''')
+        self.conn.commit()
+        
+        self.cursor.execute(f'''CREATE TABLE IF NOT EXISTS "{sysId}_{sysVer}_programs"
+            (name string, description string, language string, fileTree string)''')
+        self.conn.commit()
+        
+        self.cursor.execute(f'''CREATE TABLE IF NOT EXISTS "{sysId}_{sysVer}_traces"
+            (deployment_id string, trace_id string, startTs real, endTs real, traceType string)''')
         self.conn.commit()
 
         
