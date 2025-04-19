@@ -107,7 +107,7 @@ class SysWriter:
 
         table_name = f"{sysId}_{sysVer}_deployments"
         self.cursor.execute(f'''CREATE TABLE IF NOT EXISTS "{table_name}"
-            (deployment_id string, ts real, PRIMARY KEY (deployment_id))''')
+            (deployment_id string, PRIMARY KEY (deployment_id))''')
         self.conn.commit()
         
         table_name = f"{sysId}_{sysVer}_programs"
