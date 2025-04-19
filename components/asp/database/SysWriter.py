@@ -20,6 +20,7 @@ class SysWriter:
         '''
         self.addToSystemIndex(cdlFile.decoder.header.sysinfo)
         self.addPrograms(cdlFile.decoder.header)
+        self.addDeployments(cdlFile.decoder.header)
 
 
     def checkIfFieldExists(self, table, column, value):
@@ -30,6 +31,27 @@ class SysWriter:
         self.cursor.execute(query, [value])
         row = self.cursor.fetchone() 
         return row is not None
+    
+    def addDeployments(self, header):
+        '''
+            Add deployments to the database.
+        '''
+        sysId = header.sysinfo["metadata"]["systemId"]        
+        sysVer = header.sysinfo["metadata"]["systemVersion"]
+        TABLENAME = f"{sysId}_{sysVer}_deployments"
+
+        deploymentId = header.sysinfo["adliSystemExecutionId"]
+        
+        # Return if the deployment id has already been written to the database
+        hasName = self.checkIfFieldExists(TABLENAME, "deployment_id", deploymentId)
+        if (hasName):
+            return
+
+        sql = f''' INSERT OR REPLACE INTO "{TABLENAME}"(deployment_id)
+                VALUES(?) '''
+        self.cursor.execute(sql, [deploymentId])
+        self.conn.commit()
+
 
     def addPrograms(self, header):
         '''
@@ -80,7 +102,7 @@ class SysWriter:
             self.conn.commit()
 
         self.cursor.execute(f'''CREATE TABLE IF NOT EXISTS "{sysId}_{sysVer}_deployments"
-            (deployment_id string, ts real)''')
+            (deployment_id string)''')
         self.conn.commit()
         
         self.cursor.execute(f'''CREATE TABLE IF NOT EXISTS "{sysId}_{sysVer}_programs"
