@@ -2,11 +2,11 @@
 
 ### SYSTEM TABLE
 
-Name: SYSTEMSTABLE
+Table Name: SYSTEMSTABLE
 
 | Column Name        |  Data Type  |  Description |
 |--------------------|:-----------:|--------------------------------------------------:|
-| system_id          |  INTEGER    | Unique System Id (eg 823642)                      |
+| system_id          |  STRING     | Unique System Id (eg 823642)                      |
 | version            |  STRING     | Version of the system (eg "0.1")                  |
 | name               |  STRING     | Name of the system (Distributed Sorting System)   |
 | description        |  STRING     | Description of the system                         |
@@ -15,16 +15,15 @@ Name: SYSTEMSTABLE
 
 ### Deployments
 
-Name: <sys_id>_<sys_ver>_deployments
+Table Name: <sys_id>-<sys_ver>-deployments
 
 | Column Name        |  Data Type  |  Description |
 |--------------------|:-----------:|------------------------------------------------:|
-| deployment_id      |  INTEGER    | Deployment Id (eg 554233)                       |
-| ts                 |  DATE       | Timestamp of the deployment (eg unix ts)        |
+| deployment_id      |  STRING     | Deployment Id (eg 554233)                       |
 
 ### Programs
 
-Name: <sys_id>_<sys_ver>_programs
+Table Name: <sys_id>-<sys_ver>-programs
 
 | Column Name        |  Data Type  |  Description |
 |--------------------|:-----------:|------------------------------------------------:|
@@ -36,13 +35,13 @@ Name: <sys_id>_<sys_ver>_programs
 
 ### Traces
 
-Name: <sys_id>_<sys_ver>_traces
+Table Name: <sys_id>-<sys_ver>-traces
 
 | Column Name        |  Data Type  |  Description |
 |--------------------|:-----------:|------------------------------------------------:|
-| deployment_id      |  INTEGER    | Deployment Id (eg 554233)                       |
-| trace_id           |  INTEGER    | Trace Id (eg 235234)                            |
+| deployment_id      |  STRING     | Deployment Id (eg 554233)                       |
+| trace_id           |  STRING     | Trace Id (eg 235234)                            |
 | startTs            |  REAL       | Start of Trace                                  |
 | endTs              |  REAL       | End of Trace                                    |
-| traceType          |  NUMBER     | Type of trace                                   |
+| traceType          |  STRING     | Type of trace                                   |
 | traces             |  STRING     | JSON String of the traces for this program      |
