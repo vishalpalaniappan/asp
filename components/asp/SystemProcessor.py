@@ -2,6 +2,7 @@ import os
 from Cdl import Cdl
 from pathlib import Path
 from database.EventWriter import EventWriter
+from database.SysWriter import SysWriter
 
 class SystemProcessor:
 
@@ -12,8 +13,9 @@ class SystemProcessor:
         self.logFolder = logFolder
         self.logFiles = []
         self.eventWriter = EventWriter()
-        self.parseSystemLogFiles()
+        self.sysWriter = SysWriter()
 
+        self.parseSystemLogFiles()
 
     def parseSystemLogFiles(self):
         '''
@@ -26,6 +28,7 @@ class SystemProcessor:
                 cdlFile = Cdl(os.path.join(self.logFolder, logFileName))
                 self.logFiles.append(cdlFile)
                 self.eventWriter.addEventsToDb(cdlFile)
+                self.sysWriter.write_file(cdlFile)
 
 if __name__ == "__main__":
     rootDir = Path(__file__).resolve().parents[0]
