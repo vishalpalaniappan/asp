@@ -15,7 +15,7 @@ Table Name: SYSTEMSTABLE
 
 ### Deployments
 
-Table Name: <sys_id>-<sys_ver>-deployments
+Table Name: <sys_id>_<sys_ver>_deployments
 
 | Column Name        |  Data Type  |  Description |
 |--------------------|:-----------:|------------------------------------------------:|
@@ -23,7 +23,7 @@ Table Name: <sys_id>-<sys_ver>-deployments
 
 ### Programs
 
-Table Name: <sys_id>-<sys_ver>-programs
+Table Name: <sys_id>_<sys_ver>_programs
 
 | Column Name        |  Data Type  |  Description |
 |--------------------|:-----------:|------------------------------------------------:|
@@ -35,7 +35,7 @@ Table Name: <sys_id>-<sys_ver>-programs
 
 ### Traces
 
-Table Name: <sys_id>-<sys_ver>-traces
+Table Name: <sys_id>_<sys_ver>_traces
 
 | Column Name        |  Data Type  |  Description |
 |--------------------|:-----------:|------------------------------------------------:|
