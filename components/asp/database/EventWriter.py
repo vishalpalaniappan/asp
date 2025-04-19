@@ -1,10 +1,14 @@
 import sqlite3
 import json
-import math
 
 class EventWriter:
+    '''
+        This class writes the IO events to the database. 
+    '''
 
-    def __init__(self):        
+    def __init__(self):    
+            
+        # Initialize the database
         self.conn = sqlite3.connect("ioEvents.db", check_same_thread=False)
         self.cursor = self.conn.cursor()
         self.cursor.execute('''CREATE TABLE IF NOT EXISTS IOEVENTS
