@@ -26,22 +26,12 @@ This will generate a traceEvents.json file in the directory where the program wa
 
 # How does it work?
 
-## System Processor
-- The SystemProcessor class identifies all the log files which belong to the system (currently, they are in a known folder).
-- It uses the Cdl class to extract the program execution data from each log file and gathers the unique traces from each program. 
-- It processes each unique trace and assembles the sub-traces from each program in the order they appear.
-- It groups unique traces if they start and end at the same location, these traces have the same **Trace Type**.
-- It allows the traces to be queried by timestamp, specific variable value or by UID (this will evolve)
-    
-Note: I think that for a given **trace type**, there are specific variables associated with it, it would be great to allow the user to select the variable and filter the traces for a specific variable value (ex. specific user, specific job type)
+This section is in development because the information it had was outdated.
 
-## CDL Reader
-The Cdl class uses the clp-ffi-py library to decompress the CDL file and extract the program execution data. Some of the data that is extracted are:
-- Execution Sequence
-- Call stack for a given position
-- Variable Stack for a given position
-- Exception Information
-- Unique Traces
+In the mean time, please see these PR's for some more insight:
+[PR #22](https://github.com/vishalpalaniappan/asp-query-server/pull/22)
+[PR #23](https://github.com/vishalpalaniappan/asp-query-server/pull/23),
+[PR #25](https://github.com/vishalpalaniappan/asp-query-server/pull/25), 
 
 ## Queries
 Coming soon
