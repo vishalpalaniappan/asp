@@ -113,7 +113,7 @@ class TraceAssembler:
         rows = self.sysIoCursor.fetchall() 
 
         for row in rows:
-            rowData = self.addColumnNameToData(self.getColumns("IOEVENTS"), row)
+            rowData = self.addColumnNameToData(self.ioevent_cols, row)
             rowNode = json.loads(rowData["node"])
             if "output" in rowNode:
                 # Continue the trace since there is an output for this input.
