@@ -116,13 +116,14 @@ class TraceAssembler:
         query = f'SELECT * FROM "IOEVENTS" WHERE ("type" = ? or "type" = ?)\
               and "adli_execution_id" = ? and "adli_execution_index" = ?' 
         self.sysIoCursor.execute(query, ["link", "end", node["adliExecutionId"], node["adliExecutionIndex"]])
-        rows = self.sysIoCursor.fetchall() 
+        row = self.sysIoCursor.fetchone() 
 
-        for row in rows:
+        if row:
             rowData = self.addColumnNameToData(self.ioevent_cols, row)
             rowNode = json.loads(rowData["node"])
             if "output" in rowNode:
                 # Continue the trace since there is an output for this input.
+                # TODO: Add support for multiple outputs for a single input.
                 return {"type":"link", "node":rowNode["output"][0]}
             else:
                 # We've reached the end of the trace.
