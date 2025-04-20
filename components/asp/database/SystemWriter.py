@@ -104,10 +104,10 @@ class SystemWriter:
         self.cursor.execute(f'''
             SELECT system_id FROM SYSTEMTABLES WHERE system_id = ? and version = ?
         ''', (sysId, sysVer))
-        rows = self.cursor.fetchall()
+        entry = self.cursor.fetchone()
 
         # If entry for specified system id and version doesn't exist, add it.
-        if (len(rows) == 0):
+        if (entry is None):
             sql = ''' INSERT INTO SYSTEMTABLES(system_id, version, name, description, programs)
                 VALUES(?,?,?,?,?) '''
             self.cursor.execute(sql, [sysId, sysVer, name, description, programs])
@@ -116,12 +116,10 @@ class SystemWriter:
         table_name = f"{sysId}_{sysVer}_deployments"
         self.cursor.execute(f'''CREATE TABLE IF NOT EXISTS "{table_name}"
             (deployment_id string, PRIMARY KEY (deployment_id))''')
-        self.conn.commit()
         
         table_name = f"{sysId}_{sysVer}_programs"
         self.cursor.execute(f'''CREATE TABLE IF NOT EXISTS "{table_name}"
             (name string PRIMARY KEY, description string, language string, fileTree string)''')
-        self.conn.commit()
         
         table_name = f"{sysId}_{sysVer}_traces"
         self.cursor.execute(f'''CREATE TABLE IF NOT EXISTS "{table_name}"
