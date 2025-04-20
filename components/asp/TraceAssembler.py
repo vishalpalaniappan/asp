@@ -30,6 +30,14 @@ class TraceAssembler:
         self.processDatabase()
 
 
+    def getColumns(self, tableName):
+        '''
+            Get the columns for a table.
+        '''
+        query = f'PRAGMA table_info("{tableName}")' 
+        self.sysIoCursor.execute(query)
+        return self.sysIoCursor.fetchall()
+    
     def addColumnNameToData(self, columns, data):
         '''
             Given the column names and the data, create 
@@ -46,10 +54,7 @@ class TraceAssembler:
         '''
             Processes the database and extracts all the traces.
         '''
-        # Get the columns
-        query = f'PRAGMA table_info("IOEVENTS")' 
-        self.sysIoCursor.execute(query)
-        columns = self.sysIoCursor.fetchall() 
+        columns = self.getColumns("IOEVENTS")
 
         # Get all the start nodes
         query = f'SELECT * FROM "IOEVENTS" WHERE "type" = ?' 
@@ -62,7 +67,6 @@ class TraceAssembler:
             startNode["node"] = json.loads(startNode["node"])
             trace = self.getTrace(startNode["node"])
             self.addTraceToDatabase(startNode, trace)
-            self.printTrace(startNode, trace)
     
     def getTrace(self, node):
         '''
@@ -94,13 +98,14 @@ class TraceAssembler:
         rows = self.sysIoCursor.fetchall() 
 
         for row in rows:
-            node = json.loads(row[8])
-            if "output" in node:
+            rowData = self.addColumnNameToData(self.getColumns("IOEVENTS"), row)
+            rowNode = json.loads(rowData["node"])
+            if "output" in rowNode:
                 # Continue the trace since there is an output for this input.
-                return {"type":"link", "node":node["output"][0]}
+                return {"type":"link", "node":rowNode["output"][0]}
             else:
                 # We've reached the end of the trace.
-                return {"type":"end", "node":node}
+                return {"type":"end", "node":rowNode}
 
         return None
     
@@ -110,19 +115,22 @@ class TraceAssembler:
             Prints the given trace.
         '''
         print("")
+        print(f"Trace ID: {startNode['node']['uid']}")
         for node in traces:
-            print(node["fileName"], node["funcName"])
+            print(node["fileName"])
 
     def addTraceToDatabase(self, startNode, traces):
         '''
             Add the trace to the database.
         '''
+        if len(traces) == 0:
+            print("Trace list is empty. Not adding to database.")
+            return 
+
         traceId = startNode["node"]["uid"]
         systemId = startNode["system_id"]
         version = startNode["sys_ver"]
         deploymentId = startNode["deployment_id"]
-        startTs = startNode["ts"]
-
         tableName = f"{systemId}_{version}_traces"
 
         # Check if the trace uid has already been processed
@@ -132,11 +140,15 @@ class TraceAssembler:
         if (hasUid is not None):
             print(f"System Trace with UID {traceId} already exists in the database")
             return
+        
+        # Get the start and end timestamp for this trace
+        startTs = traces[0]["timestamp"]
+        endTs = traces[0]["timestamp"] if len(traces) == 1 else traces[-1]["timestamp"]
 
         # Insert the trace into the database
         sql = f''' INSERT INTO "{tableName}"(deployment_id, trace_id, startTs, endTs, traceType, traces)
                 VALUES(?,?,?,?,?,?) '''
-        self.aspCursor.execute(sql, [deploymentId, traceId, startTs, 0.0, "1", json.dumps(traces)])
+        self.aspCursor.execute(sql, [deploymentId, traceId, startTs, endTs, None, json.dumps(traces)])
         self.aspConn.commit()
 
 if __name__ == "__main__":
