@@ -36,5 +36,5 @@ class SystemProcessor:
 
 if __name__ == "__main__":
     rootDir = Path(__file__).resolve().parents[0]
-    SYSTEM_LOG_FILES = rootDir / "sample_system_logs"
+    SYSTEM_LOG_FILES = rootDir / "system_logs"
     processor = SystemProcessor(SYSTEM_LOG_FILES)
