@@ -155,7 +155,7 @@ class TraceAssembler:
         
         # Get the start and end timestamp for this trace
         startTs = traces[0]["timestamp"]
-        endTs = traces[0]["timestamp"] if len(traces) == 1 else traces[-1]["timestamp"]
+        endTs = None if len(traces) == 1 else traces[-1]["timestamp"]
 
         # Insert the trace into the database
         sql = f''' INSERT INTO "{tableName}"(deployment_id, trace_id, startTs, endTs, traceType, traces)
