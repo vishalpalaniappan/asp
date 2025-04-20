@@ -87,7 +87,7 @@ class CdlDecoder:
 
         logValue["timestamp"] = logLine.timestamp
         logValue["funcName"] = self.header.getLtInfo(logLine.ltId).name
-        logValue["fileName"] = self.header.programInfo["name"]
+        logValue["programName"] = self.header.programInfo["name"]
         
         self.callStack[-1]["input"].append(logValue)
 
@@ -107,7 +107,7 @@ class CdlDecoder:
                     cs["input"][-1]["output"] = []
 
                 logValue["timestamp"] = logLine.timestamp
-                logValue["fileName"] = self.header.programInfo["name"]
+                logValue["programName"] = self.header.programInfo["name"]
                 logValue["funcName"] = self.header.getLtInfo(logLine.ltId).name
 
                 cs["input"][-1]["output"].append(logValue)
@@ -117,7 +117,7 @@ class CdlDecoder:
             self.callStack[-1]["output"] = []
 
         logValue["timestamp"] = logLine.timestamp
-        logValue["fileName"] = self.header.programInfo["name"]
+        logValue["programName"] = self.header.programInfo["name"]
         logValue["funcName"] = self.header.getLtInfo(logLine.ltId).name
 
         self.callStack[-1]["output"].append(logValue)
