@@ -1,5 +1,6 @@
 import sqlite3
 import json
+import os
 
 class TraceAssembler:
     '''
@@ -9,10 +10,12 @@ class TraceAssembler:
         database in the traces table for the given system.    
     '''
 
-    def __init__(self, sysIoPath="ioEvents.db", aspPath="asp.db"):
+    def __init__(self):
         '''
             Initialize the database connections.
         '''
+        path = os.path.dirname(os.path.dirname(__file__))
+        sysIoPath = os.path.join(path, "ioEvents.db")
         try:
             self.sysIoConn = sqlite3.connect(sysIoPath)
             self.sysIoCursor = self.sysIoConn.cursor()
@@ -20,6 +23,9 @@ class TraceAssembler:
             print(f"Database error: {e}")
             raise
 
+
+        path = os.path.dirname(os.path.dirname(os.path.dirname(__file__)))
+        aspPath = os.path.join(path, "asp.db")
         try:
             self.aspConn = sqlite3.connect(aspPath)
             self.aspCursor = self.aspConn.cursor()

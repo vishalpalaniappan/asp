@@ -1,5 +1,6 @@
 import sqlite3
 import json
+import os
 
 class SystemWriter:
     '''
@@ -9,7 +10,9 @@ class SystemWriter:
     '''
 
     def __init__(self):
-        self.conn = sqlite3.connect("asp.db", check_same_thread=False)
+        path = os.path.dirname(os.path.dirname(os.path.dirname(__file__)))
+        db_path = os.path.join(path, "asp.db")
+        self.conn = sqlite3.connect(db_path, check_same_thread=False)
         self.cursor = self.conn.cursor()
         self.cursor.execute(
             '''
