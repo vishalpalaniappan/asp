@@ -1,9 +1,9 @@
 from pathlib import Path
 from clp_ffi_py.ir import ClpIrFileReader
-from decoder.CDL_CONSTANTS import LINE_TYPE
-from decoder.CdlLogLine import CdlLogLine
-from decoder.CdlHeader import CdlHeader
-from decoder.SystemIoNodes import SystemIoNodes
+from cdl.decoder.CDL_CONSTANTS import LINE_TYPE
+from cdl.decoder.CdlLogLine import CdlLogLine
+from cdl.decoder.CdlHeader import CdlHeader
+from cdl.decoder.SystemIoNodes import SystemIoNodes
 
 import os
 import copy

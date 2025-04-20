@@ -1,4 +1,4 @@
-from decoder.CdlDecoder import CdlDecoder
+from cdl.decoder.CdlDecoder import CdlDecoder
 import os
 
 class Cdl:
