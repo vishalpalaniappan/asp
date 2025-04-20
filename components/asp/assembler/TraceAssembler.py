@@ -162,7 +162,3 @@ class TraceAssembler:
                 VALUES(?,?,?,?,?,?) '''
         self.aspCursor.execute(sql, [deploymentId, traceId, startTs, endTs, None, json.dumps(traces)])
         self.aspConn.commit()
-
-if __name__ == "__main__":
-    TraceAssembler()
-    
