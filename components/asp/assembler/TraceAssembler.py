@@ -130,16 +130,6 @@ class TraceAssembler:
                 return {"type":"end", "node":rowNode}
 
         return None
-    
-
-    def printTrace(self, startNode, traces):
-        '''
-            Prints the given trace.
-        '''
-        print("")
-        print(f"Trace ID: {startNode['node']['uid']}")
-        for node in traces:
-            print(node["fileName"])
 
     def addTraceToDatabase(self, startNode, traces):
         '''
