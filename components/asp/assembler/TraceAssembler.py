@@ -19,6 +19,7 @@ class TraceAssembler:
         try:
             self.sysIoConn = sqlite3.connect(sysIoPath)
             self.sysIoCursor = self.sysIoConn.cursor()
+            self.ioevent_cols = self.getColumns("IOEVENTS")
         except sqlite3.Error as e:
             print(f"Database error: {e}")
             raise
@@ -70,8 +71,6 @@ class TraceAssembler:
         '''
             Processes the database and extracts all the traces.
         '''
-        columns = self.getColumns("IOEVENTS")
-
         # Get all the start nodes
         query = f'SELECT * FROM "IOEVENTS" WHERE "type" = ?' 
         self.sysIoCursor.execute(query, ["start"])
@@ -79,7 +78,7 @@ class TraceAssembler:
 
         # For each of the start nodes, assemble the trace and write to database
         for startNode in startNodes:
-            startNode = self.addColumnNameToData(columns, startNode)
+            startNode = self.addColumnNameToData(self.ioevent_cols, startNode)
             startNode["node"] = json.loads(startNode["node"])
             trace = self.getTrace(startNode["node"])
             self.addTraceToDatabase(startNode, trace)
