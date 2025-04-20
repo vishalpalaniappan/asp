@@ -113,7 +113,7 @@ class TraceAssembler:
         '''
             Find the linked node.
         '''
-        query = f'SELECT * FROM "IOEVENTS" WHERE ("type" = ? or "type" = ?)\
+        query = 'SELECT * FROM "IOEVENTS" WHERE ("type" = ? or "type" = ?)\
               and "adli_execution_id" = ? and "adli_execution_index" = ?' 
         self.sysIoCursor.execute(query, ["link", "end", node["adliExecutionId"], node["adliExecutionIndex"]])
         row = self.sysIoCursor.fetchone() 
