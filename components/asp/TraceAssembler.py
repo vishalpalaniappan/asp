@@ -14,20 +14,30 @@ class TraceAssembler:
             Initialize the database connections.
         '''
         try:
-            self.sysIoConn = sqlite3.connect(sysIoPath, check_same_thread=False)
+            self.sysIoConn = sqlite3.connect(sysIoPath)
             self.sysIoCursor = self.sysIoConn.cursor()
         except sqlite3.Error as e:
             print(f"Database error: {e}")
             raise
 
         try:
-            self.aspConn = sqlite3.connect(aspPath, check_same_thread=False)
+            self.aspConn = sqlite3.connect(aspPath)
             self.aspCursor = self.aspConn.cursor()
         except sqlite3.Error as e:
             print(f"Database error: {e}")
             raise
 
         self.processDatabase()
+
+
+    def __del__(self):
+        '''
+            Clean up database connections.
+        '''
+        if hasattr(self, 'sysIoConn'):
+            self.sysIoConn.close()
+        if hasattr(self, 'aspConn'):
+            self.aspConn.close()
 
 
     def getColumns(self, tableName):
