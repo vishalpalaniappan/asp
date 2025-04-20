@@ -11,6 +11,11 @@ class TraceAssembler:
     '''
 
     def __init__(self):
+        self.openConnections()
+        self.processDatabase()
+        self.closeConnections()
+
+    def openConnections(self):
         '''
             Initialize the database connections.
         '''
@@ -24,7 +29,6 @@ class TraceAssembler:
             print(f"Database error: {e}")
             raise
 
-
         path = os.path.dirname(os.path.dirname(os.path.dirname(__file__)))
         aspPath = os.path.join(path, "asp.db")
         try:
@@ -34,18 +38,20 @@ class TraceAssembler:
             print(f"Database error: {e}")
             raise
 
-        self.processDatabase()
-
-
-    def __del__(self):
+    def closeConnections(self):
         '''
-            Clean up database connections.
+            Close the database connections.
         '''
         if hasattr(self, 'sysIoConn'):
             self.sysIoConn.close()
         if hasattr(self, 'aspConn'):
             self.aspConn.close()
 
+    def __del__(self):
+        '''
+            Clean up database connections.
+        '''
+        self.closeConnections()
 
     def getColumns(self, tableName):
         '''
