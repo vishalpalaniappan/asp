@@ -11,7 +11,7 @@ To run the query handler, go to components/query_handler and run:
   ```shell
   python3 server.py
   ```
-This will start a websocket server on port 8765. After connecting to the websocket server, you can send commands to interface with the system processor. 
+This will start a websocket server on port 8765. After connecting to the websocket server, you can send commands to query the systems.
 
 Note: As of PR #22, the query server is not connected to a data source. In the coming PR's, the query server will be connected to the database.
 
@@ -19,10 +19,10 @@ To run the system processor, go to components/asp and run:
   ```shell
   python3 SystemProcessor.py
   ```
-This will generate a traceEvents.json file in the directory where the program was executed from.
+This will process all the log files in the system_logs folder and index them to the database. Once ASV is developed, the information in the database can be visualized. 
 
 # System Diagram
-![Simplified AQS System Diagram](docs/system_diagram2.jpg)
+![image](https://github.com/user-attachments/assets/787c7b7b-fff1-48e8-8ae0-03973437dc84)
 
 # How does it work?
 
@@ -36,4 +36,4 @@ In the mean time, please see these PR's for some more insight:
 ## Queries
 Coming soon
 
-In the current version of this program, the sample_system_logs folder contains all the log files belonging to the current system. In the future, once CDL log files are ingested by CLP, the features CLP provides will be used to improve the performance of this system.
+In the current version of this program, the system_logs folder contains all the log files belonging to the current system. In the future, once CDL log files are ingested by CLP, the features CLP provides will be used to improve the performance of this system.
