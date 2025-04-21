@@ -85,7 +85,7 @@ class SystemWriter:
         if (hasName):
             return
 
-        sql = f''' INSERT OR REPLACE INTO "{TABLENAME}"(name, description, language, fileTree)
+        sql = f''' INSERT OR REPLACE INTO "{TABLENAME}"(name, description, language, file_tree)
                 VALUES(?,?,?,?) '''
         self.cursor.execute(sql, [name, description, language, fileTree])
         self.conn.commit()
@@ -119,10 +119,10 @@ class SystemWriter:
         
         table_name = f"{sysId}_{sysVer}_programs"
         self.cursor.execute(f'''CREATE TABLE IF NOT EXISTS "{table_name}"
-            (name string PRIMARY KEY, description string, language string, fileTree string)''')
+            (name string PRIMARY KEY, description string, language string, file_tree string)''')
         
         table_name = f"{sysId}_{sysVer}_traces"
         self.cursor.execute(f'''CREATE TABLE IF NOT EXISTS "{table_name}"
-            (deployment_id string, trace_id string, startTs real, endTs real, 
-             traceType string, traces string, PRIMARY KEY (deployment_id, trace_id))''')
+            (deployment_id string, trace_id string, start_ts real, end_ts real, 
+             trace_type string, traces string, PRIMARY KEY (deployment_id, trace_id))''')
         self.conn.commit()

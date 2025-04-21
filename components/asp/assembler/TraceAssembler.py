@@ -158,7 +158,7 @@ class TraceAssembler:
         endTs = None if len(traces) == 1 else traces[-1]["timestamp"]
 
         # Insert the trace into the database
-        sql = f''' INSERT INTO "{tableName}"(deployment_id, trace_id, startTs, endTs, traceType, traces)
+        sql = f''' INSERT INTO "{tableName}"(deployment_id, trace_id, start_ts, end_ts, trace_type, traces)
                 VALUES(?,?,?,?,?,?) '''
         self.aspCursor.execute(sql, [deploymentId, traceId, startTs, endTs, None, json.dumps(traces)])
         self.aspConn.commit()
