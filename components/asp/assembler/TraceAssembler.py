@@ -98,7 +98,8 @@ class TraceAssembler:
 
         while (link):
             trace.append(link["node"])
-            link = self.findLink(link["node"])
+            # TODO: Add support for multiple outputs for a single input.
+            link = self.findLink(link["node"]["output"][0])
 
             # If end of trace has been reached, append and return
             if link and link["type"] == "end":
@@ -123,8 +124,7 @@ class TraceAssembler:
             rowNode = json.loads(rowData["node"])
             if "output" in rowNode:
                 # Continue the trace since there is an output for this input.
-                # TODO: Add support for multiple outputs for a single input.
-                return {"type":"link", "node":rowNode["output"][0]}
+                return {"type":"link", "node":rowNode}
             else:
                 # We've reached the end of the trace.
                 return {"type":"end", "node":rowNode}
