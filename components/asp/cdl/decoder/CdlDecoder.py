@@ -1,9 +1,9 @@
 from pathlib import Path
 from clp_ffi_py.ir import ClpIrFileReader
-from decoder.CDL_CONSTANTS import LINE_TYPE
-from decoder.CdlLogLine import CdlLogLine
-from decoder.CdlHeader import CdlHeader
-from decoder.SystemIoNodes import SystemIoNodes
+from cdl.decoder.CDL_CONSTANTS import LINE_TYPE
+from cdl.decoder.CdlLogLine import CdlLogLine
+from cdl.decoder.CdlHeader import CdlHeader
+from cdl.decoder.SystemIoNodes import SystemIoNodes
 
 import os
 import copy
@@ -82,6 +82,13 @@ class CdlDecoder:
         '''
         if "input" not in self.callStack[-1]:
             self.callStack[-1]["input"] = []
+
+        logLine = self.execution[self.callStack[-1]["funcPosition"]]
+
+        logValue["timestamp"] = logLine.timestamp
+        logValue["funcName"] = self.header.getLtInfo(logLine.ltId).name
+        logValue["programName"] = self.header.programInfo["name"]
+        
         self.callStack[-1]["input"].append(logValue)
 
 
@@ -92,15 +99,26 @@ class CdlDecoder:
             - If an input was found, append the output to the input and return
             - If an input was not found, then append output to top of call stack
         '''
+        logLine = self.execution[self.callStack[-1]["funcPosition"]]
+
         for cs in reversed(self.callStack):
             if "input" in cs:
                 if "output" not in cs["input"][-1]:
                     cs["input"][-1]["output"] = []
+
+                logValue["timestamp"] = logLine.timestamp
+                logValue["programName"] = self.header.programInfo["name"]
+                logValue["funcName"] = self.header.getLtInfo(logLine.ltId).name
+
                 cs["input"][-1]["output"].append(logValue)
                 return
             
         if "output" not in self.callStack[-1]:
             self.callStack[-1]["output"] = []
+
+        logValue["timestamp"] = logLine.timestamp
+        logValue["programName"] = self.header.programInfo["name"]
+        logValue["funcName"] = self.header.getLtInfo(logLine.ltId).name
 
         self.callStack[-1]["output"].append(logValue)
 

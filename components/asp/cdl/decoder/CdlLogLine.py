@@ -1,4 +1,4 @@
-from decoder.CDL_CONSTANTS import LINE_TYPE_DELIMITER, LINE_TYPE
+from cdl.decoder.CDL_CONSTANTS import LINE_TYPE_DELIMITER, LINE_TYPE
 import json
 
 class CdlLogLine:

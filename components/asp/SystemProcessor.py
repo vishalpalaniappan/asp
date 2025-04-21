@@ -1,8 +1,9 @@
 import os
-from Cdl import Cdl
+from cdl.Cdl import Cdl
 from pathlib import Path
 from database.EventWriter import EventWriter
 from database.SystemWriter import SystemWriter
+from assembler.TraceAssembler import TraceAssembler
 
 class SystemProcessor:
 
@@ -16,6 +17,9 @@ class SystemProcessor:
         self.sysWriter = SystemWriter()
 
         self.parseSystemLogFiles()
+
+        # Run the trace assembler on the events saved to the ioEvents database.
+        TraceAssembler()
 
     def parseSystemLogFiles(self):
         '''
@@ -32,5 +36,5 @@ class SystemProcessor:
 
 if __name__ == "__main__":
     rootDir = Path(__file__).resolve().parents[0]
-    SYSTEM_LOG_FILES = rootDir / "sample_system_logs"
+    SYSTEM_LOG_FILES = rootDir / "system_logs"
     processor = SystemProcessor(SYSTEM_LOG_FILES)

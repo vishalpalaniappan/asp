@@ -1,4 +1,4 @@
-from decoder.CdlDecoder import CdlDecoder
+from cdl.decoder.CdlDecoder import CdlDecoder
 import os
 
 class Cdl:
@@ -9,12 +9,6 @@ class Cdl:
         self.decoder = CdlDecoder(filePath)
 
         self.goToPosition(self.decoder.lastExecution)
-
-    def getUniqueTraceEvents(self):
-        '''
-            Return the unique traces in the log file
-        '''
-        return self.decoder.uniqueTraceEvents
     
     def getFileTree(self):
         return self.decoder.header.fileTree

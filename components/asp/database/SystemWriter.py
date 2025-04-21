@@ -1,5 +1,6 @@
 import sqlite3
 import json
+import os
 
 class SystemWriter:
     '''
@@ -9,7 +10,9 @@ class SystemWriter:
     '''
 
     def __init__(self):
-        self.conn = sqlite3.connect("asp.db", check_same_thread=False)
+        path = os.path.dirname(os.path.dirname(os.path.dirname(__file__)))
+        db_path = os.path.join(path, "asp.db")
+        self.conn = sqlite3.connect(db_path, check_same_thread=False)
         self.cursor = self.conn.cursor()
         self.cursor.execute(
             '''
@@ -82,7 +85,7 @@ class SystemWriter:
         if (hasName):
             return
 
-        sql = f''' INSERT OR REPLACE INTO "{TABLENAME}"(name, description, language, fileTree)
+        sql = f''' INSERT OR REPLACE INTO "{TABLENAME}"(name, description, language, file_tree)
                 VALUES(?,?,?,?) '''
         self.cursor.execute(sql, [name, description, language, fileTree])
         self.conn.commit()
@@ -101,10 +104,10 @@ class SystemWriter:
         self.cursor.execute(f'''
             SELECT system_id FROM SYSTEMTABLES WHERE system_id = ? and version = ?
         ''', (sysId, sysVer))
-        rows = self.cursor.fetchall()
+        entry = self.cursor.fetchone()
 
         # If entry for specified system id and version doesn't exist, add it.
-        if (len(rows) == 0):
+        if (entry is None):
             sql = ''' INSERT INTO SYSTEMTABLES(system_id, version, name, description, programs)
                 VALUES(?,?,?,?,?) '''
             self.cursor.execute(sql, [sysId, sysVer, name, description, programs])
@@ -113,15 +116,13 @@ class SystemWriter:
         table_name = f"{sysId}_{sysVer}_deployments"
         self.cursor.execute(f'''CREATE TABLE IF NOT EXISTS "{table_name}"
             (deployment_id string, PRIMARY KEY (deployment_id))''')
-        self.conn.commit()
         
         table_name = f"{sysId}_{sysVer}_programs"
         self.cursor.execute(f'''CREATE TABLE IF NOT EXISTS "{table_name}"
-            (name string PRIMARY KEY, description string, language string, fileTree string)''')
-        self.conn.commit()
+            (name string PRIMARY KEY, description string, language string, file_tree string)''')
         
         table_name = f"{sysId}_{sysVer}_traces"
         self.cursor.execute(f'''CREATE TABLE IF NOT EXISTS "{table_name}"
-            (deployment_id string, trace_id string, startTs real, endTs real, 
-             traceType string, traces string, PRIMARY KEY (deployment_id, trace_id))''')
+            (deployment_id string, trace_id string, start_ts real, end_ts real, 
+             trace_type string, traces string, PRIMARY KEY (deployment_id, trace_id))''')
         self.conn.commit()

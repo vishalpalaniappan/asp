@@ -1,3 +1,5 @@
+import uuid
+
 class SystemIoNodes:
     '''
         This class accepts the system io nodes extracted while
@@ -50,6 +52,7 @@ class SystemIoNodes:
         '''
             Encode the start node.
         '''
+        startNode["uid"] = str(uuid.uuid4())
         encodedStartNode = {
             "type": "start",
             "node": startNode

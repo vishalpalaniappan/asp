@@ -1,14 +1,17 @@
 import sqlite3
 import json
+import os
 
 class EventWriter:
     '''
         This class writes the IO events to the database. 
     '''
 
-    def __init__(self, db_path="ioEvents.db"):
+    def __init__(self):
         try:
-            self.conn = sqlite3.connect(db_path, check_same_thread=False)
+            path = os.path.dirname(os.path.dirname(__file__))
+            db_path = os.path.join(path, "ioEvents.db")
+            self.conn = sqlite3.connect(db_path)
             self.cursor = self.conn.cursor()
             self.cursor.execute('''CREATE TABLE IF NOT EXISTS IOEVENTS
                 (system_id string, sys_ver string, deployment_id string, program_execution_id  string, ts real, adli_execution_id string,\
