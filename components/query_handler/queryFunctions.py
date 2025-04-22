@@ -19,7 +19,7 @@ def handleGetSystems(message):
 
     if (response is None):
         message["error"] = True
-        message["response"] = "An error occured while getting all systems."
+        message["response"] = "An error occurred while getting all systems."
     else:
         message["error"] = False
         message["response"] = response
@@ -48,7 +48,7 @@ def handleGetPrograms(message):
 
     if (response is None):
         message["error"] = True
-        message["response"] = "An error occured while getting programs."
+        message["response"] = "An error occurred while getting programs."
     else:
         message["error"] = False
         message["response"] = response
@@ -79,7 +79,7 @@ def handleGetDeployments(message):
 
     if (response is None):
         message["error"] = True
-        message["response"] = "An error occured while getting deployments."
+        message["response"] = "An error occurred while getting deployments."
     else:
         message["error"] = False
         message["response"] = response
@@ -116,7 +116,7 @@ def handleGetTraces(message):
 
     if (response is None):
         message["error"] = True
-        message["response"] = "An error occured while getting traces."
+        message["response"] = "An error occurred while getting traces."
     else:
         message["error"] = False
         message["response"] = response
