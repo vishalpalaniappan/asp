@@ -7,7 +7,7 @@ def handleUnknownMessage(message):
     '''
         Handle an unknown message.
     '''
-    message["response"] = "Message does not contain a code"
+    message["response"] = "Query did not contain a queryType key."
     message["error"] = True
     return message
 
