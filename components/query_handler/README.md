@@ -1,5 +1,12 @@
-## Queries
+## Query Path
 
+1. A websocket server receives messages from a client. 
+2. The query is handled by receiveMessage in queryHandler.py.
+3. The query is passed to the handleQuery in queryHandler.py.
+4. The query is processed by calling the relevant function from queryFunctions.py (database operations are performed using SystemDatabaseReader class instance).
+5. The query result is sent back to the user.
+
+## Queries
 The following are a list of queries that the query server accepts.
 
 ### 1. Get Systems
