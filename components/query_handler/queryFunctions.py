@@ -16,14 +16,7 @@ def handleGetSystems(message):
         Get all systems.
     '''
     try:
-        response = reader.getSystems()
-
-        if (response is None):
-            message["error"] = True
-            message["response"] = "An error occurred while getting all systems."
-        else:
-            message["error"] = False
-            message["response"] = response
+        message["response"] = reader.getSystems()
     except Exception as e:
         message["error"] = True
         message["response"] = f"Database error: {e}"
@@ -52,17 +45,10 @@ def handleGetPrograms(message):
         return message
     
     try:
-        response = reader.getPrograms(
+        message["response"] = reader.getPrograms(
             systemId= message["data"]["systemId"],
             systemVersion= message["data"]["systemVersion"]
         )
-
-        if (response is None):
-            message["error"] = True
-            message["response"] = "An error occurred while getting programs."
-        else:
-            message["error"] = False
-            message["response"] = response
     except Exception as e:
         message["error"] = True
         message["response"] = f"Database error: {e}"
@@ -92,17 +78,10 @@ def handleGetDeployments(message):
         return message
 
     try:
-        response = reader.getDeployments(
+        message["response"] = reader.getDeployments(
             systemId= message["data"]["systemId"],
             systemVersion= message["data"]["systemVersion"]
         )
-
-        if (response is None):
-            message["error"] = True
-            message["response"] = "An error occurred while getting deployments."
-        else:
-            message["error"] = False
-            message["response"] = response
     except Exception as e:
         message["error"] = True
         message["response"] = f"Database error: {e}"
@@ -137,18 +116,11 @@ def handleGetTraces(message):
         return message
     
     try:    
-        response = reader.getTraces(
+        message["response"] = reader.getTraces(
             systemId= message["data"]["systemId"],
             systemVersion= message["data"]["systemVersion"],
             deploymentId= message["data"]["deploymentId"],
         )
-
-        if (response is None):
-            message["error"] = True
-            message["response"] = "An error occurred while getting traces."
-        else:
-            message["error"] = False
-            message["response"] = response
     except Exception as e:
         message["error"] = True
         message["response"] = f"Database error: {e}"

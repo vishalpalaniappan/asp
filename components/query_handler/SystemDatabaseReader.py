@@ -36,14 +36,6 @@ class SystemDatabaseReader:
         '''
         self.closeConnections()
 
-    def checkIfTableExists(self, tableName):
-        '''
-            Check if the given table exists.
-        '''
-        query = f'PRAGMA table_info("{tableName}")' 
-        self.aspCursor.execute(query)
-        return self.aspCursor.fetchone()
-
     def getColumns(self, tableName):
         '''
             Get the columns for a table.
@@ -81,24 +73,13 @@ class SystemDatabaseReader:
         '''
             Get all systems in the database.
         '''
-        tableName = "SYSTEMTABLES"
-        tableExists = self.checkIfTableExists(tableName=tableName)
-        
-        if (tableExists is None):
-            return None
-
         return self.getAllEntriesInTable("SYSTEMTABLES")
 
     def getPrograms(self, systemId, systemVersion):     
         '''
             Get all programs given a system id and system version.
         '''   
-        tableName = f"{systemId}_{systemVersion}_programs"
-        tableExists = self.checkIfTableExists(tableName=tableName)
-
-        if (tableExists is None):
-            return None
-        
+        tableName = f"{systemId}_{systemVersion}_programs"        
         return self.getAllEntriesInTable(tableName)
 
     def getDeployments(self, systemId, systemVersion):  
@@ -106,11 +87,6 @@ class SystemDatabaseReader:
             Get all the deployments for the given system.
         '''            
         tableName = f"{systemId}_{systemVersion}_deployments"
-        tableExists = self.checkIfTableExists(tableName=tableName)
-
-        if (tableExists is None):
-            return None
-
         return self.getAllEntriesInTable(tableName)
 
     def getTraces(self, systemId, systemVersion, deploymentId):
@@ -119,10 +95,6 @@ class SystemDatabaseReader:
             # TODO: Add funtionality to filter traces by start and end timestamp.       
         '''
         tableName = f"{systemId}_{systemVersion}_traces"
-        doesTableExist = self.checkIfTableExists(tableName=tableName)
-
-        if (doesTableExist is None):
-            return None
 
         query = f'SELECT * FROM "{tableName}" WHERE deployment_id = ?'
         self.aspCursor.execute(query, [deploymentId])
