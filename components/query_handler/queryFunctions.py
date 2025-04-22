@@ -23,7 +23,8 @@ def handleGetSystems(message):
     else:
         message["error"] = False
         message["response"] = response
-        return message
+        
+    return message
 
 def handleGetPrograms(message):
     '''
