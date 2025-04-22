@@ -107,20 +107,3 @@ class SystemDatabaseReader:
             results.append(self.addColumnNameToData(columns, row))
 
         return results
-
-
-if __name__ == "__main__":
-    reader = SystemDatabaseReader()
-    systems = reader.getSystems()
-
-    for system in systems:
-        print(system["system_id"])
-
-    traces = reader.getTraces(
-        systems[1]["system_id"],
-        systems[1]["version"],
-        "127b22dc-a2c3-4b58-a27b-f3ff8ac3997b"
-    )
-
-
-    
