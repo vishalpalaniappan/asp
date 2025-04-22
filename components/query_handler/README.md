@@ -8,7 +8,7 @@ This query returns all the systems in the database.
 #### Query
 ```
 {
-    "query":  "GET_SYSTEMS"
+    "queryType":  "GET_SYSTEMS"
 }
 ```
 #### Response
@@ -80,7 +80,7 @@ This query returns all the unique traces for a given system id and version.,
     "data": {
         "systemId": 1234,
         "systemVersion": "0.0.2",
-        "deploymentId": "127b22dc-a2c3-4b58-a27b-f3ff8ac3997b"
+        "deploymentId": "ff842dc3-92a4-4d0a-9a67-d27444f3f98f"
     }
 }
 ```
@@ -108,5 +108,21 @@ In the event that a required field is not available in the query, the response w
     },
     "response": "Request does not contain a system id.",
     "error": true
+}
+```
+
+## Invalid System Information
+In the event that the provided system information is invalid, it will result in the program trying to access a table that doesn't exist. This will result in a response with an error and a reason for the error.
+
+#### Example
+```
+{
+    "queryType": "GET_DEPLOYMENTS",
+    "data": {
+        "systemId": 134,
+        "systemVersion": "0.0.2"
+    },
+    "error": true,
+    "response": "Database error: no such table: 134_0.0.2_deployments"
 }
 ```
