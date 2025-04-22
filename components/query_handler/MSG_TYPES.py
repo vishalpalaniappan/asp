@@ -1,4 +1,6 @@
 MSG_TYPES = {
-    "GET_UNIQUE_TRACES": 1,
-    "GET_FILE_TREES": 2
+    "GET_SYSTEMS": 1,
+    "GET_PROGRAMS": 2,
+    "GET_DEPLOYMENTS": 3,
+    "GET_TRACES": 4
 }
