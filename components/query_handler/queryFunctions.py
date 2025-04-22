@@ -23,13 +23,18 @@ def handleGetSystems(message):
     else:
         message["error"] = False
         message["response"] = response
-        
+
     return message
 
 def handleGetPrograms(message):
     '''
         Get all programs given a system version and id.
     '''
+    if ("data" not in message):
+        message["response"] = "Request does not contain the required data key."
+        message["error"] = True
+        return message
+    
     data = message["data"]
 
     if ("systemId" not in data):
@@ -61,6 +66,11 @@ def handleGetDeployments(message):
     '''
         Get all deployments given a system id and version.
     '''
+    if ("data" not in message):
+        message["response"] = "Request does not contain the required data key."
+        message["error"] = True
+        return message
+    
     data = message["data"]
 
     if ("systemId" not in data):
@@ -92,6 +102,11 @@ def handleGetTraces(message):
     '''
         Get all traces given a system id, version and deployment id.
     '''
+    if ("data" not in message):
+        message["response"] = "Request does not contain the required data key."
+        message["error"] = True
+        return message
+    
     data = message["data"]
 
     if ("systemId" not in data):
