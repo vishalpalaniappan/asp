@@ -29,7 +29,7 @@ def handleQuery (message):
 
     return response
 
-async def receieveMessage(websocket):
+async def receiveMessage(websocket):
     '''
         Handles messages from websocket and echos a response.
     '''
