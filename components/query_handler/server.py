@@ -3,7 +3,7 @@
 import asyncio
 import argparse
 from websockets.asyncio.server import serve
-from queryHandler import handle_query
+from queryHandler import receieveMessage
 
 async def main():
     '''
@@ -24,7 +24,7 @@ async def main():
     args = parser.parse_args()
 
     print(f"Starting WebSocket server on {args.host}:{args.port}")
-    async with serve(handle_query, args.host, args.port) as server:
+    async with serve(receieveMessage, args.host, args.port) as server:
         await server.serve_forever()
 
 if __name__ == "__main__":
