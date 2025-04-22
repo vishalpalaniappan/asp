@@ -15,9 +15,15 @@ def handleGetSystems(message):
     '''
         Get all systems.
     '''
-    message["response"] = reader.getSystems()
-    message["error"] = False
-    return message
+    response = reader.getSystems()
+
+    if (response is None):
+        message["error"] = True
+        message["response"] = "An error occured while getting all systems."
+    else:
+        message["error"] = False
+        message["response"] = response
+        return message
 
 def handleGetPrograms(message):
     '''
@@ -35,11 +41,18 @@ def handleGetPrograms(message):
         message["error"] = True
         return message
 
-    message["response"] = reader.getPrograms(
+    response = reader.getPrograms(
         systemId= message["data"]["systemId"],
         systemVersion= message["data"]["systemVersion"]
     )
-    message["error"] = False
+
+    if (response is None):
+        message["error"] = True
+        message["response"] = "An error occured while getting programs."
+    else:
+        message["error"] = False
+        message["response"] = response
+
     return message
 
 
@@ -59,11 +72,18 @@ def handleGetDeployments(message):
         message["error"] = True
         return message
 
-    message["response"] = reader.getDeployments(
+    response = reader.getDeployments(
         systemId= message["data"]["systemId"],
         systemVersion= message["data"]["systemVersion"]
     )
-    message["error"] = False
+
+    if (response is None):
+        message["error"] = True
+        message["response"] = "An error occured while getting deployments."
+    else:
+        message["error"] = False
+        message["response"] = response
+
     return message
 
 
@@ -88,12 +108,19 @@ def handleGetTraces(message):
         message["error"] = True
         return message
     
-    message["response"] = reader.getTraces(
+    response = reader.getTraces(
         systemId= message["data"]["systemId"],
         systemVersion= message["data"]["systemVersion"],
         deploymentId= message["data"]["deploymentId"],
     )
-    message["error"] = False
+
+    if (response is None):
+        message["error"] = True
+        message["response"] = "An error occured while getting traces."
+    else:
+        message["error"] = False
+        message["response"] = response
+
     return message
 
 
