@@ -1,27 +1,27 @@
 import json
 from MSG_TYPES import MSG_TYPES
-from helper import getMessageFromCode
 from queryFunctions import *
 
 def handleQuery (message):
     '''
         Handle the query.
     '''
-    print(f"Received message: {getMessageFromCode(message['code'])}")
-    
-    if "code" not in message:
+    if "queryType" not in message:
         response = handleUnknownMessage(message= message)
+        return response
+
+    print(f"Received message: {message['queryType']}")    
     
-    elif (message["code"] == MSG_TYPES["GET_SYSTEMS"]):            
+    if (message["queryType"] == "GET_SYSTEMS"):            
         response = handleGetSystems(message= message)
         
-    elif (message["code"] == MSG_TYPES["GET_PROGRAMS"]):            
+    elif (message["queryType"] == "GET_PROGRAMS"):            
         response = handleGetPrograms(message= message)
     
-    elif (message["code"] == MSG_TYPES["GET_DEPLOYMENTS"]):
+    elif (message["queryType"] == "GET_DEPLOYMENTS"):
         response = handleGetDeployments(message= message)
     
-    elif (message["code"] == MSG_TYPES["GET_TRACES"]):
+    elif (message["queryType"] == "GET_TRACES"):
         response = handleGetTraces(message= message)
     
     else:

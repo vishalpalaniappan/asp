@@ -98,9 +98,10 @@ class SystemDatabaseReader:
             # TODO: Add funtionality to filter traces by start and end timestamp.       
         '''
         tableName = f"{systemId}_{systemVersion}_traces"
-        query = f'SELECT * FROM "{tableName}" WHERE deployment_id=?'
+        query = f'SELECT * FROM "{tableName}" WHERE deployment_id = ?'
         self.aspCursor.execute(query, [deploymentId])
         rows = self.aspCursor.fetchall() 
+
         columns = self.getColumns(self.aspCursor, tableName)
 
         results = []
