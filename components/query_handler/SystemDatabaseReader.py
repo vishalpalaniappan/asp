@@ -36,14 +36,13 @@ class SystemDatabaseReader:
         '''
         self.closeConnections()
 
-    def getColumns(self, cursor, tableName):
+    def getColumns(self, tableName):
         '''
             Get the columns for a table.
         '''
         query = f'PRAGMA table_info("{tableName}")' 
-        cursor.execute(query)
-        return cursor.fetchall()
-    
+        self.aspCursor.execute(query)
+        return self.aspCursor.fetchall()
     
     def addColumnNameToData(self, columns, data):
         '''
@@ -62,7 +61,7 @@ class SystemDatabaseReader:
         query = f'SELECT * FROM "{tableName}"'
         self.aspCursor.execute(query)
         rows = self.aspCursor.fetchall() 
-        columns = self.getColumns(self.aspCursor, tableName)
+        columns = self.getColumns(tableName)
 
         results = []
         for row in rows:
@@ -100,7 +99,7 @@ class SystemDatabaseReader:
         self.aspCursor.execute(query, [deploymentId])
         rows = self.aspCursor.fetchall() 
 
-        columns = self.getColumns(self.aspCursor, tableName)
+        columns = self.getColumns(tableName)
 
         results = []
         for row in rows:
