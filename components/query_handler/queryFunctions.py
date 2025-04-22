@@ -1,6 +1,9 @@
 import json
+from SystemDatabaseReader import SystemDatabaseReader
 
-def handleUnknownMessage(websocket, message):
+reader = SystemDatabaseReader()
+
+def handleUnknownMessage(message):
     '''
         Handle an unknown message.
     '''
@@ -8,7 +11,7 @@ def handleUnknownMessage(websocket, message):
     message["error"] = True
     return message
 
-def handleGetSystems(reader, message):
+def handleGetSystems(message):
     '''
         Get all systems.
     '''
@@ -16,7 +19,7 @@ def handleGetSystems(reader, message):
     message["error"] = False
     return message
 
-def handleGetPrograms(reader, message):
+def handleGetPrograms(message):
     '''
         Get all programs given a system version and id.
     '''
@@ -40,7 +43,7 @@ def handleGetPrograms(reader, message):
     return message
 
 
-def handleGetDeployments(reader, message):
+def handleGetDeployments(message):
     '''
         Get all deployments given a system id and version.
     '''
@@ -64,7 +67,7 @@ def handleGetDeployments(reader, message):
     return message
 
 
-def handleGetTraces(reader, message):
+def handleGetTraces(message):
     '''
         Get all traces given a system id, version and deployment id.
     '''
@@ -94,7 +97,7 @@ def handleGetTraces(reader, message):
     return message
 
 
-def handleUnknownCode(reader, message):
+def handleUnknownCode(message):
     '''
         Handle an unkown code.
     '''

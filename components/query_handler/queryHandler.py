@@ -1,9 +1,7 @@
 import json
 from MSG_TYPES import MSG_TYPES
-from SystemDatabaseReader import SystemDatabaseReader
 from queryFunctions import *
 
-reader = SystemDatabaseReader()
 
 def getMessageFromCode(code):
     '''
@@ -25,42 +23,24 @@ async def handle_query(websocket):
         print(f"Received message: {getMessageFromCode(message['code'])}")
         
         if "code" not in message:
-            handleUnknownMessage(
-                websocket= websocket,
-                message= message
-            )
+            response = handleUnknownMessage(message= message)
         
         elif (message["code"] == MSG_TYPES["GET_SYSTEMS"]):            
-            message = handleGetSystems(
-                reader= reader,
-                message= message
-            )
-            await websocket.send(json.dumps(message))
+            response = handleGetSystems(message= message)
             
         elif (message["code"] == MSG_TYPES["GET_PROGRAMS"]):            
-            message = handleGetPrograms(
-                reader= reader,
-                message= message
-            )
-            await websocket.send(json.dumps(message))
+            response = handleGetPrograms(message= message)
         
         elif (message["code"] == MSG_TYPES["GET_DEPLOYMENTS"]):
-            message = handleGetDeployments(
-                reader= reader,
-                message= message
-            )
-            await websocket.send(json.dumps(message))
+            response = handleGetDeployments(message= message)
         
         elif (message["code"] == MSG_TYPES["GET_TRACES"]):
-            message["error"] = False
-            await websocket.send(json.dumps(message))
+            response = handleGetTraces(message= message)
         
         else:
-            message = handleUnknownCode(
-                reader= reader,
-                message= message
-            )
-            await websocket.send(json.dumps(message))
+            response = handleUnknownCode(message= message)
+            
+        await websocket.send(json.dumps(response))
 
         
 
