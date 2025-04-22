@@ -140,9 +140,9 @@ def handleGetTraces(message):
     return message
 
 
-def handleUnknownCode(message):
+def handleUnknownQueryType(message):
     '''
-        Handle an unkown code.
+        Handle an unkown query type.
     '''
     message["response"] = f"Unknown message type: {message['queryType']}"
     message["error"] = True

@@ -25,7 +25,7 @@ def handleQuery (message):
         response = handleGetTraces(message= message)
     
     else:
-        response = handleUnknownCode(message= message)
+        response = handleUnknownQueryType(message= message)
 
     return response
 
