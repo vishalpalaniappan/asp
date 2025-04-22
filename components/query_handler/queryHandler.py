@@ -12,8 +12,7 @@ def getMessageFromCode(code):
     for key in MSG_TYPES:
         value = MSG_TYPES[key]
         if (value == code):
-            return key
-        
+            return key        
     return "Unkown message code."
 
 async def handle_query(websocket):
@@ -26,7 +25,7 @@ async def handle_query(websocket):
         print(f"Received message: {getMessageFromCode(message['code'])}")
         
         if "code" not in message:
-            handleGetSystems(
+            handleUnknownMessage(
                 websocket= websocket,
                 message= message
             )
@@ -57,7 +56,7 @@ async def handle_query(websocket):
             await websocket.send(json.dumps(message))
         
         else:
-            message = handleUnknownMessage(
+            message = handleUnknownCode(
                 reader= reader,
                 message= message
             )
