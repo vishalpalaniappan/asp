@@ -144,6 +144,6 @@ def handleUnknownCode(message):
     '''
         Handle an unkown code.
     '''
-    message["response"] = f"Unknown message type: {message['code']}"
+    message["response"] = f"Unknown message type: {message['queryType']}"
     message["error"] = True
     return message
