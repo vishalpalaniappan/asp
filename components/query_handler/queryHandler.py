@@ -5,14 +5,25 @@ from queryFunctions import *
 
 reader = SystemDatabaseReader()
 
+def getMessageFromCode(code):
+    '''
+        Get the code description from the code.
+    '''
+    for key in MSG_TYPES:
+        value = MSG_TYPES[key]
+        if (value == code):
+            return key
+        
+    return "Unkown message code."
+
 async def handle_query(websocket):
     '''
         Handles messages from websocket and echos a response.
     '''
     async for message in websocket:
-        print(f"Received message: {message}")
-
         message = json.loads(message)        
+
+        print(f"Received message: {getMessageFromCode(message['code'])}")
         
         if "code" not in message:
             handleGetSystems(
@@ -30,7 +41,6 @@ async def handle_query(websocket):
         elif (message["code"] == MSG_TYPES["GET_PROGRAMS"]):            
             message = handleGetPrograms(
                 reader= reader,
-                websocket= websocket,
                 message= message
             )
             await websocket.send(json.dumps(message))
@@ -38,7 +48,6 @@ async def handle_query(websocket):
         elif (message["code"] == MSG_TYPES["GET_DEPLOYMENTS"]):
             message = handleGetDeployments(
                 reader= reader,
-                websocket= websocket,
                 message= message
             )
             await websocket.send(json.dumps(message))
@@ -46,11 +55,12 @@ async def handle_query(websocket):
         elif (message["code"] == MSG_TYPES["GET_TRACES"]):
             message["error"] = False
             await websocket.send(json.dumps(message))
-
         
         else:
-            message["response"] = f"Unknown message type: {message['code']}"
-            message["error"] = True
+            message = handleUnknownMessage(
+                reader= reader,
+                message= message
+            )
             await websocket.send(json.dumps(message))
 
         

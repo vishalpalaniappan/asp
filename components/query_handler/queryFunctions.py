@@ -10,7 +10,7 @@ def handleGetSystems(reader, message):
     message["error"] = False
     return message
 
-def handleGetPrograms(reader, websocket, message):
+def handleGetPrograms(reader, message):
     data = message["data"]
 
     if ("systemId" not in data):
@@ -31,7 +31,7 @@ def handleGetPrograms(reader, websocket, message):
     return message
 
 
-def handleGetDeployments(reader, websocket, message):
+def handleGetDeployments(reader, message):
     data = message["data"]
 
     if ("systemId" not in data):
@@ -49,4 +49,10 @@ def handleGetDeployments(reader, websocket, message):
         systemVersion= message["data"]["systemVersion"]
     )
     message["error"] = False
+    return message
+
+
+def handleUnknownCode(reader, message):
+    message["response"] = f"Unknown message type: {message['code']}"
+    message["error"] = True
     return message
