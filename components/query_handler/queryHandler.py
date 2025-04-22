@@ -41,7 +41,7 @@ async def receiveMessage(websocket):
         except json.JSONDecodeError as e:
             response = {} 
             response["response"] = "The query does not contain a valid JSON string."
-            response["error"] = False
+            response["error"] = True
             await websocket.send(json.dumps(response))
         
 
