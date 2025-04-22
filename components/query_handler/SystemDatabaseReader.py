@@ -27,8 +27,6 @@ class SystemDatabaseReader:
         '''
             Close the database connections.
         '''
-        if hasattr(self, 'sysIoConn'):
-            self.sysIoConn.close()
         if hasattr(self, 'aspConn'):
             self.aspConn.close()
 
