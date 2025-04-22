@@ -28,19 +28,19 @@ def handleGetPrograms(message):
         Get all programs given a system version and id.
     '''
     if ("data" not in message):
-        message["response"] = "Request does not contain the required data key."
+        message["response"] = "Query does not contain the required data key."
         message["error"] = True
         return message
     
     data = message["data"]
 
     if ("systemId" not in data):
-        message["response"] = "Request does not contain a system id."
+        message["response"] = "Query does not contain a system id."
         message["error"] = True
         return message
 
     if ("systemVersion" not in data):
-        message["response"] = "Request does not contain a system version."
+        message["response"] = "Query does not contain a system version."
         message["error"] = True
         return message
     
@@ -61,19 +61,19 @@ def handleGetDeployments(message):
         Get all deployments given a system id and version.
     '''
     if ("data" not in message):
-        message["response"] = "Request does not contain the required data key."
+        message["response"] = "Query does not contain the required data key."
         message["error"] = True
         return message
     
     data = message["data"]
 
     if ("systemId" not in data):
-        message["response"] = "Request does not contain a system id."
+        message["response"] = "Query does not contain a system id."
         message["error"] = True
         return message
 
     if ("systemVersion" not in data):
-        message["response"] = "Request does not contain a system version."
+        message["response"] = "Query does not contain a system version."
         message["error"] = True
         return message
 
@@ -94,24 +94,24 @@ def handleGetTraces(message):
         Get all traces given a system id, version and deployment id.
     '''
     if ("data" not in message):
-        message["response"] = "Request does not contain the required data key."
+        message["response"] = "Query does not contain the required data key."
         message["error"] = True
         return message
     
     data = message["data"]
 
     if ("systemId" not in data):
-        message["response"] = "Request does not contain a system id."
+        message["response"] = "Query does not contain a system id."
         message["error"] = True
         return message
 
     if ("systemVersion" not in data):
-        message["response"] = "Request does not contain a system version."
+        message["response"] = "Query does not contain a system version."
         message["error"] = True
         return message
 
     if ("deploymentId" not in data):
-        message["response"] = "Request does not contain a deployment id."
+        message["response"] = "Query does not contain a deployment id."
         message["error"] = True
         return message
     
