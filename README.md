@@ -1,8 +1,7 @@
-# ASP-QUERY-SERVER
-This websocket server handles queries from the Automated System Viewer to extract and filter through system level traces. 
+# Automated System Processor
 
 > [!NOTE]  
-> This repo is in development and there are core features being added and explored.
+> This repo is in development and there are core features being added.
 
 # Usage
 Currently, each program has to be run separately. This workflow will be automated once core functionality is fully developed.
@@ -12,8 +11,6 @@ To run the query handler, go to components/query_handler and run:
   python3 server.py
   ```
 This will start a websocket server on port 8765. After connecting to the websocket server, you can send commands to query the systems.
-
-Note: As of PR #22, the query server is not connected to a data source. In the coming PR's, the query server will be connected to the database.
 
 To run the system processor, go to components/asp and run:
   ```shell
@@ -32,8 +29,5 @@ In the mean time, please see these PR's for some more insight:
 [PR #22](https://github.com/vishalpalaniappan/asp-query-server/pull/22)
 [PR #23](https://github.com/vishalpalaniappan/asp-query-server/pull/23),
 [PR #25](https://github.com/vishalpalaniappan/asp-query-server/pull/25), 
-
-## Queries
-Coming soon
 
 In the current version of this program, the system_logs folder contains all the log files belonging to the current system. In the future, once CDL log files are ingested by CLP, the features CLP provides will be used to improve the performance of this system.
