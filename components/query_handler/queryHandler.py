@@ -23,6 +23,9 @@ def handleQuery (message):
     
     elif (message["queryType"] == "GET_TRACES"):
         response = handleGetTraces(message= message)
+
+    elif (message["queryType"] == "GET_SYSTEM"):
+        response = handleGetSystem(message= message)
     
     else:
         response = handleUnknownQueryType(message= message)

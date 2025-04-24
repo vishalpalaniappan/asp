@@ -23,10 +23,8 @@ def handleGetSystems(message):
 
     return message
 
-def handleGetPrograms(message):
-    '''
-        Get all programs given a system version and id.
-    '''
+def handleGetSystem(message):
+
     if ("data" not in message):
         message["response"] = "Query does not contain the required data key."
         message["error"] = True
@@ -44,44 +42,25 @@ def handleGetPrograms(message):
         message["error"] = True
         return message
     
-    try:
-        message["response"] = reader.getPrograms(
+    try:    
+        traces = reader.getTraces(
+            systemId= message["data"]["systemId"],
+            systemVersion= message["data"]["systemVersion"],
+            deploymentId= message["data"]["deploymentId"],
+        )
+        deployments = reader.getDeployments(
             systemId= message["data"]["systemId"],
             systemVersion= message["data"]["systemVersion"]
         )
-    except Exception as e:
-        message["error"] = True
-        message["response"] = f"Database error: {e}"
-
-    return message
-
-
-def handleGetDeployments(message):
-    '''
-        Get all deployments given a system id and version.
-    '''
-    if ("data" not in message):
-        message["response"] = "Query does not contain the required data key."
-        message["error"] = True
-        return message
-    
-    data = message["data"]
-
-    if ("systemId" not in data):
-        message["response"] = "Query does not contain a system id."
-        message["error"] = True
-        return message
-
-    if ("systemVersion" not in data):
-        message["response"] = "Query does not contain a system version."
-        message["error"] = True
-        return message
-
-    try:
-        message["response"] = reader.getDeployments(
+        programs = reader.getPrograms(
             systemId= message["data"]["systemId"],
             systemVersion= message["data"]["systemVersion"]
         )
+        message["response"] = {
+            "traces": traces,
+            "deployments": deployments,
+            "programs": programs
+        }
     except Exception as e:
         message["error"] = True
         message["response"] = f"Database error: {e}"
