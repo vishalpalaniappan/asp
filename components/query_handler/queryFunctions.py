@@ -32,6 +32,7 @@ def handleGetSystem(message):
     
     data = message["data"]
 
+    # TODO: Add missing key response to a list and return all of them.
     if ("systemId" not in data):
         message["response"] = "Query does not contain a system id."
         message["error"] = True
@@ -79,6 +80,7 @@ def handleGetTraces(message):
     
     data = message["data"]
 
+    # TODO: Add missing key response to a list and return all of them.
     if ("systemId" not in data):
         message["response"] = "Query does not contain a system id."
         message["error"] = True
