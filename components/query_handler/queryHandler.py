@@ -1,5 +1,4 @@
 import json
-from MSG_TYPES import MSG_TYPES
 from queryFunctions import *
 
 def handleQuery (message):
