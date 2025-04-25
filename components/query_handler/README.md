@@ -30,7 +30,7 @@ The response to this query will be structured as follows:
     "response":  <list of systems>
 }
 ```
-### 2. Get Systems
+### 2. Get System
 This query returns all the unique traces for a given system id and version.,
 #### Query
 ```
