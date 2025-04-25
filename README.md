@@ -1,5 +1,7 @@
 # Automated System Processor
 
+Automated System Processor (ASP) is a free fully automated log based diagnostic tool for software systems. 
+
 > [!NOTE]  
 > This repo is in development and there are core features being added.
 
@@ -23,7 +25,7 @@ This will process all the log files in the system_logs folder and index them to 
 
 # How does it work?
 
-This section is in development because the information it had was outdated.
+This section is in being reworked because the information it had was outdated.
 
 In the mean time, please see these PR's for some more insight:
 [PR #22](https://github.com/vishalpalaniappan/asp-query-server/pull/22)
