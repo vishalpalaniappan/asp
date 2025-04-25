@@ -44,11 +44,6 @@ def handleGetSystem(message):
         return message
     
     try:    
-        traces = reader.getTraces(
-            systemId= message["data"]["systemId"],
-            systemVersion= message["data"]["systemVersion"],
-            deploymentId= message["data"]["deploymentId"],
-        )
         deployments = reader.getDeployments(
             systemId= message["data"]["systemId"],
             systemVersion= message["data"]["systemVersion"]
@@ -58,7 +53,6 @@ def handleGetSystem(message):
             systemVersion= message["data"]["systemVersion"]
         )
         message["response"] = {
-            "traces": traces,
             "deployments": deployments,
             "programs": programs
         }
