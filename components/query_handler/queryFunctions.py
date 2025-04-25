@@ -16,78 +16,22 @@ def handleGetSystems(message):
         Get all systems.
     '''
     try:
-        message["response"] = reader.getSystems()
+        systems = reader.getSystems()
+        for system in systems:
+            system["deployments"] = reader.getDeployments(
+                systemId= system["system_id"],
+                systemVersion= system["version"]
+            )
+            system["programs"] = reader.getPrograms(
+                systemId= system["system_id"],
+                systemVersion= system["version"]
+            )
+        message["response"] = systems
     except Exception as e:
         message["error"] = True
         message["response"] = f"Database error: {e}"
 
     return message
-
-def handleGetPrograms(message):
-    '''
-        Get all programs given a system version and id.
-    '''
-    if ("data" not in message):
-        message["response"] = "Query does not contain the required data key."
-        message["error"] = True
-        return message
-    
-    data = message["data"]
-
-    if ("systemId" not in data):
-        message["response"] = "Query does not contain a system id."
-        message["error"] = True
-        return message
-
-    if ("systemVersion" not in data):
-        message["response"] = "Query does not contain a system version."
-        message["error"] = True
-        return message
-    
-    try:
-        message["response"] = reader.getPrograms(
-            systemId= message["data"]["systemId"],
-            systemVersion= message["data"]["systemVersion"]
-        )
-    except Exception as e:
-        message["error"] = True
-        message["response"] = f"Database error: {e}"
-
-    return message
-
-
-def handleGetDeployments(message):
-    '''
-        Get all deployments given a system id and version.
-    '''
-    if ("data" not in message):
-        message["response"] = "Query does not contain the required data key."
-        message["error"] = True
-        return message
-    
-    data = message["data"]
-
-    if ("systemId" not in data):
-        message["response"] = "Query does not contain a system id."
-        message["error"] = True
-        return message
-
-    if ("systemVersion" not in data):
-        message["response"] = "Query does not contain a system version."
-        message["error"] = True
-        return message
-
-    try:
-        message["response"] = reader.getDeployments(
-            systemId= message["data"]["systemId"],
-            systemVersion= message["data"]["systemVersion"]
-        )
-    except Exception as e:
-        message["error"] = True
-        message["response"] = f"Database error: {e}"
-
-    return message
-
 
 def handleGetTraces(message):
     '''
@@ -100,6 +44,7 @@ def handleGetTraces(message):
     
     data = message["data"]
 
+    # TODO: Add missing key response to a list and return all of them.
     if ("systemId" not in data):
         message["response"] = "Query does not contain a system id."
         message["error"] = True

@@ -1,6 +1,0 @@
-MSG_TYPES = {
-    "GET_SYSTEMS": 1,
-    "GET_PROGRAMS": 2,
-    "GET_DEPLOYMENTS": 3,
-    "GET_TRACES": 4
-}

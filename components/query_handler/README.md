@@ -27,59 +27,14 @@ The response to this query will be structured as follows:
         "systemId": 1234,
         "systemVersion": "0.0.2"
     },
-    "response":  <list of systems>
+    "response":  <list of systems with id, version, deployments and programs>
 }
-```
-### 2. Get Programs
-This query returns all the programs for a given system id and version.
-#### Query
-```
-{
-    "queryType": "GET_PROGRAMS",
-    "data": {
-        "systemId": 1234,
-        "systemVersion": "0.0.2"
-    }
-}
-```
-#### Response
-The response to this query will be structured as follows:
-```
-{
-    "queryType": "GET_PROGRAMS",
-    "data": {
-        "systemId": 1234,
-        "systemVersion": "0.0.2"
-    },
-    "response":  <list of programs>
-}
-```
-### 3. Get Deployments
-This query returns all the deployments for a given system id and version. 
-#### Query
-```
-{
-    "queryType": "GET_DEPLOYMENTS",
-    "data": {
-        "systemId": 1234,
-        "systemVersion": "0.0.2"
-    }
-}
-```
-#### Response
-The response to this query will be structured as follows:
-```
-{
-    "queryType": "GET_DEPLOYMENTS",
-    "data": {
-        "systemId": 1234,
-        "systemVersion": "0.0.2"
-    },
-    "response":  <list of deployment ids>
-}
-```
-### 4. Get Traces
-This query returns all the unique traces for a given system id and version.,
+
+### 2. Get Traces
+This query returns all the unique traces for a given system id and version, and deployment id.
+
+Note: A feature to filter by time range will be added in a coming PR.
+
 #### Query
 ```
 {
