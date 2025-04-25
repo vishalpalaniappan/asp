@@ -1,5 +1,4 @@
 import json
-from MSG_TYPES import MSG_TYPES
 from queryFunctions import *
 
 def handleQuery (message):
@@ -14,12 +13,6 @@ def handleQuery (message):
     
     if (message["queryType"] == "GET_SYSTEMS"):            
         response = handleGetSystems(message= message)
-        
-    elif (message["queryType"] == "GET_PROGRAMS"):            
-        response = handleGetPrograms(message= message)
-    
-    elif (message["queryType"] == "GET_DEPLOYMENTS"):
-        response = handleGetDeployments(message= message)
     
     elif (message["queryType"] == "GET_TRACES"):
         response = handleGetTraces(message= message)
