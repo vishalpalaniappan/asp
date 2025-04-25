@@ -31,7 +31,7 @@ The response to this query will be structured as follows:
 }
 
 ### 2. Get Traces
-This query returns all the unique traces for a given system id and version.
+This query returns all the unique traces for a given system id and version, and deployment id.
 
 Note: A feature to filter by time range will be added in a coming PR.
 
