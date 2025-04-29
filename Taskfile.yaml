@@ -1,9 +1,9 @@
 version: '3'
 
 vars:
-  G_COMPONENTS_DIR: "{{.ROOT_DIR}}/components"
+  G_COMPONENTS_DIR: "{{.ROOT_DIR}}/components_new"
 
 tasks:
-  default:
+  install-submodules:
     cmds:
-      - echo "I am a task file."
+      - "git submodule update --init --recursive"
