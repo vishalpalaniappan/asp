@@ -1,0 +1,9 @@
+version: '3'
+
+vars:
+  G_COMPONENTS_DIR: "{{.ROOT_DIR}}/components_new"
+
+tasks:
+  install-submodules:
+    cmds:
+      - "git submodule update --init --recursive"
