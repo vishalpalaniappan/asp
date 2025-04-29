@@ -7,3 +7,20 @@ tasks:
   install-submodules:
     cmds:
       - "git submodule update --init --recursive"
+
+  start:
+    cmds:
+      - task: install-submodules
+      - "python3 {{.ROOT_DIR}}/scripts/start_components.py"
+
+  stop:
+    cmds:
+      - "python3 {{.ROOT_DIR}}/scripts/stop_components.py"
+
+  clean-containers:
+    cmds:
+      - "python3 {{.ROOT_DIR}}/scripts/clean_containers.py"
+
+  clean-images:
+    cmds:
+      - "python3 {{.ROOT_DIR}}/scripts/clean_images.py"
