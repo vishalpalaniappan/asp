@@ -13,7 +13,7 @@ def clearAsvContainer():
         print("Removed ASV Container.")
         return True
     except Exception as e:
-        print(f"Error when removing DLV container: {e}")
+        print(f"Error when removing ASV container: {e}")
         return False
     
 def clearDlvContainer():    
@@ -36,6 +36,8 @@ def main(argv):
     
     if (not clearDlvContainer()):
         return -1
+    
+    return 0
 
 if __name__ == "__main__":
     sys.exit(main(sys.argv))

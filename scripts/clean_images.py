@@ -8,7 +8,7 @@ def clearAsvImage():
         result = subprocess.run(cmd, capture_output=True, text=True)
         print(result)
         if result.returncode != 0:
-            print(f'Failed to remove image: {DLV_DEF["IMAGE_NAME"]}')
+            print(f'Failed to remove image: {ASV_DEF["IMAGE_NAME"]}')
             return False
         print("Removed ASV Image.")
         return True
