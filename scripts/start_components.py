@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 
 import subprocess
-from utils import doesContainerExist, buildImage
+from utils import doesContainerExist, buildImage, isDockerInstalled
 from constants import ASV_DEF, DLV_DEF
 import os
 import sys
@@ -126,6 +126,9 @@ def startDLV():
 
 
 def main(argv):
+    if (not isDockerInstalled()):
+        return -1
+    
     if (not createDirectories()):
         return -1
     

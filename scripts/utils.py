@@ -49,6 +49,13 @@ def isDockerInstalled():
     try:
         cmd = ["docker", "--version"]
         result = subprocess.run(cmd, capture_output=True, text=True)
-        return result.returncode == 0
-    except Exception:
+        success = (result.returncode == 0)
+        if (success):
+            print("Docker is installed and is accessible.")
+            return True
+        else:
+            print("Docker is not installed. Please install docker and try again.")
+            return False
+    except Exception as e:
+        print(f"Error when checking if docker exists: {e}")
         return False

@@ -1,4 +1,5 @@
 from constants import ASV_DEF, DLV_DEF
+from utils import isDockerInstalled
 import subprocess
 import sys
 
@@ -31,6 +32,9 @@ def clearDlvImage():
         return False
 
 def main(argv):
+    if (not isDockerInstalled()):
+        return -1
+    
     if (not clearAsvImage()):
         return -1
     

@@ -1,6 +1,7 @@
 import subprocess
 import os, sys
 from constants import ASV_DEF, DLV_DEF
+from utils import isDockerInstalled
 
 def stopASV():
     '''
@@ -43,6 +44,9 @@ def stopDLV():
     return True
 
 def main(argv):
+    if (not isDockerInstalled()):
+        return -1
+    
     if (not stopASV()):
         return -1
     
