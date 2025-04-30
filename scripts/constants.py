@@ -12,7 +12,7 @@ DLV_DEF = {
     "IMAGE_NAME": "dlv-image",
     "IMAGE_PATH": "docker-images/dlv/Dockerfile",
     "COMPONENT_PATH": "components_new/dlv",
-    "PORT": 3012,
+    "PORT": 3011,
     "DATA_DIR": "data/dlv",
 }
 
