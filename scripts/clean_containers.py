@@ -13,11 +13,13 @@ def clearAsvContainer():
         
         cmd = ["docker", "rm", ASV_DEF["CONTAINER_NAME"]]
         result = subprocess.run(cmd, capture_output=True, text=True)
-        print(result)
+
         if result.returncode != 0:
             print(f'Failed to remove container: {ASV_DEF["CONTAINER_NAME"]}')
             return False
+        
         print("Removed ASV Container.")
+
         return True
     except Exception as e:
         print(f"Error when removing ASV container: {e}")
@@ -33,10 +35,13 @@ def clearDlvContainer():
 
         cmd = ["docker", "rm", DLV_DEF["CONTAINER_NAME"]]
         result = subprocess.run(cmd, capture_output=True, text=True)
+
         if result.returncode != 0:
             print(f'Failed to remove container: {DLV_DEF["CONTAINER_NAME"]}')
             return False
+        
         print("Removed DLV Container.")
+        
         return True    
     except Exception as e:
         print(f"Error when removing DLV container: {e}")
