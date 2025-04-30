@@ -1,10 +1,10 @@
 import subprocess
-from constants import *
+from constants import ASV_DEF, DLV_DEF
 
 def stopDb():
 
     print("Stopping ASV...")
-    cmd = ["docker", "stop",  ASV_CONTAINER_NAME]
+    cmd = ["docker", "stop",  ASV_DEF["CONTAINER_NAME"]]
     output = subprocess.run(
         cmd, 
         capture_output=True, 
@@ -13,7 +13,7 @@ def stopDb():
     print("Stopped ASV service.")
 
     print("Stopping DLV...")
-    cmd = ["docker", "stop",  DLV_CONTAINER_NAME]
+    cmd = ["docker", "stop",  DLV_DEF["CONTAINER_NAME"]]
     output = subprocess.run(
         cmd, 
         capture_output=True, 
