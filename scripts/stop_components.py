@@ -1,8 +1,8 @@
 import subprocess
+import os, sys
 from constants import ASV_DEF, DLV_DEF
 
-def stopDb():
-
+def stopASV():
     print("Stopping ASV...")
     cmd = ["docker", "stop",  ASV_DEF["CONTAINER_NAME"]]
     output = subprocess.run(
@@ -12,6 +12,7 @@ def stopDb():
     )    
     print("Stopped ASV service.")
 
+def stopDLV():
     print("Stopping DLV...")
     cmd = ["docker", "stop",  DLV_DEF["CONTAINER_NAME"]]
     output = subprocess.run(
@@ -22,4 +23,5 @@ def stopDb():
     print("Stopped DLV service.")
 
 if __name__ == "__main__":
-    stopDb()
+    stopASV()
+    stopDLV()
