@@ -23,25 +23,34 @@ def startASV():
 
     print("Starting Automated System Viewer...")
 
+    # Check if the container exists and start it
     if (doesContainerExist(ASV_DEF["CONTAINER_NAME"])):
-        cmd = ["docker", "start", ASV_DEF["CONTAINER_NAME"]]
-        result = subprocess.run(cmd, capture_output=True, text=True)
+        print("ASV container already exists.")
+        result = subprocess.run(
+            ["docker", "start", ASV_DEF["CONTAINER_NAME"]],
+            capture_output=True,
+            text=True
+        )
         if result.returncode != 0:
             print(f"Failed to start ASV container: {result.stderr}")
             return False
-    else:
-        cmd = [
-            "docker", "run",\
-            "-d",\
-            "--name", ASV_DEF["CONTAINER_NAME"],\
-            "-p", f'{ASV_DEF["PORT"]}:{ASV_DEF["PORT"]}', \
-            "-v", "./data/asv:/app/dist", \
-            ASV_DEF["IMAGE_NAME"] \
-        ]
-        result = subprocess.run(cmd, capture_output=True, text=True)
-        if result.returncode != 0:
-            print(f"Failed to start ASV container: {result.stderr}")
-            return False
+        
+        print(f'Started Automated System Viewer on port {ASV_DEF["PORT"]}.')
+        return True
+    
+    # If the container doesn't exist run it.
+    cmd = [
+        "docker", "run",\
+        "-d",\
+        "--name", ASV_DEF["CONTAINER_NAME"],\
+        "-p", f'{ASV_DEF["PORT"]}:{ASV_DEF["PORT"]}', \
+        "-v", "./data/asv:/app/dist", \
+        ASV_DEF["IMAGE_NAME"] \
+    ]
+    result = subprocess.run(cmd, capture_output=True, text=True)
+    if result.returncode != 0:
+        print(f"Failed to start ASV container: {result.stderr}")
+        return False
 
     print(f'Started Automated System Viewer on port {ASV_DEF["PORT"]}.')
 
@@ -51,28 +60,36 @@ def startDLV():
     '''
         Starts the diagnostic log viewer container.
     '''
-
     print("Starting Diagnostic Log Viewer...")    
 
+    # If the container exists, start it and return.
     if (doesContainerExist(DLV_DEF["CONTAINER_NAME"])):
-        cmd = ["docker", "start", DLV_DEF["CONTAINER_NAME"]]
-        result = subprocess.run(cmd, capture_output=True, text=True)
+        print("DLV container already exists.")
+        result = subprocess.run(
+            ["docker", "start", DLV_DEF["CONTAINER_NAME"]],
+            capture_output=True,
+            text=True
+        )
         if result.returncode != 0:
             print(f"Failed to start DLV container: {result.stderr}")
             return False
-    else:
-        cmd = [
-            "docker", "run",\
-            "-d",\
-            "--name", DLV_DEF["CONTAINER_NAME"],\
-            "-p", f'{DLV_DEF["PORT"]}:{DLV_DEF["PORT"]}', \
-            "-v", "./data/dlv:/app/dist", \
-            DLV_DEF["IMAGE_NAME"] \
-        ]
-        result = subprocess.run(cmd,capture_output=True, text=True)
-        if result.returncode != 0:
-            print(f"Failed to start DLV container: {result.stderr}")
-            return False
+        
+        print(f'Started Diagnostic Log Viewer on port {DLV_DEF["PORT"]}.')
+        return True
+
+    # If the container doesn't exist, run it.
+    cmd = [
+        "docker", "run",\
+        "-d",\
+        "--name", DLV_DEF["CONTAINER_NAME"],\
+        "-p", f'{DLV_DEF["PORT"]}:{DLV_DEF["PORT"]}', \
+        "-v", "./data/dlv:/app/dist", \
+        DLV_DEF["IMAGE_NAME"] \
+    ]
+    result = subprocess.run(cmd,capture_output=True, text=True)
+    if result.returncode != 0:
+        print(f"Failed to start DLV container: {result.stderr}")
+        return False
         
     print(f'Started Diagnostic Log Viewer on port {DLV_DEF["PORT"]}.')
 

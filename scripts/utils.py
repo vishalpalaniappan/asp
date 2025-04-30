@@ -26,7 +26,7 @@ def doesImageExist(name):
 def buildImage(imageName, dockerPath, srcPath):
 
     if not doesImageExist(imageName):
-        subprocess.run([
+        cmd = [
             "docker",
             "build",
             "-t",
@@ -34,4 +34,5 @@ def buildImage(imageName, dockerPath, srcPath):
             "-f",
             dockerPath,
             srcPath
-        ])
+        ]
+        subprocess.run(cmd)
