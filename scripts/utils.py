@@ -11,8 +11,7 @@ def doesContainerExist(name):
         capture_output=True, 
         text=True
     )
-    containers = json.loads(output.stdout)
-    return len(containers) > 0
+    return len(output.stdout) > 0
 
 def doesImageExist(name):
     '''

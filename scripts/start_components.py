@@ -41,7 +41,7 @@ def startASV():
     try:
         containerExists = doesContainerExist(ASV_DEF["CONTAINER_NAME"])
     except Exception as e:
-        print("Failed check to see if ASV container exists: {e}")
+        print(f"Failed check to see if ASV container exists: {e}")
         return False
 
     # Check if the container exists and start it
@@ -65,7 +65,7 @@ def startASV():
         "-d",\
         "--name", ASV_DEF["CONTAINER_NAME"],\
         "-p", f'{ASV_DEF["PORT"]}:{ASV_DEF["PORT"]}', \
-        "-v", "./data/asv:/app/dist", \
+        "-v", f"{os.path.abspath('./data/asv')}:/app/dist", \
         ASV_DEF["IMAGE_NAME"] \
     ]
 
@@ -87,7 +87,7 @@ def startDLV():
     try:
         containerExists = doesContainerExist(DLV_DEF["CONTAINER_NAME"])
     except Exception as e:
-        print("Failed check to see if DLV container exists: {e}")
+        print(f"Failed check to see if DLV container exists: {e}")
         return False
 
     # If the container exists, start it and return.
@@ -111,7 +111,7 @@ def startDLV():
         "-d",\
         "--name", DLV_DEF["CONTAINER_NAME"],\
         "-p", f'{DLV_DEF["PORT"]}:{DLV_DEF["PORT"]}', \
-        "-v", "./data/dlv:/app/dist", \
+        "-v", f"{os.path.abspath('./data/dlv')}:/app/dist", \
         DLV_DEF["IMAGE_NAME"] \
     ]
 
