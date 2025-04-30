@@ -8,7 +8,7 @@ def clearAsvContainer():
         isContainerLoaded = doesContainerExist(ASV_DEF["CONTAINER_NAME"])
 
         if not isContainerLoaded:
-            print("Container does not exist. No need to clear it.")
+            print("ASV Container does not exist. No need to clear it.")
             return True
         
         cmd = ["docker", "rm", ASV_DEF["CONTAINER_NAME"]]
@@ -30,7 +30,7 @@ def clearDlvContainer():
         isContainerLoaded = doesContainerExist(DLV_DEF["CONTAINER_NAME"])
 
         if not isContainerLoaded:
-            print("Container does not exist. No need to clear it.")
+            print("DLV Container does not exist. No need to clear it.")
             return True
 
         cmd = ["docker", "rm", DLV_DEF["CONTAINER_NAME"]]
@@ -41,7 +41,7 @@ def clearDlvContainer():
             return False
         
         print("Removed DLV Container.")
-        
+
         return True    
     except Exception as e:
         print(f"Error when removing DLV container: {e}")
