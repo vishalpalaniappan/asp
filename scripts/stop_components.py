@@ -1,13 +1,19 @@
 import subprocess
 import os, sys
 from constants import ASV_DEF, DLV_DEF
-from utils import isDockerInstalled
+from utils import isDockerInstalled, doesContainerExist
 
 def stopASV():
     '''
         Stop the ASV container.
     '''
     print("Stopping ASV...")
+    
+    isContainerLoaded = doesContainerExist(ASV_DEF["CONTAINER_NAME"])
+
+    if not isContainerLoaded:
+        print("ASV Container does not exist. No need to stop it.")
+        return True
 
     cmd = ["docker", "stop",  ASV_DEF["CONTAINER_NAME"]]
 
@@ -28,6 +34,12 @@ def stopDLV():
         Stop the DLV container.
     '''
     print("Stopping DLV...")
+    
+    isContainerLoaded = doesContainerExist(DLV_DEF["CONTAINER_NAME"])
+
+    if not isContainerLoaded:
+        print("DLV Container does not exist. No need to stop it.")
+        return True
 
     cmd = ["docker", "stop",  DLV_DEF["CONTAINER_NAME"]]
 
