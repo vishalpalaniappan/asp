@@ -1,10 +1,14 @@
 from constants import ASV_DEF, DLV_DEF
-from utils import isDockerInstalled
+from utils import isDockerInstalled, doesImageExist
 import subprocess
 import sys
 
 def clearAsvImage():
     try:
+        if not doesImageExist(ASV_DEF["IMAGE_NAME"]):
+            print(f"{ASV_DEF['IMAGE_NAME']} Image does not exist.")
+            return True
+        
         cmd = ["docker", "rmi", ASV_DEF["IMAGE_NAME"]]
         result = subprocess.run(cmd, capture_output=True, text=True)
         print(result)
@@ -19,9 +23,12 @@ def clearAsvImage():
     
 def clearDlvImage():    
     try:
+        if not doesImageExist(DLV_DEF["IMAGE_NAME"]):
+            print(f"{DLV_DEF['IMAGE_NAME']} Image does not exist.")
+            return True
+        
         cmd = ["docker", "rmi", DLV_DEF["IMAGE_NAME"]]
         result = subprocess.run(cmd, capture_output=True, text=True)
-        print(result)
         if result.returncode != 0:
             print(f'Failed to remove image: {DLV_DEF["IMAGE_NAME"]}')
             return False
