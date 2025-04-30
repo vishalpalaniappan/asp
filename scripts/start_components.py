@@ -24,7 +24,8 @@ def startASV():
     print("Starting Automated System Viewer...")
 
     if (doesContainerExist(ASV_CONTAINER_NAME)):
-        result = subprocess.run(["docker", "start", ASV_CONTAINER_NAME], capture_output=True, text=True)
+        cmd = ["docker", "start", ASV_CONTAINER_NAME]
+        result = subprocess.run(cmd, capture_output=True, text=True)
         if result.returncode != 0:
             print(f"Failed to start ASV container: {result.stderr}")
             return False
@@ -37,12 +38,12 @@ def startASV():
             "-v", "./data/asv:/app/dist", \
             ASV_IMAGE_NAME \
         ]
-        result = subprocess.run(cmd)
+        result = subprocess.run(cmd, capture_output=True, text=True)
         if result.returncode != 0:
             print(f"Failed to start ASV container: {result.stderr}")
             return False
 
-    print("Started Automated System Viewer on port 3012.")
+    print(f"Started Automated System Viewer on port {ASV_PORT}.")
 
     return True
 
@@ -54,7 +55,8 @@ def startDLV():
     print("Starting Diagnostic Log Viewer...")    
 
     if (doesContainerExist(DLV_CONTAINER_NAME)):
-        result = subprocess.run(["docker", "start", DLV_CONTAINER_NAME], capture_output=True, text=True)
+        cmd = ["docker", "start", DLV_CONTAINER_NAME]
+        result = subprocess.run(cmd, capture_output=True, text=True)
         if result.returncode != 0:
             print(f"Failed to start DLV container: {result.stderr}")
             return False
@@ -67,12 +69,12 @@ def startDLV():
             "-v", "./data/dlv:/app/dist", \
             DLV_IMAGE_NAME \
         ]
-        result = subprocess.run(cmd)
+        result = subprocess.run(cmd,capture_output=True, text=True)
         if result.returncode != 0:
             print(f"Failed to start DLV container: {result.stderr}")
             return False
         
-    print("Started Diagnostic Log Viewer on port 3011.")
+    print(f"Started Diagnostic Log Viewer on port {DLV_PORT}.")
 
     return True
 
