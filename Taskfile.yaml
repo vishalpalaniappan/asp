@@ -23,4 +23,5 @@ tasks:
 
   clean-images:
     cmds:
+      - python3 {{.ROOT_DIR}}/scripts/clean_containers.py
       - python3 {{.ROOT_DIR}}/scripts/clean_images.py
