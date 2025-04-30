@@ -1,13 +1,13 @@
-from constants import *
+from constants import ASV_DEF, DLV_DEF
 import subprocess
 
-def clearContainers():
-    cmd = ["docker", "rmi", DLV_IMAGE_NAME]
+def clearImages():
+    cmd = ["docker", "rmi", ASV_DEF["IMAGE_NAME"]]
     subprocess.run(cmd)
 
-    cmd = ["docker", "rmi", ASV_IMAGE_NAME]
+    cmd = ["docker", "rmi", DLV_DEF["IMAGE_NAME"]]
     subprocess.run(cmd)
 
 
 if __name__ == "__main__":
-    clearContainers()
+    clearImages()
