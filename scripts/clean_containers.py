@@ -1,10 +1,16 @@
 from constants import ASV_DEF, DLV_DEF
-from utils import isDockerInstalled
+from utils import isDockerInstalled, doesContainerExist
 import subprocess
 import sys
 
 def clearAsvContainer():
     try:
+        isContainerLoaded = doesContainerExist(ASV_DEF["CONTAINER_NAME"])
+
+        if not isContainerLoaded:
+            print("Container does not exist. No need to clear it.")
+            return True
+        
         cmd = ["docker", "rm", ASV_DEF["CONTAINER_NAME"]]
         result = subprocess.run(cmd, capture_output=True, text=True)
         print(result)
@@ -19,9 +25,14 @@ def clearAsvContainer():
     
 def clearDlvContainer():    
     try:
+        isContainerLoaded = doesContainerExist(DLV_DEF["CONTAINER_NAME"])
+
+        if not isContainerLoaded:
+            print("Container does not exist. No need to clear it.")
+            return True
+
         cmd = ["docker", "rm", DLV_DEF["CONTAINER_NAME"]]
         result = subprocess.run(cmd, capture_output=True, text=True)
-        print(result)
         if result.returncode != 0:
             print(f'Failed to remove container: {DLV_DEF["CONTAINER_NAME"]}')
             return False
