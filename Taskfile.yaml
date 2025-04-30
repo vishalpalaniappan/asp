@@ -9,18 +9,22 @@ tasks:
       - "git submodule update --init --recursive"
 
   start:
+    dir: "{{.ROOT_DIR}}/scripts/"
     cmds:
       - task: install-submodules
-      - "python3 {{.ROOT_DIR}}/scripts/start_components.py"
+      - python3 start_components.py
 
   stop:
+    dir: "{{.ROOT_DIR}}/scripts/"
     cmds:
-      - "python3 {{.ROOT_DIR}}/scripts/stop_components.py"
+      - python3 stop_components.py
 
   clean-containers:
+    dir: "{{.ROOT_DIR}}/scripts/"
     cmds:
-      - "python3 {{.ROOT_DIR}}/scripts/clean_containers.py"
+      - python3 clean_containers.py
 
   clean-images:
+    dir: "{{.ROOT_DIR}}/scripts/"
     cmds:
-      - "python3 {{.ROOT_DIR}}/scripts/clean_images.py"
+      - python3 clean_images.py

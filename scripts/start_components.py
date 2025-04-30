@@ -1,7 +1,10 @@
+#! /usr/bin/env python3
+
 import subprocess
 from utils import doesContainerExist, buildImage
 from constants import *
 import os
+import sys
 
 def buildImages():
     buildImage(ASV_IMAGE_NAME, ASV_IMAGE_PATH, ASV_COMPONENT_PATH)
@@ -19,8 +22,12 @@ def startASV():
     '''
 
     print("Starting Automated System Viewer...")
+
     if (doesContainerExist(ASV_CONTAINER_NAME)):
-        subprocess.run(["docker", "start", ASV_CONTAINER_NAME])
+        result = subprocess.run(["docker", "start", ASV_CONTAINER_NAME], capture_output=True, text=True)
+        if result.returncode != 0:
+            print(f"Failed to start ASV container: {result.stderr}")
+            return False
     else:
         cmd = [
             "docker", "run",\
@@ -30,17 +37,27 @@ def startASV():
             "-v", "./data/asv:/app/dist", \
             ASV_IMAGE_NAME \
         ]
-        subprocess.run(cmd)
-    print("Started asv on port 3011.")
+        result = subprocess.run(cmd)
+        if result.returncode != 0:
+            print(f"Failed to start ASV container: {result.stderr}")
+            return False
+
+    print("Started Automated System Viewer on port 3012.")
+
+    return True
 
 def startDLV():
     '''
         Starts the diagnostic log viewer container.
     '''
 
-    print("Starting dlv...")    
+    print("Starting Diagnostic Log Viewer...")    
+
     if (doesContainerExist(DLV_CONTAINER_NAME)):
-        subprocess.run(["docker", "start", DLV_CONTAINER_NAME])
+        result = subprocess.run(["docker", "start", DLV_CONTAINER_NAME], capture_output=True, text=True)
+        if result.returncode != 0:
+            print(f"Failed to start DLV container: {result.stderr}")
+            return False
     else:
         cmd = [
             "docker", "run",\
@@ -50,11 +67,25 @@ def startDLV():
             "-v", "./data/dlv:/app/dist", \
             DLV_IMAGE_NAME \
         ]
-        subprocess.run(cmd)
-    print("Started dlv on port 3011.")
+        result = subprocess.run(cmd)
+        if result.returncode != 0:
+            print(f"Failed to start DLV container: {result.stderr}")
+            return False
+        
+    print("Started Diagnostic Log Viewer on port 3011.")
 
-if __name__ == "__main__":
+    return True
+
+
+def main(argv):
     createDirectories()
     buildImages()
-    startASV()
-    startDLV()
+    
+    if (not startASV()):
+        return -1
+    
+    if (not startDLV()):
+        return -1
+
+if __name__ == "__main__":
+    sys.exit(main(sys.argv))
