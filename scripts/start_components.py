@@ -36,7 +36,7 @@ def startASV():
         Starts the automated system viewer container.
     '''
 
-    print("Starting Automated System Viewer...")
+    print("\nStarting Automated System Viewer...")
 
     try:
         containerExists = doesContainerExist(ASV_DEF["CONTAINER_NAME"])
@@ -82,7 +82,7 @@ def startDLV():
     '''
         Starts the diagnostic log viewer container.
     '''
-    print("Starting Diagnostic Log Viewer...")    
+    print("\nStarting Diagnostic Log Viewer...")    
 
     try:
         containerExists = doesContainerExist(DLV_DEF["CONTAINER_NAME"])
