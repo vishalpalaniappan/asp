@@ -41,3 +41,14 @@ def buildImage(imageName, dockerPath, srcPath):
             srcPath
         ]
         subprocess.run(cmd)
+
+def isDockerInstalled():
+    """
+        Check if Docker is installed and accessible.
+    """
+    try:
+        cmd = ["docker", "--version"]
+        result = subprocess.run(cmd, capture_output=True, text=True)
+        return result.returncode == 0
+    except Exception:
+        return False
