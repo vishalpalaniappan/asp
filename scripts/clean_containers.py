@@ -1,12 +1,41 @@
 from constants import ASV_DEF, DLV_DEF
 import subprocess
+import sys
 
-def clearContainers():
-    cmd = ["docker", "rm", DLV_DEF["CONTAINER_NAME"]]
-    subprocess.run(cmd)
+def clearAsvContainer():
+    try:
+        cmd = ["docker", "rm", ASV_DEF["CONTAINER_NAME"]]
+        result = subprocess.run(cmd, capture_output=True, text=True)
+        print(result)
+        if result.returncode != 0:
+            print(f'Failed to remove container: {ASV_DEF["CONTAINER_NAME"]}')
+            return False
+        print("Removed ASV Container.")
+        return True
+    except Exception as e:
+        print(f"Error when removing DLV container: {e}")
+        return False
+    
+def clearDlvContainer():    
+    try:
+        cmd = ["docker", "rm", DLV_DEF["CONTAINER_NAME"]]
+        result = subprocess.run(cmd, capture_output=True, text=True)
+        print(result)
+        if result.returncode != 0:
+            print(f'Failed to remove container: {DLV_DEF["CONTAINER_NAME"]}')
+            return False
+        print("Removed DLV Container.")
+        return True    
+    except Exception as e:
+        print(f"Error when removing DLV container: {e}")
+        return False
 
-    cmd = ["docker", "rm", ASV_DEF["CONTAINER_NAME"]]
-    subprocess.run(cmd)
+def main(argv):
+    if (not clearAsvContainer()):
+        return -1
+    
+    if (not clearDlvContainer()):
+        return -1
 
 if __name__ == "__main__":
-    clearContainers()
+    sys.exit(main(sys.argv))
