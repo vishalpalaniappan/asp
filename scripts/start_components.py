@@ -196,7 +196,7 @@ def startASP():
             print(f"Failed to start ASP container: {result.stderr}")
             return False
         
-        print(f'Started Automated System Processor on port {ASP_DEF["PORT"]}.')
+        print('Started Automated System Processor.')
         return True
 
     # If the container doesn't exist, run it.
@@ -221,7 +221,20 @@ def startASP():
 def createNetwork():
     cmd = ["docker", "network", "create", NET_DEF["NETWORK_NAME"]]
     try:
-        result = subprocess.run(cmd,capture_output=True, text=True)
+        # Check if network already exists
+        check_cmd = ["docker", "network", "inspect", NET_DEF["NETWORK_NAME"]]
+        check_result = subprocess.run(check_cmd, capture_output=True, text=True)
+        
+        if check_result.returncode == 0:
+           print(f"Network {NET_DEF['NETWORK_NAME']} already exists.")
+           return True
+       
+        # Create network if it doesn't exist
+        create_result = subprocess.run(cmd, capture_output=True, text=True)
+        if create_result.returncode != 0:
+           print(f"Failed to create network: {create_result.stderr}")
+           return False
+           
         print(f"Created network: {NET_DEF['NETWORK_NAME']}")
         return True
     except Exception as e:
