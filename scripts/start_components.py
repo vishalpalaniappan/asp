@@ -2,7 +2,7 @@
 
 import subprocess
 from utils import doesContainerExist, buildImage, isDockerInstalled
-from constants import ASV_DEF, DLV_DEF
+from constants import ASV_DEF, DLV_DEF, DB_DEF
 import os
 import sys
 
@@ -124,6 +124,51 @@ def startDLV():
 
     return True
 
+def startDatabase():
+    print("\nStarting Database...")    
+
+    try:
+        containerExists = doesContainerExist(DB_DEF["CONTAINER_NAME"])
+    except Exception as e:
+        print(f"Failed check to see if DB container exists: {e}")
+        return False  
+
+    # If the container exists, start it and return.
+    if (containerExists):
+        print("DB container already exists.")
+        result = subprocess.run(
+            ["docker", "start", DB_DEF["CONTAINER_NAME"]],
+            capture_output=True,
+            text=True
+        )
+        if result.returncode != 0:
+            print(f"Failed to start DB container: {result.stderr}")
+            return False
+        
+        print(f'Started Database on port {DB_DEF["PORT"]}.')
+        return True  
+
+    # If the container doesn't exist, run it.
+    cmd = [
+        "docker", "run",\
+        "-d",\
+        "--name", DB_DEF["CONTAINER_NAME"],\
+        "-v", f"{os.path.abspath('./data/mariadb')}:/var/lib/mysql", \
+        "-e", f"MARIADB_ROOT_PASSWORD={DB_DEF['DATABASE_PASSWORD']}", \
+        "-e", f"MARIADB_DATABASE={DB_DEF['DATABASE_NAME']}", \
+        "-p", f'{DB_DEF["PORT"]}:{DB_DEF["PORT"]}', \
+        "mariadb:latest"
+    ]
+
+    result = subprocess.run(cmd,capture_output=True, text=True)
+    if result.returncode != 0:
+        print(f"Failed to start DB container: {result.stderr}")
+        return False
+        
+    print(f'Started Database on port {DB_DEF["PORT"]}.')
+
+    return True
+
 
 def main(argv):
     if (not isDockerInstalled()):
@@ -140,6 +185,15 @@ def main(argv):
     
     if (not startDLV()):
         return -1
-
+    
+    if (not startDatabase()):
+        return -1
 if __name__ == "__main__":
     sys.exit(main(sys.argv))
+
+    '''
+    docker run -d \
+  --name mariadb \
+  -e MARIADB_ROOT_PASSWORD=my-secret-pw \
+  -p 3306:3306 \
+  mariadb:latest'''
