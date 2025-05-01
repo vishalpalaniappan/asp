@@ -27,3 +27,8 @@ tasks:
       - task: stop
       - python3 {{.ROOT_DIR}}/scripts/clean_containers.py
       - python3 {{.ROOT_DIR}}/scripts/clean_images.py
+
+  clean-and-restart:
+    cmds:
+      - task: clean-containers
+      - task: start
