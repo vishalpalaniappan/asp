@@ -2,7 +2,7 @@
 
 import subprocess
 from utils import doesContainerExist, buildImage, isDockerInstalled
-from constants import ASV_DEF, DLV_DEF, DB_DEF, ASP_DEF
+from constants import ASV_DEF, DLV_DEF, DB_DEF, ASP_DEF, NET_DEF
 import os
 import sys
 
@@ -159,6 +159,7 @@ def startDatabase():
         "-e", f"MARIADB_ROOT_PASSWORD={DB_DEF['DATABASE_PASSWORD']}", \
         "-e", f"MARIADB_DATABASE={DB_DEF['DATABASE_NAME']}", \
         "-p", f'{DB_DEF["PORT"]}:{DB_DEF["PORT"]}', \
+        "--network", NET_DEF["NETWORK_NAME"], \
         "mariadb:latest"
     ]
 
@@ -204,6 +205,7 @@ def startASP():
         "-d",\
         "--name", ASP_DEF["CONTAINER_NAME"],\
         "-v", f"{os.path.abspath('data/asp')}:/app/mnt", \
+        "--network", NET_DEF["NETWORK_NAME"], \
         ASP_DEF["IMAGE_NAME"] \
     ]
 
@@ -216,6 +218,16 @@ def startASP():
 
     return True
 
+def createNetwork():
+    cmd = ["docker", "network", "create", NET_DEF["NETWORK_NAME"]]
+    try:
+        result = subprocess.run(cmd,capture_output=True, text=True)
+        print(result)
+        return True
+    except Exception as e:
+        print(e)
+        return False
+
 
 def main(argv):
     if (not isDockerInstalled()):
@@ -227,13 +239,16 @@ def main(argv):
     if (not buildImages()):
         return -1
     
+    if (not createNetwork()):
+        return -1
+    
+    if (not startDatabase()):
+        return -1
+    
     if (not startASV()):
         return -1
     
     if (not startDLV()):
-        return -1
-    
-    if (not startDatabase()):
         return -1
     
     if (not startASP()):
@@ -241,10 +256,3 @@ def main(argv):
     
 if __name__ == "__main__":
     sys.exit(main(sys.argv))
-
-    '''
-    docker run -d \
-  --name mariadb \
-  -e MARIADB_ROOT_PASSWORD=my-secret-pw \
-  -p 3306:3306 \
-  mariadb:latest'''

@@ -33,4 +33,8 @@ ASP_DEF = {
     "DATA_DIR": "data/asp",
 }
 
+NET_DEF = {
+    "NETWORK_NAME": "asp-network"
+}
+
 
