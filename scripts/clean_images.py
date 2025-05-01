@@ -56,7 +56,7 @@ def clearAspImage():
     
 def clearNetworks():    
     try:
-        cmd = ["docker", "rmi", NET_DEF["NETWORK_NAME"]]
+        cmd = ["docker", "network", "rm", NET_DEF["NETWORK_NAME"]]
         result = subprocess.run(cmd, capture_output=True, text=True)
         print(f"Removed Network: {NET_DEF['NETWORK_NAME']}")
         return True
