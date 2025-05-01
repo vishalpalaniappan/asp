@@ -213,8 +213,8 @@ def startASP():
     if result.returncode != 0:
         print(f"Failed to start ASP container: {result.stderr}")
         return False
-        
-    print(f'Started Automated System Processor on port {ASP_DEF["PORT"]}.')
+    
+    print('Started Automated System Processor.')
 
     return True
 
