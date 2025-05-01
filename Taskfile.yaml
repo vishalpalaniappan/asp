@@ -30,5 +30,6 @@ tasks:
 
   clean-and-restart:
     cmds:
-      - task: clean-containers
+      - cmd: "sudo rm -rf data"
+      - task: clean-images
       - task: start
