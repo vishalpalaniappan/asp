@@ -3,7 +3,10 @@ from utils import isDockerInstalled, doesContainerExist
 import subprocess
 import sys
 
-def clearAsvContainer():
+def deleteAsvContainer():
+    '''
+        Deletes the ASV Container.
+    '''
     try:
         isContainerLoaded = doesContainerExist(ASV_DEF["CONTAINER_NAME"])
 
@@ -25,7 +28,10 @@ def clearAsvContainer():
         print(f"Error when removing ASV container: {e}")
         return False
     
-def clearDlvContainer():    
+def deleteDlvContainer():    
+    '''
+        Deletes the DLV container.
+    '''
     try:
         isContainerLoaded = doesContainerExist(DLV_DEF["CONTAINER_NAME"])
 
@@ -47,7 +53,10 @@ def clearDlvContainer():
         print(f"Error when removing DLV container: {e}")
         return False
     
-def clearDbContainers():    
+def deleteDbContainers():  
+    '''
+        Delete the DB container.
+    '''  
     try:
         isContainerLoaded = doesContainerExist(DB_DEF["CONTAINER_NAME"])
 
@@ -73,13 +82,13 @@ def main(argv):
     if (not isDockerInstalled()):
         return -1
     
-    if (not clearAsvContainer()):
+    if (not deleteAsvContainer()):
         return -1
     
-    if (not clearDlvContainer()):
+    if (not deleteDlvContainer()):
         return -1
     
-    if (not clearDbContainers()):
+    if (not deleteDbContainers()):
         return -1
     
     return 0
