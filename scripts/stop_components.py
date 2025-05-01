@@ -7,7 +7,7 @@ def stopASV():
     '''
         Stop the ASV container.
     '''
-    print("Stopping ASV...")
+    print("\nStopping ASV...")
     
     isContainerLoaded = doesContainerExist(ASV_DEF["CONTAINER_NAME"])
 
@@ -33,7 +33,7 @@ def stopDLV():
     '''
         Stop the DLV container.
     '''
-    print("Stopping DLV...")
+    print("\nStopping DLV...")
     
     isContainerLoaded = doesContainerExist(DLV_DEF["CONTAINER_NAME"])
 
@@ -59,7 +59,7 @@ def stopDB():
     '''
         Stop the DB container.
     '''
-    print("Stopping DB...")
+    print("\nStopping DB...")
     
     isContainerLoaded = doesContainerExist(DB_DEF["CONTAINER_NAME"])
 
