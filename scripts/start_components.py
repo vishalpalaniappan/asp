@@ -158,6 +158,7 @@ def startDatabase():
         "-v", f"{os.path.abspath('./data/mariadb')}:/var/lib/mysql", \
         "-e", f"MARIADB_ROOT_PASSWORD={DB_DEF['DATABASE_PASSWORD']}", \
         "-e", f"MARIADB_DATABASE={DB_DEF['DATABASE_NAME']}", \
+        "-e", "MYSQL_USER=root", \
         "-p", f'{DB_DEF["PORT"]}:{DB_DEF["PORT"]}', \
         "--network", NET_DEF["NETWORK_NAME"], \
         "mariadb:latest"
