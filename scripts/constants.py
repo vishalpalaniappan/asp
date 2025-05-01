@@ -24,3 +24,13 @@ DB_DEF = {
     "DATA_DIR": "data/mariadb",
 }
 
+ASP_DEF = {
+    "CONTAINER_NAME": "asp-container",
+    "IMAGE_NAME": "asp-image",
+    "IMAGE_PATH": "docker-images/asp/Dockerfile",
+    "COMPONENT_PATH": "components_new/asp",
+    "PORT": 3306,
+    "DATA_DIR": "data/asp",
+}
+
+

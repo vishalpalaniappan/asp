@@ -2,7 +2,7 @@
 
 import subprocess
 from utils import doesContainerExist, buildImage, isDockerInstalled
-from constants import ASV_DEF, DLV_DEF, DB_DEF
+from constants import ASV_DEF, DLV_DEF, DB_DEF, ASP_DEF
 import os
 import sys
 
@@ -13,6 +13,7 @@ def buildImages():
     try:
         buildImage(ASV_DEF["IMAGE_NAME"], ASV_DEF["IMAGE_PATH"], ASV_DEF["COMPONENT_PATH"])
         buildImage(DLV_DEF["IMAGE_NAME"], DLV_DEF["IMAGE_PATH"], DLV_DEF["COMPONENT_PATH"])
+        buildImage(ASP_DEF["IMAGE_NAME"], ASP_DEF["IMAGE_PATH"], ASP_DEF["COMPONENT_PATH"])
         return True
     except Exception as e:
         print(f"Failed to build images: {e}")
@@ -26,6 +27,7 @@ def createDirectories():
         os.makedirs("data", exist_ok=True)
         os.makedirs(ASV_DEF["DATA_DIR"], exist_ok=True)
         os.makedirs(DLV_DEF["DATA_DIR"], exist_ok=True)
+        os.makedirs(ASP_DEF["DATA_DIR"], exist_ok=True)
         return True
     except Exception as e:
         print(f"Failed to create directories: {e}")
@@ -169,6 +171,51 @@ def startDatabase():
 
     return True
 
+def startASP():
+    '''
+        Starts the automated system processor container.
+    '''
+    print("\nStarting Automated System Processor...")    
+
+    try:
+        containerExists = doesContainerExist(ASP_DEF["CONTAINER_NAME"])
+    except Exception as e:
+        print(f"Failed check to see if ASP container exists: {e}")
+        return False
+
+    # If the container exists, start it and return.
+    if (containerExists):
+        print("ASP container already exists.")
+        result = subprocess.run(
+            ["docker", "start", ASP_DEF["CONTAINER_NAME"]],
+            capture_output=True,
+            text=True
+        )
+        if result.returncode != 0:
+            print(f"Failed to start ASP container: {result.stderr}")
+            return False
+        
+        print(f'Started Automated System Processor on port {ASP_DEF["PORT"]}.')
+        return True
+
+    # If the container doesn't exist, run it.
+    cmd = [
+        "docker", "run",\
+        "-d",\
+        "--name", ASP_DEF["CONTAINER_NAME"],\
+        "-v", f"{os.path.abspath('data/asp')}:/app/mnt", \
+        ASP_DEF["IMAGE_NAME"] \
+    ]
+
+    result = subprocess.run(cmd,capture_output=True, text=True)
+    if result.returncode != 0:
+        print(f"Failed to start ASP container: {result.stderr}")
+        return False
+        
+    print(f'Started Automated System Processor on port {ASP_DEF["PORT"]}.')
+
+    return True
+
 
 def main(argv):
     if (not isDockerInstalled()):
@@ -188,6 +235,10 @@ def main(argv):
     
     if (not startDatabase()):
         return -1
+    
+    if (not startASP()):
+        return -1
+    
 if __name__ == "__main__":
     sys.exit(main(sys.argv))
 
