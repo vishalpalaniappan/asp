@@ -1,85 +1,56 @@
 import subprocess
 import os, sys
-from constants import ASV_DEF, DLV_DEF, DB_DEF
+from constants import ASV_DEF, DLV_DEF, DB_DEF, ASP_DEF
 from utils import isDockerInstalled, doesContainerExist
+
+
+def stopContainer(container_name, service_name):
+    '''
+        Generic function to stop a container.
+    '''
+    print(f"\nStopping {service_name}...")
+    
+    isContainerLoaded = doesContainerExist(container_name)
+
+    if not isContainerLoaded:
+        print(f"{service_name} Container does not exist. No need to stop it.")
+        return True
+
+    cmd = ["docker", "stop", container_name]
+
+    try:
+        result = subprocess.run(cmd, capture_output=True, text=True)    
+        if result.returncode != 0:
+            print(f"Failed to stop {service_name} container: {result.stderr}")
+            return False   
+    except Exception as e:
+        print(f"Error stopping {service_name} container: {str(e)}")
+        return False
+    
+    print(f"Stopped {service_name} service.")
+    return True
+
 
 def stopASV():
     '''
         Stop the ASV container.
     '''
-    print("\nStopping ASV...")
-    
-    isContainerLoaded = doesContainerExist(ASV_DEF["CONTAINER_NAME"])
-
-    if not isContainerLoaded:
-        print("ASV Container does not exist. No need to stop it.")
-        return True
-
-    cmd = ["docker", "stop",  ASV_DEF["CONTAINER_NAME"]]
-
-    try:
-        result = subprocess.run(cmd, capture_output=True, text=True)
-        if result.returncode != 0:
-            print(f"Failed to stop ASV container: {result.stderr}")
-            return False    
-    except Exception as e:
-        print(f"Error stopping ASV container: {str(e)}")
-        return False
-    
-    print("Stopped ASV service.")
-    return True
+    return stopContainer(ASV_DEF["CONTAINER_NAME"], "ASV")
 
 def stopDLV():
     '''
         Stop the DLV container.
     '''
-    print("\nStopping DLV...")
-    
-    isContainerLoaded = doesContainerExist(DLV_DEF["CONTAINER_NAME"])
-
-    if not isContainerLoaded:
-        print("DLV Container does not exist. No need to stop it.")
-        return True
-
-    cmd = ["docker", "stop",  DLV_DEF["CONTAINER_NAME"]]
-
-    try:
-        result = subprocess.run(cmd, capture_output=True, text=True)    
-        if result.returncode != 0:
-            print(f"Failed to stop DLV container: {result.stderr}")
-            return False   
-    except Exception as e:
-        print(f"Error stopping DLV container: {str(e)}")
-        return False
-    
-    print("Stopped DLV service.")
-    return True
+    return stopContainer(DLV_DEF["CONTAINER_NAME"], "DLV")
 
 def stopDB():
     '''
         Stop the DB container.
     '''
-    print("\nStopping DB...")
-    
-    isContainerLoaded = doesContainerExist(DB_DEF["CONTAINER_NAME"])
+    return stopContainer(DB_DEF["CONTAINER_NAME"], "DB")
 
-    if not isContainerLoaded:
-        print("DB Container does not exist. No need to stop it.")
-        return True
-
-    cmd = ["docker", "stop",  DB_DEF["CONTAINER_NAME"]]
-
-    try:
-        result = subprocess.run(cmd, capture_output=True, text=True)    
-        if result.returncode != 0:
-            print(f"Failed to stop DB container: {result.stderr}")
-            return False   
-    except Exception as e:
-        print(f"Error stopping DB container: {str(e)}")
-        return False
-    
-    print("Stopped DB service.")
-    return True
+def stopASP():
+    return stopContainer(ASP_DEF["CONTAINER_NAME"], "ASP")
 
 def main(argv):
     if (not isDockerInstalled()):
@@ -92,6 +63,9 @@ def main(argv):
         return -1
     
     if (not stopDB()):
+        return -1
+    
+    if (not stopASP()):
         return -1
     
     return 0
