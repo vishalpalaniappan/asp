@@ -1,4 +1,4 @@
-from constants import ASV_DEF, DLV_DEF, ASP_DEF
+from constants import ASV_DEF, DLV_DEF, ASP_DEF, NET_DEF
 from utils import isDockerInstalled, doesImageExist
 import subprocess
 import sys
@@ -53,9 +53,22 @@ def clearAspImage():
     except Exception as e:
         print(f"Error when removing ASP image: {e}")
         return False
+    
+def clearNetworks():    
+    try:
+        cmd = ["docker", "rmi", NET_DEF["NETWORK_NAME"]]
+        result = subprocess.run(cmd, capture_output=True, text=True)
+        print(f"Removed Network: {NET_DEF['NETWORK_NAME']}")
+        return True
+    except Exception as e:
+        print(f"Error when removing network named: {NET_DEF['NETWORK_NAME']}")
+        return False
 
 def main(argv):
     if (not isDockerInstalled()):
+        return -1
+    
+    if (not clearNetworks()):
         return -1
     
     if (not clearAsvImage()):

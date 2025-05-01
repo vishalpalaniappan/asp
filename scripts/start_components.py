@@ -222,10 +222,10 @@ def createNetwork():
     cmd = ["docker", "network", "create", NET_DEF["NETWORK_NAME"]]
     try:
         result = subprocess.run(cmd,capture_output=True, text=True)
-        print(result)
+        print(f"Created network: {NET_DEF['NETWORK_NAME']}")
         return True
     except Exception as e:
-        print(e)
+        print(f"Error when creating network named: {e}")
         return False
 
 
