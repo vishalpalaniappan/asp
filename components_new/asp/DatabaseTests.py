@@ -9,6 +9,7 @@ class DatabaseWriter:
         self.connect()
         self.createSystemsTable()
         self.addSystem()
+        self.addDeployments("1234","0.0.1","9999", None)
 
 
     def connect(self):
@@ -47,6 +48,16 @@ class DatabaseWriter:
         '''
         self.cursor.execute(sql)
 
+    def addDeployments(self, system_id, system_ver, deployment_id, startTs):
+        system_ver = system_ver.replace(".","")
+        tableName = f"{system_id}_{system_ver}_deployments"
+
+        sql = f''' INSERT INTO {tableName}(deployment_id, start_ts, end_ts)
+                VALUES(%s,%s,%s) '''
+        self.cursor.execute(sql, (deployment_id, startTs, None))
+        self.conn.commit()
+
+
     def addSystem(self):
         system_id = "1234"
         system_ver = "0.0.1".replace(".","")
@@ -58,6 +69,18 @@ class DatabaseWriter:
                 VALUES(%s,%s,%s,%s,%s) '''
         self.cursor.execute(sql, (system_id, system_ver, name, description, programs))
         self.conn.commit()
+
+        sql = f'''
+            CREATE TABLE IF NOT EXISTS {system_id}_{system_ver}_deployments 
+            (
+                id INT AUTO_INCREMENT PRIMARY KEY,
+                deployment_id VARCHAR(100) NOT NULL,
+                start_ts TIMESTAMP,
+                end_ts TIMESTAMP,
+                created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+            )
+        '''
+        self.cursor.execute(sql)
 
         sql = f'''
             CREATE TABLE IF NOT EXISTS {system_id}_{system_ver}_traces 
