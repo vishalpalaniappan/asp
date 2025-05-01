@@ -16,3 +16,11 @@ DLV_DEF = {
     "DATA_DIR": "data/dlv",
 }
 
+DB_DEF = {
+    "CONTAINER_NAME": "mariadb-container",
+    "PORT": 3306,
+    "DATABASE_NAME": "asp-database",
+    "DATABASE_PASSWORD": "random-password",
+    "DATA_DIR": "data/mariadb",
+}
+
