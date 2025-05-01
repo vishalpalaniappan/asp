@@ -1,12 +1,14 @@
 import time
 import mysql.connector
 import sys
+import json
 
 class DatabaseWriter:
 
     def __init__(self):
         self.connect()
         self.createSystemsTable()
+        self.addSystem()
 
 
     def connect(self):
@@ -43,6 +45,14 @@ class DatabaseWriter:
         '''
 
         self.cursor.execute(sql)
+
+
+    def addSystem(self):
+        programs = json.dumps({"A":1})
+        sql = ''' INSERT INTO SYSTEMSTABLE(system_id, system_ver, name, description, programs)
+                VALUES(%s,%s,%s,%s,%s) '''
+        self.cursor.execute(sql, ("1234", "0.0.1", "Distributed Sorting System", "desc", programs))
+        self.conn.commit()
 
 
 
