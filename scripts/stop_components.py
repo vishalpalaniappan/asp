@@ -82,31 +82,7 @@ def stopDB():
     return True
 
 def stopASP():
-    '''
-        Stop the ASP container.
-    '''
-    print("\nStopping ASP...")
-    
-    isContainerLoaded = doesContainerExist(ASP_DEF["CONTAINER_NAME"])
-
-    if not isContainerLoaded:
-        print("ASP Container does not exist. No need to stop it.")
-        return True
-
-    cmd = ["docker", "stop",  ASP_DEF["CONTAINER_NAME"]]
-
-    try:
-        result = subprocess.run(cmd, capture_output=True, text=True)    
-        if result.returncode != 0:
-            print(f"Failed to stop ASP container: {result.stderr}")
-            return False   
-    except Exception as e:
-        print(f"Error stopping ASP container: {str(e)}")
-        return False
-    
-    print("Stopped ASP service.")
-    return True
-
+    return stopContainer(ASP_DEF["CONTAINER_NAME"], "ASP")
 def main(argv):
     if (not isDockerInstalled()):
         return -1
