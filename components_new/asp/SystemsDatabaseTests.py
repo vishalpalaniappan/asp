@@ -2,33 +2,17 @@ import time
 import mysql.connector
 import sys
 import json
+from DbConn import DBClient
 
 class DatabaseWriter:
 
     def __init__(self):
-        self.connect()
-        self.createSystemsTable()
-        self.addSystem()
-        self.addDeployments("1234","0.0.1","9999", None)
-
-
-    def connect(self):
-        '''
-            Connect to the database.
-        '''
-        self.conn = mysql.connector.connect(
-            host="localhost",
-            user="root",
-            password="random-password",
-            database="aspDatabase",
-            port="3306"
-        )
-
-        self.cursor = self.conn.cursor()
-        self.cursor.execute("SELECT version();")
-
-        dbVersion = self.cursor.fetchone()[0]
-        print(f"DB Version: {dbVersion}")
+        with DBClient() as db:
+            self.conn = db.conn
+            self.cursor = db.cursor
+            self.createSystemsTable()
+            self.addSystem()
+            self.addDeployments("1234","0.0.1","9999", None)
 
     def createSystemsTable(self):
         '''
@@ -60,6 +44,7 @@ class DatabaseWriter:
 
     def addSystem(self):
         system_id = "1234"
+        system_ver = "0.0.1"
         name = "Distributed Sorting System"
         description = "System Description"
         programs = json.dumps({"A":1})
