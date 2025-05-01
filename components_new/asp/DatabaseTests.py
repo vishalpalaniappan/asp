@@ -60,7 +60,6 @@ class DatabaseWriter:
 
     def addSystem(self):
         system_id = "1234"
-        system_ver = "0.0.1".replace(".","")
         name = "Distributed Sorting System"
         description = "System Description"
         programs = json.dumps({"A":1})
@@ -69,6 +68,8 @@ class DatabaseWriter:
                 VALUES(%s,%s,%s,%s,%s) '''
         self.cursor.execute(sql, (system_id, system_ver, name, description, programs))
         self.conn.commit()
+
+        system_ver = system_ver.replace(".","")
 
         sql = f'''
             CREATE TABLE IF NOT EXISTS {system_id}_{system_ver}_deployments 
