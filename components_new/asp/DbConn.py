@@ -1,12 +1,21 @@
 import mysql.connector
+import os 
 
 def get_connection():
+    
+    isDocker = os.environ.get('IS_RUNNING_IN_DOCKER', False)
+
+    if isDocker:
+        host = "mariadb-container"
+    else:
+        host = "localhost"
+
     return mysql.connector.connect(
-        host="localhost",
-        user="root",
-        password="random-password",
-        database="aspDatabase",
-        port="3306"
+        host= host,
+        user= "root",
+        password= "random-password",
+        database= "aspDatabase",
+        port= "3306"
     )
 
 class DBClient:
