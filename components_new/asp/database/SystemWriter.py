@@ -43,10 +43,14 @@ class SystemWriter:
         '''
             Checks if the database has the given field.
         '''
-        query = f'SELECT {column} FROM "{table}" WHERE {column} = ?' 
-        self.cursor.execute(query, [value])
-        row = self.cursor.fetchone() 
-        return row is not None
+        query = f"""
+            SELECT 1 FROM {table}
+            WHERE {column} = %s
+            LIMIT 1
+        """
+        self.cursor.execute(query, (value, ))
+
+        return True if self.cursor.fetchone() else False
     
     def addDeployments(self, header):
         '''
@@ -59,6 +63,11 @@ class SystemWriter:
         system_ver = system_ver.replace(".","")
         
         tableName = f"{system_id}_{system_ver}_deployments"
+
+        # Return if the program has already been written to the database
+        hasName = self.checkIfFieldExists(tableName, "deployment_id", deployment_id)
+        if (hasName):
+            return
 
         sql = f''' INSERT INTO {tableName}(deployment_id, start_ts, end_ts)
                 VALUES(%s,%s,%s) '''
@@ -101,6 +110,15 @@ class SystemWriter:
         name = systemInfo["metadata"]["name"]
         description = systemInfo["metadata"]["description"]
         programs = json.dumps(systemInfo["programs"])
+
+        query = f"""
+            SELECT 1 FROM SYSTEMSTABLE
+            WHERE system_id = %s AND system_ver = %s
+        """
+        self.cursor.execute(query, (system_id,system_ver))
+        systemExists = True if self.cursor.fetchone() else False
+        if (systemExists):
+            return
 
         sql = ''' INSERT INTO SYSTEMSTABLE(system_id, system_ver, name, description, programs)
                 VALUES(%s,%s,%s,%s,%s) '''

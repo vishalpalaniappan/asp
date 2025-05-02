@@ -33,7 +33,6 @@ class TraceAssembler:
         for row in result:
             columns.append(row[0])
 
-        print("Columns:", columns)
         return columns
     
     def addColumnNameToData(self, columns, data):
@@ -60,7 +59,6 @@ class TraceAssembler:
         # For each of the start nodes, assemble the trace and write to database
         for startNode in startNodes:
             startNode = self.addColumnNameToData(self.ioevent_cols, startNode)
-            print(startNode)
             startNode["node"] = json.loads(startNode["node"])
             trace = self.getTrace(startNode["node"])
             self.addTraceToDatabase(startNode, trace)
