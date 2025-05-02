@@ -29,11 +29,11 @@ class SystemProcessor:
         '''
             Parse the system log files contained in folder.
         '''
-        visitedFiles = []
+        visitedFiles = set()
 
         while True:
             time.sleep(2)
-            current = os.listdir(self.logFolder)
+            current = set(os.listdir(self.logFolder))
             newFiles = current - visitedFiles
 
             if len(newFiles) == 0:
@@ -48,7 +48,7 @@ class SystemProcessor:
 
             # TODO: Only assemble the new nodes that were added
             TraceAssembler(self.db)
-            
+
             visitedFiles = current
 
 
