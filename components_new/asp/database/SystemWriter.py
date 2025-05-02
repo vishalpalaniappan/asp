@@ -35,8 +35,7 @@ class SystemWriter:
             3. Add filetree for system for this program
             4. Add extracted unique traces to the table.
         '''
-        self.addToSystemIndex(cdlFile.decoder.header.sysinfo)
-        # self.addPrograms(cdlFile.decoder.header)
+        self.addToSystemIndex(cdlFile.decoder.header)
         self.addDeployments(cdlFile.decoder.header)
 
     def checkIfFieldExists(self, table, column, value):
@@ -75,41 +74,16 @@ class SystemWriter:
         self.conn.commit()
 
 
-    def addPrograms(self, header):
-        '''
-            Add programs to the database.
-        '''
-        sysId = header.sysinfo["metadata"]["systemId"]        
-        sysVer = header.sysinfo["metadata"]["systemVersion"] 
-        programInfo = header.programInfo
-        
-        TABLENAME = f"{sysId}_{sysVer}_programs"
-
-        name = programInfo["name"]
-        description = programInfo["description"]
-        language = programInfo["language"]
-        fileTree = json.dumps(header.fileTree)
-
-        # Return if the program has already been written to the database
-        hasName = self.checkIfFieldExists(TABLENAME, "name", name)
-        if (hasName):
-            return
-
-        sql = f''' INSERT OR REPLACE INTO "{TABLENAME}"(name, description, language, file_tree)
-                VALUES(?,?,?,?) '''
-        self.cursor.execute(sql, [name, description, language, fileTree])
-        self.conn.commit()
-
-
-    def addToSystemIndex(self, systemInfo):
+    def addToSystemIndex(self, header):
         '''
             Adds sys info to SYSTEMTABLES and creates tables for programs, deployments and traces.
         '''
+        systemInfo = header.sysinfo
         system_id = systemInfo["metadata"]["systemId"]        
         system_ver = systemInfo["metadata"]["systemVersion"]
         name = systemInfo["metadata"]["name"]
         description = systemInfo["metadata"]["description"]
-        programs = json.dumps(systemInfo["programs"])
+        programs = json.dumps(header.fileTree)
 
         query = f"""
             SELECT 1 FROM SYSTEMSTABLE
