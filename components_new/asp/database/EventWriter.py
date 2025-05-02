@@ -66,26 +66,27 @@ class EventWriter:
             print(f"File {programId} has already been processed.")
             return
 
-        # Create table data for each io node
-        event_data = []
-        for event in logFile.decoder.systemIoNodes:
-            node = event["node"]
-            adliExecutionId = node["adliExecutionId"]
-            adliExecutionIndex = node["adliExecutionIndex"]
-            trace_type = event["type"]
-            nodeStr = json.dumps(node)
-            dt_string = datetime.fromtimestamp(float(ts))
-            event_data.append((sysId, sysVer, deploymentId, programId, dt_string, None, adliExecutionId, adliExecutionIndex, trace_type, nodeStr))        
+        if len(logFile.decoder.systemIoNodes) > 0:
+            # Create table data for each io node
+            event_data = []
+            for event in logFile.decoder.systemIoNodes:
+                node = event["node"]
+                adliExecutionId = node["adliExecutionId"]
+                adliExecutionIndex = node["adliExecutionIndex"]
+                trace_type = event["type"]
+                nodeStr = json.dumps(node)
+                dt_string = datetime.fromtimestamp(float(ts))
+                event_data.append((sysId, sysVer, deploymentId, programId, dt_string, None, adliExecutionId, adliExecutionIndex, trace_type, nodeStr))        
 
 
-        sql = f''' INSERT INTO IOEVENTS(
-            system_id, system_ver, deployment_id, \
-            program_execution_id, start_ts, end_ts, \
-            adli_execution_id, adli_execution_index, \
-            trace_type, node
-            )
-                VALUES(%s,%s,%s,%s,%s,%s,%s,%s,%s,%s) '''
-        self.cursor.executemany(sql, event_data)
-        self.conn.commit()
-        
-        print(f"Added System IO events from {programInfo['name']} to database.")
+            sql = f''' INSERT INTO IOEVENTS(
+                system_id, system_ver, deployment_id, \
+                program_execution_id, start_ts, end_ts, \
+                adli_execution_id, adli_execution_index, \
+                trace_type, node
+                )
+                    VALUES(%s,%s,%s,%s,%s,%s,%s,%s,%s,%s) '''
+            self.cursor.executemany(sql, event_data)
+            self.conn.commit()
+            
+            print(f"Added System IO events from {programInfo['name']} to database.")
