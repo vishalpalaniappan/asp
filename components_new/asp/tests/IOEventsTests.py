@@ -28,7 +28,7 @@ class IOEventsTest:
                 end_ts TIMESTAMP,
                 adli_execution_id VARCHAR(100),
                 adli_execution_index VARCHAR(100),
-                type VARCHAR(100),
+                trace_type VARCHAR(100),
                 node TEXT,
                 created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
             )

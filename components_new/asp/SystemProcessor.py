@@ -16,7 +16,7 @@ class SystemProcessor:
         self.logFiles = []
         
         with DBClient() as db:
-            # self.eventWriter = EventWriter(db)
+            self.eventWriter = EventWriter(db)
             self.sysWriter = SystemWriter(db)
             self.parseSystemLogFiles()
 
@@ -33,7 +33,7 @@ class SystemProcessor:
             if logFileName.endswith(".clp.zst"):
                 cdlFile = Cdl(os.path.join(self.logFolder, logFileName))
                 self.logFiles.append(cdlFile)
-                # self.eventWriter.addEventsToDb(cdlFile)
+                self.eventWriter.addEventsToDb(cdlFile)
                 self.sysWriter.write_file(cdlFile)
 
                 # TraceAssembler()
