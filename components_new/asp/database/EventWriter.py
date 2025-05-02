@@ -40,10 +40,14 @@ class EventWriter:
         '''
             Checks if the database has the given field.
         '''
-        query = f'SELECT {column} FROM {table} WHERE {column} = ?' 
-        self.cursor.execute(query, [value])
-        row = self.cursor.fetchone() 
-        return row is not None
+        query = f"""
+            SELECT 1 FROM {table}
+            WHERE {column} = %s
+            LIMIT 1
+        """
+        self.cursor.execute(query, (value, ))
+
+        return True if self.cursor.fetchone() else False
         
     def addEventsToDb(self, logFile):
         '''
@@ -57,10 +61,10 @@ class EventWriter:
         programInfo = logFile.decoder.header.programInfo
         
         # If the program has already been processed, then return.
-        # fileExists = self.checkIfFieldExists("IOEVENTS", "program_execution_id", programId)
-        # if (fileExists):
-        #     print(f"File {programId} has already been processed.")
-        #     return
+        fileExists = self.checkIfFieldExists("IOEVENTS", "program_execution_id", programId)
+        if (fileExists):
+            print(f"File {programId} has already been processed.")
+            return
 
         # Create table data for each io node
         event_data = []
