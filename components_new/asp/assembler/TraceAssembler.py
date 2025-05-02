@@ -1,6 +1,7 @@
 import sqlite3
 import json
 import os
+from datetime import datetime
 
 class TraceAssembler:
     '''
@@ -10,56 +11,30 @@ class TraceAssembler:
         database in the traces table for the given system.    
     '''
 
-    def __init__(self):
-        self.openConnections()
+    def __init__(self, db):
+        self.conn = db.conn
+        self.cursor = db.conn.cursor()
+        self.ioevent_cols = self.getColumns("IOEVENTS")
         self.processDatabase()
-        self.closeConnections()
-
-    def openConnections(self):
-        '''
-            Initialize the database connections.
-        '''
-        path = os.path.dirname(os.path.dirname(__file__))
-        sysIoPath = os.path.join(path, "ioEvents.db")
-        try:
-            self.sysIoConn = sqlite3.connect(sysIoPath)
-            self.sysIoCursor = self.sysIoConn.cursor()
-            self.ioevent_cols = self.getColumns("IOEVENTS")
-        except sqlite3.Error as e:
-            print(f"Database error: {e}")
-            raise
-
-        path = os.path.dirname(os.path.dirname(os.path.dirname(__file__)))
-        aspPath = os.path.join(path, "asp.db")
-        try:
-            self.aspConn = sqlite3.connect(aspPath)
-            self.aspCursor = self.aspConn.cursor()
-        except sqlite3.Error as e:
-            print(f"Database error: {e}")
-            raise
-
-    def closeConnections(self):
-        '''
-            Close the database connections.
-        '''
-        if hasattr(self, 'sysIoConn'):
-            self.sysIoConn.close()
-        if hasattr(self, 'aspConn'):
-            self.aspConn.close()
-
-    def __del__(self):
-        '''
-            Clean up database connections.
-        '''
-        self.closeConnections()
 
     def getColumns(self, tableName):
         '''
             Get the columns for a table.
         '''
-        query = f'PRAGMA table_info("{tableName}")' 
-        self.sysIoCursor.execute(query)
-        return self.sysIoCursor.fetchall()
+        query = """
+            SELECT COLUMN_NAME
+            FROM INFORMATION_SCHEMA.COLUMNS
+            WHERE TABLE_NAME = %s
+        """
+        self.cursor.execute(query, ("IOEVENTS",))
+        result = self.cursor.fetchall()
+
+        columns = []
+        for row in result:
+            columns.append(row[0])
+
+        print("Columns:", columns)
+        return columns
     
     def addColumnNameToData(self, columns, data):
         '''
@@ -68,7 +43,7 @@ class TraceAssembler:
         '''
         obj = {}
         for index, columnValue in enumerate(data):
-            obj[columns[index][1]] = columnValue
+            obj[columns[index]] = columnValue
 
         return obj
 
@@ -78,13 +53,14 @@ class TraceAssembler:
             Processes the database and extracts all the traces.
         '''
         # Get all the start nodes
-        query = f'SELECT * FROM "IOEVENTS" WHERE "type" = ?' 
-        self.sysIoCursor.execute(query, ["start"])
-        startNodes = self.sysIoCursor.fetchall() 
+        query = f'SELECT * FROM IOEVENTS WHERE trace_type = %s' 
+        self.cursor.execute(query, ("start",))
+        startNodes = self.cursor.fetchall() 
 
         # For each of the start nodes, assemble the trace and write to database
         for startNode in startNodes:
             startNode = self.addColumnNameToData(self.ioevent_cols, startNode)
+            print(startNode)
             startNode["node"] = json.loads(startNode["node"])
             trace = self.getTrace(startNode["node"])
             self.addTraceToDatabase(startNode, trace)
@@ -114,10 +90,10 @@ class TraceAssembler:
         '''
             Find the linked node.
         '''
-        query = 'SELECT * FROM "IOEVENTS" WHERE ("type" = ? or "type" = ?)\
-              and "adli_execution_id" = ? and "adli_execution_index" = ?' 
-        self.sysIoCursor.execute(query, ["link", "end", node["adliExecutionId"], node["adliExecutionIndex"]])
-        row = self.sysIoCursor.fetchone() 
+        query = 'SELECT * FROM IOEVENTS WHERE ("type" = %s or "type" = %s)\
+              and "adli_execution_id" = %s and "adli_execution_index" = %s' 
+        self.cursor.execute(query, ("link", "end", node["adliExecutionId"], node["adliExecutionIndex"]))
+        row = self.cursor.fetchone() 
 
         if row:
             rowData = self.addColumnNameToData(self.ioevent_cols, row)
@@ -141,14 +117,16 @@ class TraceAssembler:
 
         traceId = startNode["node"]["uid"]
         systemId = startNode["system_id"]
-        version = startNode["sys_ver"]
+        version = startNode["system_ver"]
         deploymentId = startNode["deployment_id"]
-        tableName = f"{systemId}_{version}_traces"
+
+        version_formatted = version.replace(".","")
+        tableName = f"{systemId}_{version_formatted}_traces"
 
         # Check if the trace uid has already been processed
-        query = f'SELECT * FROM "{tableName}" WHERE "trace_id" = ?' 
-        self.aspCursor.execute(query, [traceId])
-        hasUid = self.aspCursor.fetchone()
+        query = f'SELECT * FROM {tableName} WHERE trace_id = %s' 
+        self.cursor.execute(query, (traceId,))
+        hasUid = self.cursor.fetchone()
         if (hasUid is not None):
             print(f"System Trace with UID {traceId} already exists in the database")
             return
@@ -157,8 +135,12 @@ class TraceAssembler:
         startTs = traces[0]["timestamp"]
         endTs = None if len(traces) == 1 else traces[-1]["timestamp"]
 
+        startTs = datetime.fromtimestamp(startTs/1000)
+        if endTs:
+            endTs = datetime.fromtimestamp(endTs/1000)
+
         # Insert the trace into the database
-        sql = f''' INSERT INTO "{tableName}"(deployment_id, trace_id, start_ts, end_ts, trace_type, traces)
-                VALUES(?,?,?,?,?,?) '''
-        self.aspCursor.execute(sql, [deploymentId, traceId, startTs, endTs, None, json.dumps(traces)])
-        self.aspConn.commit()
+        sql = f''' INSERT INTO {tableName}(deployment_id, trace_id, start_ts, end_ts, trace_type, traces)
+                VALUES(%s,%s,%s,%s,%s,%s) '''
+        self.cursor.execute(sql, (deploymentId, traceId, startTs, endTs, None, json.dumps(traces)))
+        self.conn.commit()

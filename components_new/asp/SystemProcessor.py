@@ -20,8 +20,8 @@ class SystemProcessor:
             self.sysWriter = SystemWriter(db)
             self.parseSystemLogFiles()
 
-        # Run the trace assembler on the events saved to the ioEvents database.
-        # TraceAssembler()
+            # Run the trace assembler on the events saved to the ioEvents database.
+            TraceAssembler(db)
 
     def parseSystemLogFiles(self):
         '''
@@ -35,8 +35,6 @@ class SystemProcessor:
                 self.logFiles.append(cdlFile)
                 self.eventWriter.addEventsToDb(cdlFile)
                 self.sysWriter.write_file(cdlFile)
-
-                # TraceAssembler()
 
 if __name__ == "__main__":
     rootDir = Path(__file__).resolve().parents[0]
