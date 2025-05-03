@@ -2,7 +2,7 @@
 
 import subprocess
 from utils import doesContainerExist, buildImage, isDockerInstalled
-from constants import ASV_DEF, DLV_DEF, DB_DEF, ASP_DEF, NET_DEF
+from constants import ASV_DEF, DLV_DEF, DB_DEF, ASP_DEF, NET_DEF, QUERY_HANDLER_DEF
 import os
 import sys
 
@@ -29,6 +29,7 @@ def createDirectories():
         os.makedirs(ASV_DEF["DATA_DIR"], exist_ok=True)
         os.makedirs(DLV_DEF["DATA_DIR"], exist_ok=True)
         os.makedirs(ASP_DEF["DATA_DIR"], exist_ok=True)
+        os.makedirs(QUERY_HANDLER_DEF["DATA_DIR"], exist_ok=True)
         return True
     except Exception as e:
         print(f"Failed to create directories: {e}")
