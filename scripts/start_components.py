@@ -206,6 +206,7 @@ def startASP():
         "-d",\
         "--name", ASP_DEF["CONTAINER_NAME"],\
         "-v", f"{os.path.abspath('data/asp')}:/app/mnt", \
+        "-v", f"{os.path.abspath('system_logs')}:/app/logs", \
         "--network", NET_DEF["NETWORK_NAME"], \
         ASP_DEF["IMAGE_NAME"] \
     ]
