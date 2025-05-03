@@ -32,5 +32,5 @@ tasks:
     cmds:
       - task: clean-images
       - cmd: "rm -rf system_logs"
-      - cmd: "rm -rf data"
+      - cmd: "sudo rm -rf data"
       - task: start
