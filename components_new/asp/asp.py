@@ -24,49 +24,41 @@ class SystemProcessor:
             self.sysWriter = SystemWriter(db)
             self.monitorFolder()
 
-
     def monitorFolder(self):
         '''
             Parse the system log files contained in folder.
         '''
         visitedFiles = set()
+        self._continue_monitoring = True
 
-def monitorFolder(self):
-    '''
-        Parse the system log files contained in folder.
-    '''
-    visitedFiles = set()
-    self._continue_monitoring = True
+        while self._continue_monitoring:
+            try:
+                time.sleep(2)
+                current = set(os.listdir(self.logFolder))
+                newFiles = current - visitedFiles
 
-    while self._continue_monitoring:
-        try:
-            time.sleep(2)
-            current = set(os.listdir(self.logFolder))
-            newFiles = current - visitedFiles
+                if len(newFiles) == 0:
+                    continue
 
-            if len(newFiles) == 0:
-                continue
+                print("\nProcessing new files:")
+                print(newFiles)
 
-            print("\nProcessing new files:")
-            print(newFiles)
+                for logFileName in newFiles:
+                    if logFileName.endswith(".clp.zst"):
+                        cdlFile = Cdl(os.path.join(self.logFolder, logFileName))
+                        self.logFiles.append(cdlFile)
+                        self.eventWriter.addEventsToDb(cdlFile)
+                        self.sysWriter.write_file(cdlFile)
 
-            for logFileName in newFiles:
-                if logFileName.endswith(".clp.zst"):
-                    cdlFile = Cdl(os.path.join(self.logFolder, logFileName))
-                    self.logFiles.append(cdlFile)
-                    self.eventWriter.addEventsToDb(cdlFile)
-                    self.sysWriter.write_file(cdlFile)
+                # TODO: Only assemble the new nodes that were added
+                TraceAssembler(self.db)
 
-            # TODO: Only assemble the new nodes that were added
-            TraceAssembler(self.db)
-
-            visitedFiles = current
-        except KeyboardInterrupt:
-            print("Stopping monitoring...")
-            self._continue_monitoring = False
-        except Exception as e:
-            print(f"Error in monitoring: {e}")
-            # Consider whether to continue or exit based on the error
+                visitedFiles = current
+            except KeyboardInterrupt:
+                print("Stopping monitoring...")
+                self._continue_monitoring = False
+            except Exception as e:
+                print(f"Error in monitoring: {e}")
 
 def main(argv):
     rootDir = Path(__file__).resolve().parents[0]
