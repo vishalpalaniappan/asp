@@ -1,5 +1,5 @@
 ASV_DEF = {
-    "CONTAINER_NAME": "asv-container",
+    "CONTAINER_NAME": "asp-asv-container",
     "IMAGE_NAME": "asv-image",
     "IMAGE_PATH": "docker-images/asv/Dockerfile",
     "COMPONENT_PATH": "components_new/asv",
@@ -8,7 +8,7 @@ ASV_DEF = {
 }
 
 DLV_DEF = {
-    "CONTAINER_NAME": "dlv-container",
+    "CONTAINER_NAME": "asp-dlv-container",
     "IMAGE_NAME": "dlv-image",
     "IMAGE_PATH": "docker-images/dlv/Dockerfile",
     "COMPONENT_PATH": "components_new/dlv",
@@ -17,7 +17,7 @@ DLV_DEF = {
 }
 
 DB_DEF = {
-    "CONTAINER_NAME": "mariadb-container",
+    "CONTAINER_NAME": "asp-mariadb-container",
     "PORT": 3306,
     "DATABASE_NAME": "aspDatabase",
     "DATABASE_PASSWORD": "random-password",
