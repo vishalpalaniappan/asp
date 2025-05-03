@@ -26,7 +26,7 @@ class TraceAssembler:
             FROM INFORMATION_SCHEMA.COLUMNS
             WHERE TABLE_NAME = %s
         """
-        self.cursor.execute(query, ("IOEVENTS",))
+        self.cursor.execute(query, (tableName,))
         result = self.cursor.fetchall()
 
         columns = []
