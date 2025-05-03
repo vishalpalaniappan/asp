@@ -1,6 +1,6 @@
 import subprocess
 import os, sys
-from constants import ASV_DEF, DLV_DEF, DB_DEF, ASP_DEF
+from constants import ASV_DEF, DLV_DEF, DB_DEF, ASP_DEF, QUERY_HANDLER_DEF
 from utils import isDockerInstalled, doesContainerExist
 
 
@@ -50,7 +50,16 @@ def stopDB():
     return stopContainer(DB_DEF["CONTAINER_NAME"], "DB")
 
 def stopASP():
+    '''
+        Stop the ASP Container
+    '''
     return stopContainer(ASP_DEF["CONTAINER_NAME"], "ASP")
+
+def stopQueryHandler():
+    '''
+        Stop the query handler.
+    '''
+    return stopContainer(QUERY_HANDLER_DEF["CONTAINER_NAME"], "query handler")
 
 def main(argv):
     if (not isDockerInstalled()):
@@ -66,6 +75,9 @@ def main(argv):
         return -1
     
     if (not stopASP()):
+        return -1
+    
+    if (not stopQueryHandler()):
         return -1
     
     return 0

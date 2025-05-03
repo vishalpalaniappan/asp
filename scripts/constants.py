@@ -34,6 +34,7 @@ ASP_DEF = {
 
 QUERY_HANDLER_DEF = {
     "CONTAINER_NAME": "query-handler-container",
+    "PORT": 8765,
     "IMAGE_NAME": "query-handler-image",
     "IMAGE_PATH": "docker-images/query_handler/Dockerfile",
     "COMPONENT_PATH": "components_new/query_handler",

@@ -14,6 +14,11 @@ def buildImages():
         buildImage(ASV_DEF["IMAGE_NAME"], ASV_DEF["IMAGE_PATH"], ASV_DEF["COMPONENT_PATH"])
         buildImage(DLV_DEF["IMAGE_NAME"], DLV_DEF["IMAGE_PATH"], DLV_DEF["COMPONENT_PATH"])
         buildImage(ASP_DEF["IMAGE_NAME"], ASP_DEF["IMAGE_PATH"], ASP_DEF["COMPONENT_PATH"])
+        buildImage(
+            QUERY_HANDLER_DEF["IMAGE_NAME"],
+            QUERY_HANDLER_DEF["IMAGE_PATH"],
+            QUERY_HANDLER_DEF["COMPONENT_PATH"]
+        )
         return True
     except Exception as e:
         print(f"Failed to build images: {e}")
@@ -222,6 +227,55 @@ def startASP():
 
     return True
 
+
+def startQueryHandler():
+    '''
+        Starts the query handler container.
+    '''
+    print("\nStarting Query Handler...")    
+
+    try:
+        containerExists = doesContainerExist(QUERY_HANDLER_DEF["CONTAINER_NAME"])
+    except Exception as e:
+        print(f"Failed check to see if query handler container exists: {e}")
+        return False
+
+    # If the container exists, start it and return.
+    if (containerExists):
+        print("Query handler container already exists.")
+        result = subprocess.run(
+            ["docker", "start", QUERY_HANDLER_DEF["CONTAINER_NAME"]],
+            capture_output=True,
+            text=True
+        )
+        if result.returncode != 0:
+            print(f"Failed to start query handler container: {result.stderr}")
+            return False
+        
+        print(f'Started query handler on port {QUERY_HANDLER_DEF["PORT"]}.')
+        return True
+
+    # If the container doesn't exist, run it.
+    cmd = [
+        "docker", "run",\
+        "-d",\
+        "--name", QUERY_HANDLER_DEF["CONTAINER_NAME"],\
+        "-v", f"{os.path.abspath('data/query_handler')}:/app/mnt", \
+        "-p", f'{QUERY_HANDLER_DEF["PORT"]}:{QUERY_HANDLER_DEF["PORT"]}', \
+        "--network", NET_DEF["NETWORK_NAME"], \
+        QUERY_HANDLER_DEF["IMAGE_NAME"] \
+    ]
+
+    result = subprocess.run(cmd,capture_output=True, text=True)
+    if result.returncode != 0:
+        print(f"Failed to start query handler container: {result.stderr}")
+        return False
+    
+    print(f'Started query handler on port {QUERY_HANDLER_DEF["PORT"]}.')
+
+    return True
+
+
 def createNetwork():
     '''
         Create the network that connects the docker containers.
@@ -272,6 +326,9 @@ def main(argv):
         return -1
     
     if not startASP():
+        return -1
+    
+    if not startQueryHandler():
         return -1
     
     return 0
