@@ -91,7 +91,7 @@ class SystemDbReader:
         '''
             Get all systems in the database.
         '''
-        return self.getAllEntriesInTable("SYSTEMTABLES")
+        return self.getAllEntriesInTable("SYSTEMSTABLE")
 
     def getDeployments(self, systemId, systemVersion):  
         '''
