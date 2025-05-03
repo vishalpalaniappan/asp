@@ -61,7 +61,7 @@ def main(argv):
     isDocker = os.environ.get('IS_RUNNING_IN_DOCKER', False)
 
     if isDocker:
-        SYSTEM_LOG_FILES = "/app/mnt"
+        SYSTEM_LOG_FILES = "/app/logs"
     else:
         SYSTEM_LOG_FILES = rootDir / "system_logs"
 
