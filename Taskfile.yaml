@@ -30,7 +30,7 @@ tasks:
 
   clean-and-restart:
     cmds:
-      - cmd: "rm -rf data 2>/dev/null || (echo 'Error: Cannot remove data directory, may require elevated privileges' && exit 1)"
-      - cmd: "rm -rf system_logs 2>/dev/null || (echo 'Error: Cannot remove system_logs directory, may require elevated privileges' && exit 1)"
       - task: clean-images
+      - cmd: "rm -rf system_logs"
+      - cmd: "rm -rf data"
       - task: start
