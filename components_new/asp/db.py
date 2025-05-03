@@ -30,11 +30,28 @@ def get_connection():
     raise Exception(f"Tried to connect to database {attempt} times but failed.")
 
 class DBClient:
+    """
+    A context manager for database operations.
+    
+    Handles connection creation and cleanup automatically when used in a with statement.
+    Example:
+        with DBClient() as db:
+            db.cursor.execute("SELECT * FROM table")
+            results = db.cursor.fetchall()
+    """
     def __enter__(self):
         self.conn = get_connection()
         self.cursor = self.conn.cursor()
         return self
 
     def __exit__(self, exc_type, exc_val, exc_tb):
-        self.cursor.close()
-        self.conn.close()
+        if hasattr(self, 'cursor') and self.cursor:
+            self.cursor.close()
+        if hasattr(self, 'conn') and self.conn:
+            if exc_type is None:
+                # Commit if no exception occurred
+                self.conn.commit()
+            self.conn.close()
+        
+        # Return False to propagate exceptions
+        return False
