@@ -7,7 +7,7 @@ def get_connection():
     isDocker = os.environ.get('IS_RUNNING_IN_DOCKER', False)
 
     if isDocker:
-        host = "mariadb-container"
+        host = "asp-mariadb-container"
     else:
         host = "localhost"
 
