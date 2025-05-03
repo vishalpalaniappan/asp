@@ -18,7 +18,6 @@ class SystemProcessor:
         self.logFiles = []
 
     def run(self):
-        time.sleep(5)
         with DBClient() as db:
             self.db = db
             self.eventWriter = EventWriter(db)
