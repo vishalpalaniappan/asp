@@ -58,8 +58,14 @@ class SystemProcessor:
 
 def main(argv):
     rootDir = Path(__file__).resolve().parents[0]
-    SYSTEM_LOG_FILES = rootDir / "system_logs"
-    # SYSTEM_LOG_FILES = "/app/mnt"
+    
+    isDocker = os.environ.get('IS_RUNNING_IN_DOCKER', False)
+
+    if isDocker:
+        SYSTEM_LOG_FILES = "/app/mnt"
+    else:
+        SYSTEM_LOG_FILES = rootDir / "system_logs"
+
     processor = SystemProcessor(SYSTEM_LOG_FILES)
     processor.run()
 
