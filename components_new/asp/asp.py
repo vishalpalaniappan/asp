@@ -6,7 +6,7 @@ from pathlib import Path
 from database.EventWriter import EventWriter
 from database.SystemWriter import SystemWriter
 from assembler.TraceAssembler import TraceAssembler
-from DbConn import DBClient
+from db import DBClient
 
 class SystemProcessor:
 
@@ -18,6 +18,7 @@ class SystemProcessor:
         self.logFiles = []
 
     def run(self):
+        time.sleep(5)
         with DBClient() as db:
             self.db = db
             self.eventWriter = EventWriter(db)
@@ -39,6 +40,9 @@ class SystemProcessor:
             if len(newFiles) == 0:
                 continue
 
+            print("\nProcessing new files:")
+            print(newFiles)
+
             for logFileName in newFiles:
                 if logFileName.endswith(".clp.zst"):
                     cdlFile = Cdl(os.path.join(self.logFolder, logFileName))
@@ -55,6 +59,7 @@ class SystemProcessor:
 def main(argv):
     rootDir = Path(__file__).resolve().parents[0]
     SYSTEM_LOG_FILES = rootDir / "system_logs"
+    # SYSTEM_LOG_FILES = "/app/mnt"
     processor = SystemProcessor(SYSTEM_LOG_FILES)
     processor.run()
 

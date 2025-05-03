@@ -8,4 +8,6 @@ COPY . .
 
 RUN pip install --no-cache-dir -r requirements.txt
 
-CMD ["python", "DatabaseWriter.py"]
+ENV IS_RUNNING_IN_DOCKER=True
+
+CMD ["python", "asp.py"]

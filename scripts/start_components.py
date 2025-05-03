@@ -220,6 +220,9 @@ def startASP():
     return True
 
 def createNetwork():
+    '''
+        Create the network that connects the docker containers.
+    '''
     cmd = ["docker", "network", "create", NET_DEF["NETWORK_NAME"]]
     try:
         # Check if network already exists
@@ -244,29 +247,31 @@ def createNetwork():
 
 
 def main(argv):
-    if (not isDockerInstalled()):
+    if not isDockerInstalled():
         return -1
     
-    if (not createDirectories()):
+    if not createDirectories():
         return -1
     
-    if (not buildImages()):
+    if not buildImages():
         return -1
     
-    if (not createNetwork()):
+    if not createNetwork():
         return -1
     
-    if (not startDatabase()):
+    if not startDatabase():
         return -1
     
-    if (not startASV()):
+    if not startASV():
         return -1
     
-    if (not startDLV()):
+    if not startDLV():
         return -1
     
-    if (not startASP()):
+    if not startASP():
         return -1
+    
+    return 0
     
 if __name__ == "__main__":
     sys.exit(main(sys.argv))
