@@ -31,7 +31,15 @@ class SystemProcessor:
         '''
         visitedFiles = set()
 
-        while True:
+def monitorFolder(self):
+    '''
+        Parse the system log files contained in folder.
+    '''
+    visitedFiles = set()
+    self._continue_monitoring = True
+
+    while self._continue_monitoring:
+        try:
             time.sleep(2)
             current = set(os.listdir(self.logFolder))
             newFiles = current - visitedFiles
@@ -53,7 +61,12 @@ class SystemProcessor:
             TraceAssembler(self.db)
 
             visitedFiles = current
-
+        except KeyboardInterrupt:
+            print("Stopping monitoring...")
+            self._continue_monitoring = False
+        except Exception as e:
+            print(f"Error in monitoring: {e}")
+            # Consider whether to continue or exit based on the error
 
 def main(argv):
     rootDir = Path(__file__).resolve().parents[0]
