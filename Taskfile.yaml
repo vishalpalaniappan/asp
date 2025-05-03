@@ -27,3 +27,10 @@ tasks:
       - task: stop
       - python3 {{.ROOT_DIR}}/scripts/clean_containers.py
       - python3 {{.ROOT_DIR}}/scripts/clean_images.py
+
+  clean-and-restart:
+    cmds:
+      - task: clean-images
+      - cmd: "rm -rf system_logs"
+      - cmd: "sudo rm -rf data"
+      - task: start

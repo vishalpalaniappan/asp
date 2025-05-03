@@ -25,6 +25,7 @@ def createDirectories():
     '''
     try:
         os.makedirs("data", exist_ok=True)
+        os.makedirs("system_logs", exist_ok=True)
         os.makedirs(ASV_DEF["DATA_DIR"], exist_ok=True)
         os.makedirs(DLV_DEF["DATA_DIR"], exist_ok=True)
         os.makedirs(ASP_DEF["DATA_DIR"], exist_ok=True)
@@ -158,6 +159,7 @@ def startDatabase():
         "-v", f"{os.path.abspath('./data/mariadb')}:/var/lib/mysql", \
         "-e", f"MARIADB_ROOT_PASSWORD={DB_DEF['DATABASE_PASSWORD']}", \
         "-e", f"MARIADB_DATABASE={DB_DEF['DATABASE_NAME']}", \
+        "-e", "MYSQL_USER=root", \
         "-p", f'{DB_DEF["PORT"]}:{DB_DEF["PORT"]}', \
         "--network", NET_DEF["NETWORK_NAME"], \
         "mariadb:latest"
@@ -205,6 +207,7 @@ def startASP():
         "-d",\
         "--name", ASP_DEF["CONTAINER_NAME"],\
         "-v", f"{os.path.abspath('data/asp')}:/app/mnt", \
+        "-v", f"{os.path.abspath('system_logs')}:/app/logs", \
         "--network", NET_DEF["NETWORK_NAME"], \
         ASP_DEF["IMAGE_NAME"] \
     ]
@@ -219,6 +222,9 @@ def startASP():
     return True
 
 def createNetwork():
+    '''
+        Create the network that connects the docker containers.
+    '''
     cmd = ["docker", "network", "create", NET_DEF["NETWORK_NAME"]]
     try:
         # Check if network already exists
@@ -243,29 +249,31 @@ def createNetwork():
 
 
 def main(argv):
-    if (not isDockerInstalled()):
+    if not isDockerInstalled():
         return -1
     
-    if (not createDirectories()):
+    if not createDirectories():
         return -1
     
-    if (not buildImages()):
+    if not buildImages():
         return -1
     
-    if (not createNetwork()):
+    if not createNetwork():
         return -1
     
-    if (not startDatabase()):
+    if not startDatabase():
         return -1
     
-    if (not startASV()):
+    if not startASV():
         return -1
     
-    if (not startDLV()):
+    if not startDLV():
         return -1
     
-    if (not startASP()):
+    if not startASP():
         return -1
+    
+    return 0
     
 if __name__ == "__main__":
     sys.exit(main(sys.argv))
