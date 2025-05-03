@@ -25,6 +25,7 @@ def createDirectories():
     '''
     try:
         os.makedirs("data", exist_ok=True)
+        os.makedirs("system_logs", exist_ok=True)
         os.makedirs(ASV_DEF["DATA_DIR"], exist_ok=True)
         os.makedirs(DLV_DEF["DATA_DIR"], exist_ok=True)
         os.makedirs(ASP_DEF["DATA_DIR"], exist_ok=True)
