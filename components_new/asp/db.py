@@ -1,5 +1,6 @@
 import mysql.connector
 import os 
+import time
 
 def get_connection():
     
@@ -10,13 +11,23 @@ def get_connection():
     else:
         host = "localhost"
 
-    return mysql.connector.connect(
-        host= host,
-        user= "root",
-        password= "random-password",
-        database= "aspDatabase",
-        port= "3306"
-    )
+    MAX_ATTEMPTS = 20
+    for attempt in range(MAX_ATTEMPTS):
+        try:
+            return mysql.connector.connect(
+                host= host,
+                user= "root",
+                password= "random-password",
+                database= "aspDatabase",
+                port= "3306"
+            )
+        except Exception as e:
+            print(f"Attempt {attempt + 1}: {e}")
+            print("Trying again in 5 seconds.")
+            attempt += 1
+        time.sleep(5)
+
+    raise Exception(f"Tried to connect to database {attempt} times but failed.")
 
 class DBClient:
     def __enter__(self):
