@@ -88,13 +88,14 @@ class TraceAssembler:
         '''
             Find the linked node.
         '''
-        query = 'SELECT * FROM IOEVENTS WHERE ("type" = %s or "type" = %s)\
-              and "adli_execution_id" = %s and "adli_execution_index" = %s' 
-        self.cursor.execute(query, ("link", "end", node["adliExecutionId"], node["adliExecutionIndex"]))
-        row = self.cursor.fetchone() 
+        query = 'SELECT * FROM IOEVENTS WHERE (trace_type = %s or trace_type = %s)\
+              and adli_execution_id = %s and adli_execution_index = %s' 
+        values = ("link", "end", node["adliExecutionId"], node["adliExecutionIndex"])
+        self.cursor.execute(query,values)
+        row = self.cursor.fetchall() 
 
-        if row:
-            rowData = self.addColumnNameToData(self.ioevent_cols, row)
+        if len(row) > 0:
+            rowData = self.addColumnNameToData(self.ioevent_cols, row[0])
             rowNode = json.loads(rowData["node"])
             if "output" in rowNode:
                 # Continue the trace since there is an output for this input.
@@ -124,8 +125,8 @@ class TraceAssembler:
         # Check if the trace uid has already been processed
         query = f'SELECT * FROM {tableName} WHERE trace_id = %s' 
         self.cursor.execute(query, (traceId,))
-        hasUid = self.cursor.fetchone()
-        if (hasUid is not None):
+        hasUid = self.cursor.fetchall()
+        if (len(hasUid) > 0):
             print(f"System Trace with UID {traceId} already exists in the database")
             return
         
