@@ -30,7 +30,8 @@ class SystemDbReader:
                     user= "root",
                     password= "random-password",
                     database= "aspDatabase",
-                    port= "3306"
+                    port= "3306",
+                    autocommit=True 
                 )
             except Exception as e:
                 print(f"Attempt {attempt + 1}: {e}")
@@ -49,8 +50,10 @@ class SystemDbReader:
             FROM INFORMATION_SCHEMA.COLUMNS
             WHERE TABLE_NAME = %s
         """
-        self.cursor.execute(query, (tableName,))
-        result = self.cursor.fetchall()
+
+        with self.conn.cursor() as cursor:
+            cursor.execute(query, (tableName,))
+            result = cursor.fetchall()
 
         columns = []
         for row in result:
@@ -66,7 +69,7 @@ class SystemDbReader:
         obj = {}
         for index, columnValue in enumerate(data):
             if isinstance(columnValue, datetime):
-                obj[columns[index]] = columnValue.timestamp()
+                obj[columns[index]] = columnValue.timestamp() * 1000
             else:
                 obj[columns[index]] = columnValue
 
@@ -76,9 +79,13 @@ class SystemDbReader:
         '''
             Given a table name, get all entries in the table.
         '''
-        query = f'SELECT * FROM {tableName}'
-        self.cursor.execute(query)
-        rows = self.cursor.fetchall() 
+        query = f'SELECT SQL_NO_CACHE * FROM {tableName}'
+
+        
+        with self.conn.cursor() as cursor:
+            cursor.execute(query)
+            rows = cursor.fetchall() 
+
         columns = self.getColumns(tableName)
 
         results = []
@@ -109,9 +116,12 @@ class SystemDbReader:
         sysVerFormatted = systemVersion.replace(".","")
         tableName = f"{systemId}_{sysVerFormatted}_traces"
 
-        query = f'SELECT * FROM {tableName} WHERE deployment_id = %s'
-        self.cursor.execute(query, (deploymentId,))
-        rows = self.cursor.fetchall() 
+        query = f'SELECT SQL_NO_CACHE * FROM {tableName} WHERE deployment_id = %s'
+
+        
+        with self.conn.cursor() as cursor:
+            cursor.execute(query, (deploymentId,))
+            rows = cursor.fetchall() 
 
         columns = self.getColumns(tableName)
 
