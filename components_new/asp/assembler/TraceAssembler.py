@@ -52,7 +52,7 @@ class TraceAssembler:
             Processes the database and extracts all the traces.
         '''
         # Get all the start nodes
-        query = f'SELECT * FROM IOEVENTS WHERE trace_type = %s' 
+        query = f'SELECT * FROM IOEVENTS WHERE node_type = %s' 
         self.cursor.execute(query, ("start",))
         startNodes = self.cursor.fetchall() 
 
@@ -72,11 +72,16 @@ class TraceAssembler:
 
         while (link):
             trace.append(link["node"])
+
+            if "output" not in link["node"]:
+                # No output for this node and it isn't an end, so trace as ended.
+                return trace
+
             # TODO: Add support for multiple outputs for a single input.
             link = self.findLink(link["node"]["output"][0])
 
             # If end of trace has been reached, append and return
-            if link and link["type"] == "end":
+            if link and link["node_type"] == "end":
                 trace.append(link["node"])
                 return trace
 
@@ -88,7 +93,7 @@ class TraceAssembler:
         '''
             Find the linked node.
         '''
-        query = 'SELECT * FROM IOEVENTS WHERE (trace_type = %s or trace_type = %s)\
+        query = 'SELECT * FROM IOEVENTS WHERE (node_type = %s or node_type = %s)\
               and adli_execution_id = %s and adli_execution_index = %s' 
         values = ("link", "end", node["adliExecutionId"], node["adliExecutionIndex"])
         self.cursor.execute(query,values)
@@ -99,10 +104,10 @@ class TraceAssembler:
             rowNode = json.loads(rowData["node"])
             if "output" in rowNode:
                 # Continue the trace since there is an output for this input.
-                return {"type":"link", "node":rowNode}
+                return {"node_type":"link", "node":rowNode}
             else:
                 # We've reached the end of the trace.
-                return {"type":"end", "node":rowNode}
+                return {"node_type":"end", "node":rowNode}
 
         return None
 
@@ -134,9 +139,9 @@ class TraceAssembler:
         startTs = traces[0]["timestamp"]
         endTs = None if len(traces) == 1 else traces[-1]["timestamp"]
 
-        startTs = datetime.fromtimestamp(startTs/1000)
+        startTs = datetime.fromtimestamp(float(startTs / 1000))
         if endTs:
-            endTs = datetime.fromtimestamp(endTs/1000)
+            endTs = datetime.fromtimestamp(float(endTs / 1000))
 
         # Insert the trace into the database
         sql = f''' INSERT INTO {tableName}(deployment_id, trace_id, start_ts, end_ts, trace_type, traces)
