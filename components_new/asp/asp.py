@@ -29,9 +29,9 @@ class SystemProcessor:
             Parse the system log files contained in folder.
         '''
         visitedFiles = set()
-        self._continue_monitoring = True
+        self.continue_monitoring = True
 
-        while self._continue_monitoring:
+        while self.continue_monitoring:
             try:
                 time.sleep(2)
                 current = set(os.listdir(self.logFolder))
@@ -56,7 +56,7 @@ class SystemProcessor:
                 visitedFiles = current
             except KeyboardInterrupt:
                 print("Stopping monitoring...")
-                self._continue_monitoring = False
+                self.continue_monitoring = False
             except Exception as e:
                 print(f"Error in monitoring: {e}")
 
