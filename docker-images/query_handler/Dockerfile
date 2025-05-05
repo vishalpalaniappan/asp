@@ -10,4 +10,4 @@ ENV IS_RUNNING_IN_DOCKER=True
 
 EXPOSE 8765
 
-CMD ["python3", "server.py"]
+CMD ["python3", "-u", "server.py"]

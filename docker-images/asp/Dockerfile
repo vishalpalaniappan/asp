@@ -10,4 +10,4 @@ RUN pip install --no-cache-dir -r requirements.txt
 
 ENV IS_RUNNING_IN_DOCKER=True
 
-CMD ["python", "asp.py"]
+CMD ["python", "-u", "asp.py"]
