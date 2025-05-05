@@ -36,8 +36,7 @@ class SystemDbReader:
             except Exception as e:
                 print(f"Attempt {attempt + 1}: {e}")
                 print("Trying again in 5 seconds.")
-                attempt += 1
-            time.sleep(5)
+                time.sleep(5)
 
         raise Exception(f"Tried to connect to database {attempt} times but failed.")
             
