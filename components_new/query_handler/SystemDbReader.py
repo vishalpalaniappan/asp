@@ -78,7 +78,7 @@ class SystemDbReader:
         '''
             Given a table name, get all entries in the table.
         '''
-        query = f'SELECT SQL_NO_CACHE * FROM {tableName}'
+        query = f'SELECT * FROM {tableName}'
 
         
         with self.conn.cursor() as cursor:
@@ -115,7 +115,7 @@ class SystemDbReader:
         sysVerFormatted = systemVersion.replace(".","")
         tableName = f"{systemId}_{sysVerFormatted}_traces"
 
-        query = f'SELECT SQL_NO_CACHE * FROM {tableName} WHERE deployment_id = %s'
+        query = f'SELECT * FROM {tableName} WHERE deployment_id = %s'
 
         
         with self.conn.cursor() as cursor:
