@@ -6,19 +6,7 @@ Automated System Processor (ASP) is a free fully automated log based diagnostic 
 > This repo is in development and there are core features being added.
 
 # Usage
-Currently, each program has to be run separately. This workflow will be automated once core functionality is fully developed.
 
-To run the query handler, go to components/query_handler and run:
-  ```shell
-  python3 server.py
-  ```
-This will start a websocket server on port 8765. After connecting to the websocket server, you can send commands to query the systems.
-
-To run the system processor, go to components/asp and run:
-  ```shell
-  python3 SystemProcessor.py
-  ```
-This will process all the log files in the system_logs folder and index them to the database. Once ASV is developed, the information in the database can be visualized. 
 
 # System Diagram
 ![image](https://github.com/user-attachments/assets/787c7b7b-fff1-48e8-8ae0-03973437dc84)
