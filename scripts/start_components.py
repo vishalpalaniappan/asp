@@ -1,10 +1,12 @@
 #!/usr/bin/env python3
 
+import mysql.connector
 import subprocess
 from utils import doesContainerExist, buildImage, isDockerInstalled
 from constants import ASV_DEF, DLV_DEF, DB_DEF, ASP_DEF, NET_DEF, QUERY_HANDLER_DEF
 import os
 import sys
+import time
 
 def buildImages():
     '''
@@ -301,7 +303,31 @@ def createNetwork():
     except Exception as e:
         print(f"Error when creating network named: {e}")
         return False
+    
 
+def checkDatabaseConnection():
+
+    try:
+        print("Attempting database connection...")
+        conn = mysql.connector.connect(
+            host= "localhost",
+            user= "root",
+            password= "random-password",
+            database= "aspDatabase",
+            port= "3306",
+            autocommit=True 
+        )
+        if conn.is_connected():
+            cursor = conn.cursor()
+            cursor.execute("SELECT 1;")
+            cursor.fetchone()
+            conn.close()
+            print("Database is live.")
+            return True
+        
+    except Exception as e:
+        print("Database is not accessible yet.")
+        return False
 
 def main(argv):
     if not isDockerInstalled():
@@ -319,16 +345,26 @@ def main(argv):
     if not startDatabase():
         return -1
     
-    if not startASV():
-        return -1
-    
-    if not startDLV():
-        return -1
+    # Wait for database to start
+    count = 0
+    while(not checkDatabaseConnection()):
+        if (count == 10):
+            print("Failed to connect to database. Exiting.")
+            return -1
+        else:
+            count += 1
+            time.sleep(3)
     
     if not startASP():
         return -1
     
     if not startQueryHandler():
+        return -1
+    
+    if not startASV():
+        return -1
+    
+    if not startDLV():
         return -1
     
     return 0
