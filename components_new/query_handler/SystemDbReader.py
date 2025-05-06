@@ -13,6 +13,21 @@ class SystemDbReader:
         self.conn = self.get_connection()
         self.cursor = self.conn.cursor()
 
+    def close(self):
+        """
+            Close the database connection and cursor.
+        """
+        if self.cursor:
+            self.cursor.close()
+        if self.conn:
+            self.conn.close()
+
+    def __del__(self):
+        """
+            Ensure resources are cleaned up when object is garbage collected.
+        """
+        self.close()
+
     def get_connection(self):
         
         isDocker = os.environ.get('IS_RUNNING_IN_DOCKER', False)
