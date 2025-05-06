@@ -29,7 +29,7 @@ class EventWriter:
                 end_ts TIMESTAMP,
                 adli_execution_id VARCHAR(100),
                 adli_execution_index VARCHAR(100),
-                trace_type VARCHAR(100),
+                node_type VARCHAR(100),
                 node TEXT,
                 created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
             )
@@ -73,17 +73,17 @@ class EventWriter:
                 node = event["node"]
                 adliExecutionId = node["adliExecutionId"]
                 adliExecutionIndex = node["adliExecutionIndex"]
-                trace_type = event["type"]
+                node_type = event["node_type"]
                 nodeStr = json.dumps(node)
                 dt_string = datetime.fromtimestamp(float(ts))
-                event_data.append((sysId, sysVer, deploymentId, programId, dt_string, None, adliExecutionId, adliExecutionIndex, trace_type, nodeStr))        
+                event_data.append((sysId, sysVer, deploymentId, programId, dt_string, None, adliExecutionId, adliExecutionIndex, node_type, nodeStr))        
 
 
             sql = f''' INSERT INTO IOEVENTS(
                 system_id, system_ver, deployment_id, \
                 program_execution_id, start_ts, end_ts, \
                 adli_execution_id, adli_execution_index, \
-                trace_type, node
+                node_type, node
                 )
                     VALUES(%s,%s,%s,%s,%s,%s,%s,%s,%s,%s) '''
             self.cursor.executemany(sql, event_data)

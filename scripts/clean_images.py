@@ -1,4 +1,4 @@
-from constants import ASV_DEF, DLV_DEF, ASP_DEF, NET_DEF
+from constants import ASV_DEF, DLV_DEF, ASP_DEF, NET_DEF, QUERY_HANDLER_DEF
 from utils import isDockerInstalled, doesImageExist
 import subprocess
 import sys
@@ -54,6 +54,23 @@ def clearAspImage():
         print(f"Error when removing ASP image: {e}")
         return False
     
+def clearQueryHandlerImage():    
+    try:
+        if not doesImageExist(QUERY_HANDLER_DEF["IMAGE_NAME"]):
+            print(f"{QUERY_HANDLER_DEF['IMAGE_NAME']} Image does not exist.")
+            return True
+        
+        cmd = ["docker", "rmi", QUERY_HANDLER_DEF["IMAGE_NAME"]]
+        result = subprocess.run(cmd, capture_output=True, text=True)
+        if result.returncode != 0:
+            print(f'Failed to remove image: {QUERY_HANDLER_DEF["IMAGE_NAME"]}')
+            return False
+        print("Removed query handler image.")
+        return True
+    except Exception as e:
+        print(f"Error when removing query handler image: {e}")
+        return False
+    
 def clearNetworks():    
     try:
         cmd = ["docker", "network", "rm", NET_DEF["NETWORK_NAME"]]
@@ -78,6 +95,9 @@ def main(argv):
         return -1
     
     if (not clearAspImage()):
+        return -1
+    
+    if (not clearQueryHandlerImage()):
         return -1
     
     return 0

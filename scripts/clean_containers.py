@@ -1,4 +1,4 @@
-from constants import ASV_DEF, DLV_DEF, DB_DEF, ASP_DEF
+from constants import ASV_DEF, DLV_DEF, DB_DEF, ASP_DEF, QUERY_HANDLER_DEF
 from utils import isDockerInstalled, doesContainerExist
 import subprocess
 import sys
@@ -102,6 +102,31 @@ def deleteAspContainer():
     except Exception as e:
         print(f"Error when removing ASP container: {e}")
         return False
+    
+def deleteQueryHandlerContainer():  
+    '''
+        Delete the Query Handler container.
+    '''  
+    try:
+        isContainerLoaded = doesContainerExist(QUERY_HANDLER_DEF["CONTAINER_NAME"])
+
+        if not isContainerLoaded:
+            print("Query handler container does not exist. No need to clear it.")
+            return True
+
+        cmd = ["docker", "rm", QUERY_HANDLER_DEF["CONTAINER_NAME"]]
+        result = subprocess.run(cmd, capture_output=True, text=True)
+
+        if result.returncode != 0:
+            print(f'Failed to remove container: {QUERY_HANDLER_DEF["CONTAINER_NAME"]}')
+            return False
+        
+        print("Removed query handler container.")
+
+        return True    
+    except Exception as e:
+        print(f"Error when removing query handler container: {e}")
+        return False
 
 def main(argv):
     if (not isDockerInstalled()):
@@ -117,6 +142,9 @@ def main(argv):
         return -1
     
     if (not deleteAspContainer()):
+        return -1
+    
+    if (not deleteQueryHandlerContainer()):
         return -1
     
     return 0

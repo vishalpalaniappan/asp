@@ -32,6 +32,15 @@ ASP_DEF = {
     "DATA_DIR": "data/asp",
 }
 
+QUERY_HANDLER_DEF = {
+    "CONTAINER_NAME": "query-handler-container",
+    "PORT": 8765,
+    "IMAGE_NAME": "query-handler-image",
+    "IMAGE_PATH": "docker-images/query_handler/Dockerfile",
+    "COMPONENT_PATH": "components_new/query_handler",
+    "DATA_DIR": "data/query_handler",
+}
+
 NET_DEF = {
     "NETWORK_NAME": "asp-network"
 }

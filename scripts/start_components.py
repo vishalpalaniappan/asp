@@ -1,10 +1,13 @@
 #!/usr/bin/env python3
 
+import mysql.connector
 import subprocess
 from utils import doesContainerExist, buildImage, isDockerInstalled
-from constants import ASV_DEF, DLV_DEF, DB_DEF, ASP_DEF, NET_DEF
+from constants import ASV_DEF, DLV_DEF, DB_DEF, ASP_DEF, NET_DEF, QUERY_HANDLER_DEF
 import os
 import sys
+import time
+import webbrowser
 
 def buildImages():
     '''
@@ -14,6 +17,11 @@ def buildImages():
         buildImage(ASV_DEF["IMAGE_NAME"], ASV_DEF["IMAGE_PATH"], ASV_DEF["COMPONENT_PATH"])
         buildImage(DLV_DEF["IMAGE_NAME"], DLV_DEF["IMAGE_PATH"], DLV_DEF["COMPONENT_PATH"])
         buildImage(ASP_DEF["IMAGE_NAME"], ASP_DEF["IMAGE_PATH"], ASP_DEF["COMPONENT_PATH"])
+        buildImage(
+            QUERY_HANDLER_DEF["IMAGE_NAME"],
+            QUERY_HANDLER_DEF["IMAGE_PATH"],
+            QUERY_HANDLER_DEF["COMPONENT_PATH"]
+        )
         return True
     except Exception as e:
         print(f"Failed to build images: {e}")
@@ -29,6 +37,7 @@ def createDirectories():
         os.makedirs(ASV_DEF["DATA_DIR"], exist_ok=True)
         os.makedirs(DLV_DEF["DATA_DIR"], exist_ok=True)
         os.makedirs(ASP_DEF["DATA_DIR"], exist_ok=True)
+        os.makedirs(QUERY_HANDLER_DEF["DATA_DIR"], exist_ok=True)
         return True
     except Exception as e:
         print(f"Failed to create directories: {e}")
@@ -221,6 +230,55 @@ def startASP():
 
     return True
 
+
+def startQueryHandler():
+    '''
+        Starts the query handler container.
+    '''
+    print("\nStarting Query Handler...")    
+
+    try:
+        containerExists = doesContainerExist(QUERY_HANDLER_DEF["CONTAINER_NAME"])
+    except Exception as e:
+        print(f"Failed check to see if query handler container exists: {e}")
+        return False
+
+    # If the container exists, start it and return.
+    if (containerExists):
+        print("Query handler container already exists.")
+        result = subprocess.run(
+            ["docker", "start", QUERY_HANDLER_DEF["CONTAINER_NAME"]],
+            capture_output=True,
+            text=True
+        )
+        if result.returncode != 0:
+            print(f"Failed to start query handler container: {result.stderr}")
+            return False
+        
+        print(f'Started query handler on port {QUERY_HANDLER_DEF["PORT"]}.')
+        return True
+
+    # If the container doesn't exist, run it.
+    cmd = [
+        "docker", "run",\
+        "-d",\
+        "--name", QUERY_HANDLER_DEF["CONTAINER_NAME"],\
+        "-v", f"{os.path.abspath('data/query_handler')}:/app/mnt", \
+        "-p", f'{QUERY_HANDLER_DEF["PORT"]}:{QUERY_HANDLER_DEF["PORT"]}', \
+        "--network", NET_DEF["NETWORK_NAME"], \
+        QUERY_HANDLER_DEF["IMAGE_NAME"] \
+    ]
+
+    result = subprocess.run(cmd,capture_output=True, text=True)
+    if result.returncode != 0:
+        print(f"Failed to start query handler container: {result.stderr}")
+        return False
+    
+    print(f'Started query handler on port {QUERY_HANDLER_DEF["PORT"]}.')
+
+    return True
+
+
 def createNetwork():
     '''
         Create the network that connects the docker containers.
@@ -246,7 +304,31 @@ def createNetwork():
     except Exception as e:
         print(f"Error when creating network named: {e}")
         return False
+    
 
+def checkDatabaseConnection():
+
+    try:
+        print("Attempting database connection...")
+        conn = mysql.connector.connect(
+            host= "localhost",
+            user= "root",
+            password= "random-password",
+            database= "aspDatabase",
+            port= "3306",
+            autocommit=True 
+        )
+        if conn.is_connected():
+            cursor = conn.cursor()
+            cursor.execute("SELECT 1;")
+            cursor.fetchone()
+            conn.close()
+            print("Database is live.")
+            return True
+        
+    except Exception as e:
+        print("Database is not accessible yet.")
+        return False
 
 def main(argv):
     if not isDockerInstalled():
@@ -264,14 +346,32 @@ def main(argv):
     if not startDatabase():
         return -1
     
+    # Wait for database to start
+    count = 0
+    while(not checkDatabaseConnection()):
+        if (count == 10):
+            print("Failed to connect to database. Exiting.")
+            return -1
+        else:
+            count += 1
+            time.sleep(3)
+    
+    if not startASP():
+        return -1
+    
+    if not startQueryHandler():
+        return -1
+    
     if not startASV():
         return -1
     
     if not startDLV():
         return -1
     
-    if not startASP():
-        return -1
+    print("Opening Automated System Viewer in default browser...")
+    print("If it doesn't open, follow this link:")
+    print("http://localhost:3012/")
+    webbrowser.open("http://localhost:3012/")
     
     return 0
     
