@@ -7,6 +7,7 @@ from constants import ASV_DEF, DLV_DEF, DB_DEF, ASP_DEF, NET_DEF, QUERY_HANDLER_
 import os
 import sys
 import time
+import webbrowser
 
 def buildImages():
     '''
@@ -366,6 +367,11 @@ def main(argv):
     
     if not startDLV():
         return -1
+    
+    print("Opening Automated System Viewer in default browser.")
+    print("If it doesn't open, follow this link:")
+    print("http://localhost:3012/")
+    webbrowser.open("http://localhost:3012/")
     
     return 0
     
