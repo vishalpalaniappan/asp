@@ -368,7 +368,7 @@ def main(argv):
     if not startDLV():
         return -1
     
-    print("Opening Automated System Viewer in default browser.")
+    print("Opening Automated System Viewer in default browser...")
     print("If it doesn't open, follow this link:")
     print("http://localhost:3012/")
     webbrowser.open("http://localhost:3012/")
