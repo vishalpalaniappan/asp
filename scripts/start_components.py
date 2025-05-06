@@ -123,7 +123,7 @@ def startDLV():
         "-d",\
         "--name", DLV_DEF["CONTAINER_NAME"],\
         "-p", f'{DLV_DEF["PORT"]}:{DLV_DEF["PORT"]}', \
-        "-v", f"{os.path.abspath('./data/dlv')}:/app/dist", \
+        "-v", f"{os.path.abspath('./system_logs')}:/app/dist", \
         DLV_DEF["IMAGE_NAME"] \
     ]
 
@@ -313,9 +313,9 @@ def checkDatabaseConnection():
         conn = mysql.connector.connect(
             host= "localhost",
             user= "root",
-            password= "random-password",
-            database= "aspDatabase",
-            port= "3306",
+            password= DB_DEF["DATABASE_PASSWORD"],
+            database= DB_DEF["DATABASE_NAME"],
+            port= str(DB_DEF["PORT"]),
             autocommit=True 
         )
         if conn.is_connected():
@@ -326,7 +326,7 @@ def checkDatabaseConnection():
             print("Database is live.")
             return True
         
-    except Exception as e:
+    except Exception:
         print("Database is not accessible yet.")
         return False
 
@@ -348,6 +348,7 @@ def main(argv):
     
     # Wait for database to start
     count = 0
+    print("Checking database connection.")
     while(not checkDatabaseConnection()):
         if (count == 10):
             print("Failed to connect to database. Exiting.")
