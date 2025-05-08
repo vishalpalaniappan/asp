@@ -363,8 +363,8 @@ def main(argv):
     if not startQueryHandler():
         return -1
     
-    if not startASV():
-        return -1
+    # if not startASV():
+    #     return -1
     
     if not startDLV():
         return -1

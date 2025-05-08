@@ -8,17 +8,9 @@ tasks:
     cmds:
       - "git submodule update --init --recursive"
 
-  install-python-libs:
-    cmds:
-      - pip3 install --user virtualenv
-      - ~/.local/bin/virtualenv venv
-      - ./venv/bin/pip install --upgrade pip
-      - ./venv/bin/pip install -r {{.ROOT_DIR}}/requirements.txt
-
   start:
     cmds:
       - task: install-submodules
-      - task: install-python-libs
       - python3 {{.ROOT_DIR}}/scripts/start_components.py
 
   stop:
