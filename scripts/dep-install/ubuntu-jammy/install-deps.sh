@@ -6,6 +6,7 @@ set -e
 # Error on undefined variable
 set -u
 
+# Update and install libraries
 apt-get update
 DEBIAN_FRONTEND=noninteractive apt-get install --no-install-recommends -y \
   ca-certificates \
