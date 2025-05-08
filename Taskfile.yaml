@@ -10,9 +10,9 @@ tasks:
 
   install-python-libs:
     cmds:
-      - "python3 -m venv venv"
-      - "source venv/bin/activate"
-      - "pip install -r {{.ROOT_DIR}}/requirements.txt"
+      - python3 -m venv venv
+      - source venv/bin/activate
+      - . venv/bin/activate && pip install -r {{.ROOT_DIR}}/requirements.txt
 
   start:
     cmds:
