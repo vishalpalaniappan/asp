@@ -85,6 +85,8 @@ class CdlDecoder:
 
         logLine = self.execution[self.callStack[-1]["funcPosition"]]
 
+        logValue["logFileIndex"] = self.position + 1
+        logValue["logFileId"] = self.header.execInfo["programExecutionId"]
         logValue["timestamp"] = logLine.timestamp
         logValue["funcName"] = self.header.getLtInfo(logLine.ltId).name
         logValue["programName"] = self.header.programInfo["name"]
@@ -106,6 +108,8 @@ class CdlDecoder:
                 if "output" not in cs["input"][-1]:
                     cs["input"][-1]["output"] = []
 
+                logValue["logFileIndex"] = self.position + 1
+                logValue["logFileId"] = self.header.execInfo["programExecutionId"]
                 logValue["timestamp"] = logLine.timestamp
                 logValue["programName"] = self.header.programInfo["name"]
                 logValue["funcName"] = self.header.getLtInfo(logLine.ltId).name
@@ -116,6 +120,8 @@ class CdlDecoder:
         if "output" not in self.callStack[-1]:
             self.callStack[-1]["output"] = []
 
+        logValue["logFileIndex"] = self.position + 1
+        logValue["logFileId"] = self.header.execInfo["programExecutionId"]
         logValue["timestamp"] = logLine.timestamp
         logValue["programName"] = self.header.programInfo["name"]
         logValue["funcName"] = self.header.getLtInfo(logLine.ltId).name
