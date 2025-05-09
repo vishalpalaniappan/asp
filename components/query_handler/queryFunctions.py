@@ -1,7 +1,7 @@
 import json
-from SystemDatabaseReader import SystemDatabaseReader
+from SystemDbReader import SystemDbReader
 
-reader = SystemDatabaseReader()
+reader = SystemDbReader()
 
 def handleUnknownMessage(message):
     '''
@@ -20,11 +20,7 @@ def handleGetSystems(message):
         for system in systems:
             system["deployments"] = reader.getDeployments(
                 systemId= system["system_id"],
-                systemVersion= system["version"]
-            )
-            system["programs"] = reader.getPrograms(
-                systemId= system["system_id"],
-                systemVersion= system["version"]
+                systemVersion= system["system_ver"]
             )
         message["response"] = systems
     except Exception as e:

@@ -1,2 +1,2 @@
 websockets
-clp-ffi-py
+mysql-connector-python

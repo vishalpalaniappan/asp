@@ -1,5 +1,10 @@
 import json
-from queryFunctions import *
+from queryFunctions import (
+    handleUnknownMessage,
+    handleGetSystems,
+    handleGetTraces,
+    handleUnknownQueryType
+)
 
 def handleQuery (message):
     '''
