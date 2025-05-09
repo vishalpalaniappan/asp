@@ -1,5 +1,7 @@
 #!/usr/bin/env bash
 
+# This script installs the dependencies needed to run the application.
+
 # Exit on any error
 set -e
 
