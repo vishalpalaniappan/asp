@@ -17,7 +17,7 @@ To install the dependencies, run:
 ```
 In addition to installing python and other useful libraries, this script also installs [task](https://taskfile.dev/) if it doesn't exist.
 
-### 2. Starting the System
+### 2. Starting ASP
 
 To start the system, run:
 ```shell
@@ -39,7 +39,7 @@ Once the system is fully started, the Automated System Viewer will automatically
 
 To process new system log files, add the logs to the system_logs folder. ASP monitors this folder to process and index any new system level traces.
 
-### 3. Stopping the System
+### 3. Stopping ASP
 
 To stop the system, run:
 ```shell
@@ -48,7 +48,7 @@ task stop
 
 This will stop all the containers.
 
-### 4. Cleaning and Restarting
+### 4. Cleaning and Restarting ASP
 
 To fully clean and restart the system:
 ```shell
