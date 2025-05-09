@@ -320,7 +320,7 @@ def main(argv):
     if not startDatabase():
         return -1
     
-    print("Waiting for database to start")
+    print("Waiting for database to start...")
     time.sleep(10)
     
     if not startASP():
