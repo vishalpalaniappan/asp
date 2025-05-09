@@ -2,7 +2,7 @@
 
 Automated System Processor (ASP) is a free fully automated log based diagnostic tool for software systems. 
 
-# Usage
+## Usage
 
 > [!NOTE]  
 > This workflow has been tested on a WSL distro running Ubuntu with Docker Desktop and Python3.9. It has also been tested on an EC2 instance running Ubuntu with docker installed. This workflow will continue to evolve as support for more platforms is added and more complete testing is performed.
