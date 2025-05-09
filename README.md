@@ -7,17 +7,25 @@ Automated System Processor (ASP) is a free fully automated log based diagnostic 
 > [!NOTE]  
 > This workflow has been tested on a WSL distro running Ubuntu with Docker Desktop and Python3.9. It has also been tested on an EC2 instance running Ubuntu with docker installed. This workflow will continue to evolve as support for more platforms is added and more complete testing is performed.
 
-After cloning the repo onto a machine running Ubuntu, enter the repo's folder and follow these steps to start the components:
+After cloning the repo onto a machine running Ubuntu, enter the repo's folder and see the following points for how to use it.
 
-### 1. Installing Dependencies
+## Requirements
+
+ASP expects docker to be installed, so please install it if you haven't. It also expects that you can run docker without needing root permissions. 
+
+Please see these docs for more directions:
+- https://docs.docker.com/engine/install/ubuntu/
+- https://docs.docker.com/engine/install/linux-postinstall/
+
+## Installing Dependencies
 
 To install the dependencies, run:
 ```shell
 ./scripts/install-deps.sh
 ```
-In addition to installing python and other useful libraries, this script also installs [task](https://taskfile.dev/) if it doesn't exist.
+In addition to installing python and other useful libraries, this script also installs [task](https://taskfile.dev/) if it isn't already installed.
 
-### 2. Starting ASP
+## Starting ASP
 
 To start the system, run:
 ```shell
@@ -39,7 +47,7 @@ Once the system is fully started, the Automated System Viewer will automatically
 
 To process new system log files, add the logs to the system_logs folder. ASP monitors this folder to process and index any new system level traces.
 
-### 3. Stopping ASP
+## Stopping ASP
 
 To stop the system, run:
 ```shell
@@ -48,7 +56,7 @@ task stop
 
 This will stop all the containers.
 
-### 4. Cleaning and Restarting ASP
+## Cleaning and Restarting ASP
 
 To fully clean and restart the system:
 ```shell
