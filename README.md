@@ -5,7 +5,7 @@ Automated System Processor (ASP) is a free fully automated log based diagnostic 
 ## Usage
 
 > [!NOTE]  
-> This workflow has been tested on a WSL distro running Ubuntu with Docker Desktop and Python3.9. It has also been tested on an EC2 instance running Ubuntu with docker installed. This workflow will continue to evolve as support for more platforms is added and more complete testing is performed.
+> This workflow has been tested on a WSL distro running Ubuntu(22.04 LTS) with Docker Desktop(Version 28.0.1, build 068a01e) and Python3.9. It has been tested on an t2.micro EC2 instance running Ubuntu(24.04.2 LTS) with docker installed. This workflow will continue to evolve as support for more platforms is added and more complete testing is performed.
 
 After cloning the repo onto a machine running Ubuntu, enter the repo's folder and see the following points for how to use it.
 
