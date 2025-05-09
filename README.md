@@ -54,7 +54,7 @@ To fully clean and restart the system:
 ```shell
 task clean-and-restart
 ```
-This command deletes all the images and containers. It also deletes any data stored in the container (eg. database). 
+This command deletes all the generated images and containers. It also deletes any data stored in the containers (eg. database). It then rebuids the images and starts the containers.
 
 Currently, it does not clear the system_logs folder. I did this because I primarily use the clean-and-restart task while developing and it was helpful for me to retain the logs.
 
