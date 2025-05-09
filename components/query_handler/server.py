@@ -13,7 +13,7 @@ async def main():
     parser = argparse.ArgumentParser(description='WebSocket server for ASV queries')
 
     parser.add_argument('--host',
-                        default='localhost',
+                        default='0.0.0.0',
                         help='Host to bind the server to')
                         
     parser.add_argument('--port',

@@ -2,23 +2,61 @@
 
 Automated System Processor (ASP) is a free fully automated log based diagnostic tool for software systems. 
 
+## Usage
+
 > [!NOTE]  
-> This repo is in development and there are core features being added.
+> This workflow has been tested on a WSL distro running Ubuntu with Docker Desktop and Python3.9. It has also been tested on an EC2 instance running Ubuntu with docker installed. This workflow will continue to evolve as support for more platforms is added and more complete testing is performed.
 
-# Usage
-Currently, each program has to be run separately. This workflow will be automated once core functionality is fully developed.
+After cloning the repo onto a machine running Ubuntu, enter the repo's folder and follow these steps to start the components:
 
-To run the query handler, go to components/query_handler and run:
-  ```shell
-  python3 server.py
-  ```
-This will start a websocket server on port 8765. After connecting to the websocket server, you can send commands to query the systems.
+### 1. Installing Dependencies
 
-To run the system processor, go to components/asp and run:
-  ```shell
-  python3 SystemProcessor.py
-  ```
-This will process all the log files in the system_logs folder and index them to the database. Once ASV is developed, the information in the database can be visualized. 
+To install the dependencies, run:
+```shell
+./scripts/install-deps.sh
+```
+In addition to installing python and other useful libraries, this script also installs [task](https://taskfile.dev/) if it doesn't exist.
+
+### 2. Starting ASP
+
+To start the system, run:
+```shell
+task start
+```
+This will build the docker images and start the containers to run the following:
+
+| Component                  | URL                    | PORT |
+|----------------------------|------------------------|------|
+| Automated System Processor |                        |      |
+| Diagnostic Log Viewer      | http://localhost:3011/ | 3011 |
+| Automated System Viewer    | http://localhost:3012/ | 3012 |
+| Query Handler              | ws://localhost:8765    | 8765 |
+| Database                   |                        | 3306 |
+
+It also sets up the network connection between the containers so the database can be queried.
+
+Once the system is fully started, the Automated System Viewer will automatically open in the browser. You can also manually visit the URL provided above.
+
+To process new system log files, add the logs to the system_logs folder. ASP monitors this folder to process and index any new system level traces.
+
+### 3. Stopping ASP
+
+To stop the system, run:
+```shell
+task stop
+```
+
+This will stop all the containers.
+
+### 4. Cleaning and Restarting ASP
+
+To fully clean and restart the system:
+```shell
+task clean-and-restart
+```
+This command deletes all the generated images and containers. It also deletes any data stored in the containers (eg. database). It then rebuids the images and starts the containers.
+
+Currently, it does not clear the system_logs folder. I did this because I primarily use the clean-and-restart task while developing and it was helpful for me to retain the logs.
 
 # System Diagram
 ![image](https://github.com/user-attachments/assets/787c7b7b-fff1-48e8-8ae0-03973437dc84)

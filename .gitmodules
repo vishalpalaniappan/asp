@@ -1,9 +1,9 @@
 [submodule "tools/yscope-dev-utils"]
 	path = tools/yscope-dev-utils
 	url = https://github.com/y-scope/yscope-dev-utils.git
-[submodule "components_new/asv"]
-	path = components_new/asv
-	url = https://github.com/vishalpalaniappan/automated-system-viewer.git
-[submodule "components_new/dlv"]
-	path = components_new/dlv
+[submodule "components/dlv"]
+	path = components/dlv
 	url = https://github.com/vishalpalaniappan/diagnostic-log-viewer.git
+[submodule "components/asv"]
+	path = components/asv
+	url = https://github.com/vishalpalaniappan/automated-system-viewer.git

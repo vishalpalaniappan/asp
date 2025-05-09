@@ -9,19 +9,23 @@ class SystemWriter:
         and assembled traces.
     '''
 
-    def __init__(self):
-        path = os.path.dirname(os.path.dirname(os.path.dirname(__file__)))
-        db_path = os.path.join(path, "asp.db")
-        self.conn = sqlite3.connect(db_path, check_same_thread=False)
+    def __init__(self, db):
+        self.conn = db.conn
         self.cursor = self.conn.cursor()
-        self.cursor.execute(
-            '''
-            CREATE TABLE IF NOT EXISTS SYSTEMTABLES
-            (system_id string, version string, name string, description text, programs string,
-                PRIMARY KEY (system_id, version))
-            '''
-        )
-        self.conn.commit()
+
+        sql = '''
+            CREATE TABLE IF NOT EXISTS SYSTEMSTABLE 
+            (
+                id INT AUTO_INCREMENT PRIMARY KEY,
+                system_id VARCHAR(100) NOT NULL,
+                system_ver VARCHAR(100),
+                name VARCHAR(100),
+                description TEXT,
+                programs JSON,
+                created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+            )
+        '''
+        self.cursor.execute(sql)
         
     def write_file(self, cdlFile):
         '''
@@ -31,98 +35,95 @@ class SystemWriter:
             3. Add filetree for system for this program
             4. Add extracted unique traces to the table.
         '''
-        self.addToSystemIndex(cdlFile.decoder.header.sysinfo)
-        self.addPrograms(cdlFile.decoder.header)
+        self.addToSystemIndex(cdlFile.decoder.header)
         self.addDeployments(cdlFile.decoder.header)
 
     def checkIfFieldExists(self, table, column, value):
         '''
             Checks if the database has the given field.
         '''
-        query = f'SELECT {column} FROM "{table}" WHERE {column} = ?' 
-        self.cursor.execute(query, [value])
-        row = self.cursor.fetchone() 
-        return row is not None
+        query = f"""
+            SELECT 1 FROM {table}
+            WHERE {column} = %s
+            LIMIT 1
+        """
+        self.cursor.execute(query, (value, ))
+
+        return True if self.cursor.fetchone() else False
     
     def addDeployments(self, header):
         '''
             Add deployments to the database.
         '''
-        sysId = header.sysinfo["metadata"]["systemId"]        
-        sysVer = header.sysinfo["metadata"]["systemVersion"]
-        TABLENAME = f"{sysId}_{sysVer}_deployments"
-
-        deploymentId = header.sysinfo["adliSystemExecutionId"]
+        deployment_id = header.sysinfo["adliSystemExecutionId"]
         
-        # Return if the deployment id has already been written to the database
-        hasName = self.checkIfFieldExists(TABLENAME, "deployment_id", deploymentId)
-        if (hasName):
-            return
-
-        sql = f''' INSERT OR REPLACE INTO "{TABLENAME}"(deployment_id)
-                VALUES(?) '''
-        self.cursor.execute(sql, [deploymentId])
-        self.conn.commit()
-
-
-    def addPrograms(self, header):
-        '''
-            Add programs to the database.
-        '''
-        sysId = header.sysinfo["metadata"]["systemId"]        
-        sysVer = header.sysinfo["metadata"]["systemVersion"] 
-        programInfo = header.programInfo
+        system_id = header.sysinfo["metadata"]["systemId"]        
+        system_ver = header.sysinfo["metadata"]["systemVersion"]
+        system_ver = system_ver.replace(".","")
         
-        TABLENAME = f"{sysId}_{sysVer}_programs"
-
-        name = programInfo["name"]
-        description = programInfo["description"]
-        language = programInfo["language"]
-        fileTree = json.dumps(header.fileTree)
+        tableName = f"{system_id}_{system_ver}_deployments"
 
         # Return if the program has already been written to the database
-        hasName = self.checkIfFieldExists(TABLENAME, "name", name)
+        hasName = self.checkIfFieldExists(tableName, "deployment_id", deployment_id)
         if (hasName):
             return
 
-        sql = f''' INSERT OR REPLACE INTO "{TABLENAME}"(name, description, language, file_tree)
-                VALUES(?,?,?,?) '''
-        self.cursor.execute(sql, [name, description, language, fileTree])
+        sql = f''' INSERT INTO {tableName}(deployment_id, start_ts, end_ts)
+                VALUES(%s,%s,%s) '''
+        self.cursor.execute(sql, (deployment_id, None, None))
         self.conn.commit()
 
 
-    def addToSystemIndex(self, systemInfo):
+    def addToSystemIndex(self, header):
         '''
             Adds sys info to SYSTEMTABLES and creates tables for programs, deployments and traces.
         '''
-        sysId = systemInfo["metadata"]["systemId"]        
-        sysVer = systemInfo["metadata"]["systemVersion"]
+        systemInfo = header.sysinfo
+        system_id = systemInfo["metadata"]["systemId"]        
+        system_ver = systemInfo["metadata"]["systemVersion"]
         name = systemInfo["metadata"]["name"]
         description = systemInfo["metadata"]["description"]
-        programs = json.dumps(systemInfo["programs"])
+        programs = json.dumps(header.fileTree)
 
-        self.cursor.execute(f'''
-            SELECT system_id FROM SYSTEMTABLES WHERE system_id = ? and version = ?
-        ''', (sysId, sysVer))
-        entry = self.cursor.fetchone()
+        query = f"""
+            SELECT 1 FROM SYSTEMSTABLE
+            WHERE system_id = %s AND system_ver = %s
+        """
+        self.cursor.execute(query, (system_id,system_ver))
+        systemExists = True if self.cursor.fetchone() else False
+        if (systemExists):
+            return
 
-        # If entry for specified system id and version doesn't exist, add it.
-        if (entry is None):
-            sql = ''' INSERT INTO SYSTEMTABLES(system_id, version, name, description, programs)
-                VALUES(?,?,?,?,?) '''
-            self.cursor.execute(sql, [sysId, sysVer, name, description, programs])
-            self.conn.commit()
-
-        table_name = f"{sysId}_{sysVer}_deployments"
-        self.cursor.execute(f'''CREATE TABLE IF NOT EXISTS "{table_name}"
-            (deployment_id string, PRIMARY KEY (deployment_id))''')
-        
-        table_name = f"{sysId}_{sysVer}_programs"
-        self.cursor.execute(f'''CREATE TABLE IF NOT EXISTS "{table_name}"
-            (name string PRIMARY KEY, description string, language string, file_tree string)''')
-        
-        table_name = f"{sysId}_{sysVer}_traces"
-        self.cursor.execute(f'''CREATE TABLE IF NOT EXISTS "{table_name}"
-            (deployment_id string, trace_id string, start_ts real, end_ts real, 
-             trace_type string, traces string, PRIMARY KEY (deployment_id, trace_id))''')
+        sql = ''' INSERT INTO SYSTEMSTABLE(system_id, system_ver, name, description, programs)
+                VALUES(%s,%s,%s,%s,%s) '''
+        self.cursor.execute(sql, (system_id, system_ver, name, description, programs))
         self.conn.commit()
+
+        system_ver = system_ver.replace(".","")
+
+        sql = f'''
+            CREATE TABLE IF NOT EXISTS {system_id}_{system_ver}_deployments 
+            (
+                id INT AUTO_INCREMENT PRIMARY KEY,
+                deployment_id VARCHAR(100) NOT NULL,
+                start_ts TIMESTAMP,
+                end_ts TIMESTAMP,
+                created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+            )
+        '''
+        self.cursor.execute(sql)
+
+        sql = f'''
+            CREATE TABLE IF NOT EXISTS {system_id}_{system_ver}_traces 
+            (
+                id INT AUTO_INCREMENT PRIMARY KEY,
+                deployment_id VARCHAR(100) NOT NULL,
+                trace_id VARCHAR(100),
+                start_ts TIMESTAMP,
+                end_ts TIMESTAMP,
+                trace_type VARCHAR(100),
+                traces TEXT,
+                created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+            )
+        '''
+        self.cursor.execute(sql)

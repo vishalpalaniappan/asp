@@ -54,7 +54,7 @@ class SystemIoNodes:
         '''
         startNode["uid"] = str(uuid.uuid4())
         encodedStartNode = {
-            "type": "start",
+            "node_type": "start",
             "node": startNode
         }
         self.classifiedNodes.append(encodedStartNode)
@@ -64,7 +64,7 @@ class SystemIoNodes:
             Encode the link node.
         '''
         encodedLinkNode = {
-            "type": "link",
+            "node_type": "link",
             "node": linkNode
         }
         self.classifiedNodes.append(encodedLinkNode)
@@ -74,7 +74,7 @@ class SystemIoNodes:
             Encode the end node.
         '''
         encodedEndNode = {
-            "type": "end",
+            "node_type": "end",
             "node": endNode
         }
         self.classifiedNodes.append(encodedEndNode)

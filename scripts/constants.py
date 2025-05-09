@@ -2,7 +2,7 @@ ASV_DEF = {
     "CONTAINER_NAME": "asp-asv-container",
     "IMAGE_NAME": "asp-asv-image",
     "IMAGE_PATH": "docker-images/asv/Dockerfile",
-    "COMPONENT_PATH": "components_new/asv",
+    "COMPONENT_PATH": "components/asv",
     "PORT": 3012,
     "DATA_DIR": "data/asv",
 }
@@ -11,7 +11,7 @@ DLV_DEF = {
     "CONTAINER_NAME": "asp-dlv-container",
     "IMAGE_NAME": "asp-dlv-image",
     "IMAGE_PATH": "docker-images/dlv/Dockerfile",
-    "COMPONENT_PATH": "components_new/dlv",
+    "COMPONENT_PATH": "components/dlv",
     "PORT": 3011,
     "DATA_DIR": "data/dlv",
 }
@@ -28,7 +28,7 @@ ASP_DEF = {
     "CONTAINER_NAME": "asp-container",
     "IMAGE_NAME": "asp-image",
     "IMAGE_PATH": "docker-images/asp/Dockerfile",
-    "COMPONENT_PATH": "components_new/asp",
+    "COMPONENT_PATH": "components/asp",
     "DATA_DIR": "data/asp",
 }
 
@@ -37,7 +37,7 @@ QUERY_HANDLER_DEF = {
     "PORT": 8765,
     "IMAGE_NAME": "query-handler-image",
     "IMAGE_PATH": "docker-images/query_handler/Dockerfile",
-    "COMPONENT_PATH": "components_new/query_handler",
+    "COMPONENT_PATH": "components/query_handler",
     "DATA_DIR": "data/query_handler",
 }
 
