@@ -55,6 +55,8 @@ class CdlDecoder:
                     currLog["timestamp"] = auto_gen_kv_pairs["timestamp"]
                     currLog["level"] = auto_gen_kv_pairs["level"]
                     self.parseLogLine(currLog)
+                    
+                    self.position += 1
         
         # Save any remaining system io nodes in the callstack
         while len(self.callStack) > 0:
@@ -78,9 +80,9 @@ class CdlDecoder:
         elif (currLog["type"] == "adli_exception"):
             self.exception = currLog["value"]
         elif (currLog["type"] == "adli_input"):
-            self.processInput(currLog["value"])
+            self.processInput(currLog)
         elif (currLog["type"] == "adli_output"):
-            self.processOutput(currLog["value"])
+            self.processOutput(currLog)
 
     def processInput(self, logValue):
         '''
@@ -93,8 +95,8 @@ class CdlDecoder:
 
         logValue["logFileIndex"] = self.position + 1
         logValue["logFileId"] = self.header.execInfo["programExecutionId"]
-        logValue["timestamp"] = logLine.timestamp
-        logValue["funcName"] = self.header.getLtInfo(logLine.ltId).name
+        logValue["timestamp"] = logLine["timestamp"]["unix_millisecs"]
+        logValue["funcName"] = self.header.getLtInfo(logLine["value"]).name
         logValue["programName"] = self.header.programInfo["name"]
         
         self.callStack[-1]["input"].append(logValue)
@@ -116,7 +118,7 @@ class CdlDecoder:
 
                 logValue["logFileIndex"] = self.position + 1
                 logValue["logFileId"] = self.header.execInfo["programExecutionId"]
-                logValue["timestamp"] = logLine.timestamp
+                logValue["timestamp"] = logLine["timestamp"]["unix_millisecs"]
                 logValue["programName"] = self.header.programInfo["name"]
                 logValue["funcName"] = self.header.getLtInfo(logLine["value"]).name
 
@@ -126,9 +128,10 @@ class CdlDecoder:
         if "output" not in self.callStack[-1]:
             self.callStack[-1]["output"] = []
 
+
         logValue["logFileIndex"] = self.position + 1
         logValue["logFileId"] = self.header.execInfo["programExecutionId"]
-        logValue["timestamp"] = logLine.timestamp
+        logValue["timestamp"] = logLine["timestamp"]["unix_millisecs"]
         logValue["programName"] = self.header.programInfo["name"]
         logValue["funcName"] = self.header.getLtInfo(logLine["value"]).name
 
@@ -201,7 +204,7 @@ class CdlDecoder:
         '''
         csInfo = []
         for cs in self.callStacks[position]:
-            lt = self.execution[cs].ltId
+            lt = self.execution[cs]["value"]
             ltInfo = self.header.getLtInfo(lt)
             funcLt = ltInfo.getFuncLt()
 
@@ -267,7 +270,7 @@ class CdlDecoder:
         globalVars = {}
         tempVars = {}
 
-        currLt = self.execution[position].ltId
+        currLt = self.execution[position]["value"]
         funcId = self.header.getLtInfo(currLt).getFuncLt()
 
         currPosition = 0
@@ -275,15 +278,15 @@ class CdlDecoder:
             currLog = self.execution[currPosition]
 
             if currLog["type"] == "adli_variable":
-                variable = self.header.varMap[currLog.varId]
+                variable = self.header.varMap[currLog["varid"]]
                 varFuncId = variable.getFuncLt()
 
                 if variable.isTempVar():
-                    tempVars[variable.getName()] = currLog.value
+                    tempVars[variable.getName()] = currLog["value"]
                 elif ((varFuncId == 0) or variable.isGlobal()):
-                    self.updateVariable(variable, currLog.value, globalVars, tempVars)
+                    self.updateVariable(variable, currLog["value"], globalVars, tempVars)
                 elif (varFuncId == funcId):
-                    self.updateVariable(variable, currLog.value, localVars, tempVars)
+                    self.updateVariable(variable, currLog["value"], localVars, tempVars)
 
             currPosition += 1
 
