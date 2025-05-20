@@ -4,17 +4,18 @@ from cdl.decoder.LogType import LogType
 
 class CdlHeader:
 
-    def __init__(self, header):
+    def __init__(self, IRStreamHeader):
         self.ltMap = {}
         self.varMap = {}
-        self.saveHeaderInformation(header)
+        self.saveHeaderInformation(IRStreamHeader)
 
-    def saveHeaderInformation(self, header):
+    def saveHeaderInformation(self, IRStreamHeader):
         '''
             Save the header information while creating
             objects to store the variable and logtype
             information.
         '''
+        header = json.loads(IRStreamHeader["header"])
         self.fileTree = header["fileTree"]
         self.execInfo = header["execInfo"]
         self.programInfo = header["programInfo"]

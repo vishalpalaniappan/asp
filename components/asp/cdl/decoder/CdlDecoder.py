@@ -1,7 +1,8 @@
 from pathlib import Path
-from clp_ffi_py.ir import ClpIrFileReader
-from cdl.decoder.CDL_CONSTANTS import LINE_TYPE
-from cdl.decoder.CdlLogLine import CdlLogLine
+from clp_ffi_py.ir import Deserializer, KeyValuePairLogEvent
+from typing import Optional
+import zstandard as zstd
+import tempfile
 from cdl.decoder.CdlHeader import CdlHeader
 from cdl.decoder.SystemIoNodes import SystemIoNodes
 
@@ -33,10 +34,27 @@ class CdlDecoder:
         '''
             Load and parse the file line by line.
         '''
-        with ClpIrFileReader(Path(filePath)) as clp_reader:
-            self.position = 0
-            for log_event in clp_reader:
-                self.parseLogLine(log_event)
+        self.position = 0
+        with open(Path(filePath), "rb") as compressed_file:
+            with tempfile.NamedTemporaryFile(delete=True, mode='w+b') as temp_file:
+                # Decompress file to temporary file
+                dctx = zstd.ZstdDecompressor()
+                dctx.copy_stream(compressed_file, temp_file)
+                temp_file.seek(0)
+
+                # Deseralize the IR Stream to read key value pair log events.
+                deserializer = Deserializer(temp_file)
+                while True:
+                    log_event: Optional[KeyValuePairLogEvent] = deserializer.deserialize_log_event()
+                    if log_event is None:
+                        # The entire stream has been consumed
+                        break
+                    auto_gen_kv_pairs, user_gen_kv_pairs = log_event.to_dict()
+
+                    currLog = user_gen_kv_pairs
+                    currLog["timestamp"] = auto_gen_kv_pairs["timestamp"]
+                    currLog["level"] = auto_gen_kv_pairs["level"]
+                    self.parseLogLine(currLog)
         
         # Save any remaining system io nodes in the callstack
         while len(self.callStack) > 0:
@@ -44,37 +62,25 @@ class CdlDecoder:
             if (("input" in popped) or ("output" in popped)):
                 self.nodes.append(popped)
 
-    def parseLogLine(self, log_event):
+    def parseLogLine(self, currLog):
         '''
             Parse the log line and process the relevant data.
         '''
-        currLog = CdlLogLine(log_event)
         self.execution.append(currLog)
 
-        if currLog.type == LINE_TYPE["JSON"]:
-            self.processJSONLog(currLog)
-        elif currLog.type == LINE_TYPE["EXCEPTION"]:
-            self.exception = currLog.value
-        elif currLog.type == LINE_TYPE["EXECUTION"]:
+        if (currLog["type"] == "adli_header"):
+            self.header = CdlHeader(currLog)
+        elif (currLog["type"] == "adli_execution"):
             self.lastExecution = self.position
             self.addToCallStack(currLog)
-        elif currLog.type == LINE_TYPE["VARIABLE"]:
+        elif (currLog["type"] == "adli_variable"):
             pass
-        
-        self.position += 1
-
-
-    def processJSONLog(self, log):
-        '''
-            This function processes any JSON logs.
-        '''
-        if (log.value["type"] == "adli_header"):
-            self.header = CdlHeader(log.value["header"])
-        elif (log.value["type"] == "adli_input"):
-            self.processInput(log.value)
-        elif (log.value["type"] == "adli_output"):
-            self.processOutput(log.value)
-
+        elif (currLog["type"] == "adli_exception"):
+            self.exception = currLog["value"]
+        elif (currLog["type"] == "adli_input"):
+            self.processInput(currLog["value"])
+        elif (currLog["type"] == "adli_output"):
+            self.processOutput(currLog["value"])
 
     def processInput(self, logValue):
         '''
@@ -112,7 +118,7 @@ class CdlDecoder:
                 logValue["logFileId"] = self.header.execInfo["programExecutionId"]
                 logValue["timestamp"] = logLine.timestamp
                 logValue["programName"] = self.header.programInfo["name"]
-                logValue["funcName"] = self.header.getLtInfo(logLine.ltId).name
+                logValue["funcName"] = self.header.getLtInfo(logLine["value"]).name
 
                 cs["input"][-1]["output"].append(logValue)
                 return
@@ -124,7 +130,7 @@ class CdlDecoder:
         logValue["logFileId"] = self.header.execInfo["programExecutionId"]
         logValue["timestamp"] = logLine.timestamp
         logValue["programName"] = self.header.programInfo["name"]
-        logValue["funcName"] = self.header.getLtInfo(logLine.ltId).name
+        logValue["funcName"] = self.header.getLtInfo(logLine["value"]).name
 
         self.callStack[-1]["output"].append(logValue)
 
@@ -139,14 +145,14 @@ class CdlDecoder:
             - Copy stack into global list       
         '''
         position = len(self.execution) - 1
-        ltInfo = self.header.getLtInfo(log.ltId)
+        ltInfo = self.header.getLtInfo(log["value"])
         cs = self.callStack
 
         if (ltInfo.isFunction()):
             self.callStack.append({"funcPosition":position})
 
         while (len(cs) > 0):
-            currStackFuncLt = self.execution[cs[-1]["funcPosition"]].ltId
+            currStackFuncLt = self.execution[cs[-1]["funcPosition"]]["value"]
             if (int(currStackFuncLt) == int(ltInfo.getFuncLt())):
                 break
 
@@ -174,7 +180,7 @@ class CdlDecoder:
         '''
         while (position >= 1):
             position -= 1
-            if self.execution[position].type == LINE_TYPE["EXECUTION"]:
+            if self.execution[position]["type"] == "adli_execution":
                 return position
         return None
 
@@ -184,7 +190,7 @@ class CdlDecoder:
         '''
         position += 1
         while (position < len(self.execution)):
-            if self.execution[position].type == LINE_TYPE["EXECUTION"]:
+            if self.execution[position]["type"] == "adli_execution":
                 return position
             position += 1
         return None
@@ -268,7 +274,7 @@ class CdlDecoder:
         while (currPosition < position):
             currLog = self.execution[currPosition]
 
-            if currLog.type == LINE_TYPE["VARIABLE"]:
+            if currLog["type"] == "adli_variable":
                 variable = self.header.varMap[currLog.varId]
                 varFuncId = variable.getFuncLt()
 
@@ -294,7 +300,7 @@ class CdlDecoder:
         '''
         funcArgs = {}
         position += 1
-        while position < len(self.execution) and (self.execution[position].type == LINE_TYPE["VARIABLE"]):
+        while position < len(self.execution) and (self.execution[position]["type"] == "adli_variable"):
             varInfo = self.header.getVarInfo(self.execution[position].varId)
             funcArgs[varInfo.getName()] = self.execution[position].value
             position += 1
