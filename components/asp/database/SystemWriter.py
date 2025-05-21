@@ -57,9 +57,14 @@ class SystemWriter:
         '''
         deployment_id = header.sysinfo["adliSystemExecutionId"]
         
-        system_id = header.sysinfo["metadata"]["systemId"]        
-        system_ver = header.sysinfo["metadata"]["systemVersion"]
-        system_ver = system_ver.replace(".","")
+        
+        if header.sysinfo and "metadata" in header.sysinfo and header.sysinfo["metadata"]:
+            system_id = header.sysinfo["metadata"]["systemId"] if "systemId" in header.sysinfo["metadata"] else None
+            system_ver = header.sysinfo["metadata"]["systemVersion"] if "systemId" in header.sysinfo["metadata"] else None
+            system_ver = system_ver.replace(".","")
+        else:
+            system_id = None
+            system_ver = None
         
         tableName = f"{system_id}_{system_ver}_deployments"
 
@@ -79,10 +84,17 @@ class SystemWriter:
             Adds sys info to SYSTEMTABLES and creates tables for programs, deployments and traces.
         '''
         systemInfo = header.sysinfo
-        system_id = systemInfo["metadata"]["systemId"]        
-        system_ver = systemInfo["metadata"]["systemVersion"]
-        name = systemInfo["metadata"]["name"]
-        description = systemInfo["metadata"]["description"]
+        if systemInfo and "metadata" in systemInfo and header.sysinfo["metadata"]:
+            system_id = header.sysinfo["metadata"]["systemId"] if "systemId" in header.sysinfo["metadata"] else None
+            system_ver = header.sysinfo["metadata"]["systemVersion"] if "systemId" in header.sysinfo["metadata"] else None
+            name = systemInfo["metadata"]["name"]
+            description = systemInfo["metadata"]["description"]
+        else:
+            system_id = None
+            system_ver = None
+            name = None
+            description = None
+            
         programs = json.dumps(header.fileTree)
 
         query = f"""
