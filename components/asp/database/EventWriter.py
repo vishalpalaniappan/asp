@@ -54,27 +54,21 @@ class EventWriter:
             Add system io events to the database.
         '''
         header = logFile.decoder.header
-        print(header.sysinfo)
-        if header.sysinfo and "metadata" in header.sysinfo:
-            metadata = header.sysinfo["metadata"]
-            sysId = metadata["systemId"] if "systemId" in metadata else None
-            sysVer = metadata["systemVersion"] if "systemVersion" in metadata else None
-        else:
-            sysId = None
-            sysVer = None
-            
-        if header.sysinfo and "adliSystemExecutionId" in header.sysinfo:
-            deploymentId = header.sysinfo["adliSystemExecutionId"]
-        else:
-            deploymentId = None
 
-        if header.execInfo and "programExecutionId" in header.execInfo:
-            programId = header.execInfo["programExecutionId"]
-            ts = header.execInfo["timestamp"]
-        else:
-            programId = None
-            ts = None
 
+        # Get system information
+        systemInfo = header.sysinfo
+        metadata = systemInfo.get("metadata")
+        sysId = metadata.get("systemId")
+        sysVer = metadata.get("systemVersion")
+        deploymentId = systemInfo.get("adliSystemExecutionId")
+        
+        # Get execution information
+        execInfo = header.execInfo
+        programId = execInfo.get("programExecutionId")
+        ts = execInfo.get("timestamp")
+
+        # Get program information
         programInfo = header.programInfo
         
         # If the program has already been processed, then return.

@@ -55,17 +55,14 @@ class SystemWriter:
         '''
             Add deployments to the database.
         '''
-        deployment_id = header.sysinfo["adliSystemExecutionId"]
-        
-        
-        if header.sysinfo and "metadata" in header.sysinfo and header.sysinfo["metadata"]:
-            system_id = header.sysinfo["metadata"]["systemId"] if "systemId" in header.sysinfo["metadata"] else None
-            system_ver = header.sysinfo["metadata"]["systemVersion"] if "systemId" in header.sysinfo["metadata"] else None
-            system_ver = system_ver.replace(".","")
-        else:
-            system_id = None
-            system_ver = None
-        
+        sysinfo = header.sysinfo
+        deployment_id = sysinfo.get("adliSystemExecutionId")
+        metadata = sysinfo.get("metadata", {}) if sysinfo else {}
+        system_id = metadata.get("systemId")
+        system_ver = metadata.get("systemVersion")
+        if system_ver:
+            system_ver = system_ver.replace(".", "")
+            
         tableName = f"{system_id}_{system_ver}_deployments"
 
         # Return if the program has already been written to the database
@@ -84,17 +81,12 @@ class SystemWriter:
             Adds sys info to SYSTEMTABLES and creates tables for programs, deployments and traces.
         '''
         systemInfo = header.sysinfo
-        if systemInfo and "metadata" in systemInfo and header.sysinfo["metadata"]:
-            system_id = header.sysinfo["metadata"]["systemId"] if "systemId" in header.sysinfo["metadata"] else None
-            system_ver = header.sysinfo["metadata"]["systemVersion"] if "systemId" in header.sysinfo["metadata"] else None
-            name = systemInfo["metadata"]["name"]
-            description = systemInfo["metadata"]["description"]
-        else:
-            system_id = None
-            system_ver = None
-            name = None
-            description = None
-            
+        metadata = systemInfo.get("metadata", {}) if systemInfo else {}
+        system_id = metadata.get("systemId")
+        system_ver = metadata.get("systemVersion")
+        name = metadata.get("name")
+        description = metadata.get("description")
+                    
         programs = json.dumps(header.fileTree)
 
         query = f"""
