@@ -53,12 +53,23 @@ class EventWriter:
         '''
             Add system io events to the database.
         '''
-        sysId = logFile.decoder.header.sysinfo["metadata"]["systemId"]
-        sysVer = logFile.decoder.header.sysinfo["metadata"]["systemVersion"]
-        deploymentId = logFile.decoder.header.sysinfo["adliSystemExecutionId"]
-        programId = logFile.decoder.header.execInfo["programExecutionId"]
-        ts = logFile.decoder.header.execInfo["timestamp"]
-        programInfo = logFile.decoder.header.programInfo
+        header = logFile.decoder.header
+
+
+        # Get system information
+        systemInfo = header.sysinfo
+        metadata = systemInfo.get("metadata")
+        sysId = metadata.get("systemId")
+        sysVer = metadata.get("systemVersion")
+        deploymentId = systemInfo.get("adliSystemExecutionId")
+        
+        # Get execution information
+        execInfo = header.execInfo
+        programId = execInfo.get("programExecutionId")
+        ts = execInfo.get("timestamp")
+
+        # Get program information
+        programInfo = header.programInfo
         
         # If the program has already been processed, then return.
         fileExists = self.checkIfFieldExists("IOEVENTS", "program_execution_id", programId)
