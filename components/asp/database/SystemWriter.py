@@ -55,12 +55,14 @@ class SystemWriter:
         '''
             Add deployments to the database.
         '''
-        deployment_id = header.sysinfo["adliSystemExecutionId"]
-        
-        system_id = header.sysinfo["metadata"]["systemId"]        
-        system_ver = header.sysinfo["metadata"]["systemVersion"]
-        system_ver = system_ver.replace(".","")
-        
+        sysinfo = header.sysinfo
+        deployment_id = sysinfo.get("adliSystemExecutionId")
+        metadata = sysinfo.get("metadata", {}) if sysinfo else {}
+        system_id = metadata.get("systemId")
+        system_ver = metadata.get("systemVersion")
+        if system_ver:
+            system_ver = system_ver.replace(".", "")
+            
         tableName = f"{system_id}_{system_ver}_deployments"
 
         # Return if the program has already been written to the database
@@ -79,10 +81,12 @@ class SystemWriter:
             Adds sys info to SYSTEMTABLES and creates tables for programs, deployments and traces.
         '''
         systemInfo = header.sysinfo
-        system_id = systemInfo["metadata"]["systemId"]        
-        system_ver = systemInfo["metadata"]["systemVersion"]
-        name = systemInfo["metadata"]["name"]
-        description = systemInfo["metadata"]["description"]
+        metadata = systemInfo.get("metadata", {}) if systemInfo else {}
+        system_id = metadata.get("systemId")
+        system_ver = metadata.get("systemVersion")
+        name = metadata.get("name")
+        description = metadata.get("description")
+                    
         programs = json.dumps(header.fileTree)
 
         query = f"""
