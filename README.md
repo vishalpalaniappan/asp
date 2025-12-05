@@ -2,6 +2,9 @@
 
 Automated System Processor (ASP) is a free fully automated log based diagnostic tool for software systems. 
 
+> [!NOTE]  
+> This repo is going to be reworked to use the abstractions in the design to observe the distributed traces. Ultimately a distributed trace is an abstraction in the design and through the semantic design map, the active distributed traces can be observed directly. The failure modalities are also instrumented into the constraints of the abstractions and the root cause of failures in distributed traces can be understood through these design semantics. Ultimately, this will enable automate debugging of distributed systems. 
+
 ## Usage
 
 > [!NOTE]  
